@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { 
-  Card, CardBody, Button, Select, SelectItem, 
-  Divider, Chip
+  Card, Button, Select, ListBox, Label
 } from '@heroui/react';
 import { 
   PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip,
@@ -10,6 +9,7 @@ import {
 import { useAppSelector } from '@/store/hooks';
 import { selectCategories } from '@/features/categories/store/categoriesSlice';
 import { calculateMonthlySummary } from '@/shared/models/finance';
+import { ChevronDown } from 'lucide-react';
 
 const ReportsScreen = () => {
   const transactions = useAppSelector((state) => state.transactions.items);
@@ -51,43 +51,47 @@ const ReportsScreen = () => {
       <h1 className="text-3xl font-bold pt-4">Relatórios</h1>
 
       <div className="w-full">
-        <Select
-          label="Mês de Referência"
-          variant="flat"
-          selectedKeys={[selectedMonth]}
-          onSelectionChange={(keys) => setSelectedMonth(Array.from(keys)[0] as string)}
-          className="w-full"
-          classNames={{
-            trigger: "bg-ios-darkGray border-none shadow-sm h-14",
-          }}
-        >
-          {availableMonths.map((month) => (
-            <SelectItem key={month} textValue={month}>
-              {new Date(month + '-02').toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
-            </SelectItem>
-          ))}
+        <Select selectedKey={selectedMonth} onSelectionChange={(key) => setSelectedMonth(key as string)}>
+          <Label className="text-xs text-ios-gray mb-1 block">Mês de Referência</Label>
+          <Select.Trigger className="w-full bg-ios-darkGray border-none shadow-sm h-14 rounded-xl px-4 flex items-center justify-between outline-none">
+            <Select.Value className="text-foreground font-semibold">
+              {(value) => value ? new Date(String(value) + '-02').toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }) : 'Selecione o mês'}
+            </Select.Value>
+            <Select.Indicator>
+              <ChevronDown size={18} className="text-ios-gray" />
+            </Select.Indicator>
+          </Select.Trigger>
+          <Select.Popover className="bg-ios-darkGray border border-white/10 rounded-xl shadow-2xl min-w-[var(--trigger-width)]">
+            <ListBox className="p-1 outline-none">
+              {availableMonths.map((month) => (
+                <ListBox.Item key={month} id={month} textValue={month} className="px-3 py-3 rounded-lg data-[hover=true]:bg-white/10 outline-none cursor-pointer text-sm">
+                  {new Date(month + '-02').toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
+                </ListBox.Item>
+              ))}
+            </ListBox>
+          </Select.Popover>
         </Select>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <Card className="bg-ios-green/10 border-none shadow-none">
-          <CardBody className="p-4 text-center">
+        <Card className="bg-ios-green/10 border-none shadow-none rounded-2xl">
+          <Card.Content className="p-4 text-center">
             <p className="text-xs text-ios-green uppercase tracking-wider mb-1">Entradas</p>
             <p className="text-xl font-bold text-ios-green">R$ {summary.incomeTotal.toFixed(2)}</p>
-          </CardBody>
+          </Card.Content>
         </Card>
-        <Card className="bg-ios-red/10 border-none shadow-none">
-          <CardBody className="p-4 text-center">
+        <Card className="bg-ios-red/10 border-none shadow-none rounded-2xl">
+          <Card.Content className="p-4 text-center">
             <p className="text-xs text-ios-red uppercase tracking-wider mb-1">Saídas</p>
             <p className="text-xl font-bold text-ios-red">R$ {summary.expenseTotal.toFixed(2)}</p>
-          </CardBody>
+          </Card.Content>
         </Card>
       </div>
 
       <div className="space-y-4 pt-2">
         <h3 className="text-xl font-bold px-1">Distribuição</h3>
-        <Card className="bg-ios-darkGray border-none p-4 shadow-none">
-          <CardBody className="p-0 overflow-visible">
+        <Card className="bg-ios-darkGray border-none p-4 shadow-none rounded-3xl">
+          <Card.Content className="p-0 overflow-visible">
             <div className="w-full h-[300px]">
               {pieData.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
@@ -120,14 +124,14 @@ const ReportsScreen = () => {
                 </div>
               )}
             </div>
-          </CardBody>
+          </Card.Content>
         </Card>
       </div>
 
       <div className="space-y-4 pt-2">
         <h3 className="text-xl font-bold px-1">Comparativo</h3>
-        <Card className="bg-ios-darkGray border-none p-4 shadow-none">
-          <CardBody className="p-0 overflow-visible">
+        <Card className="bg-ios-darkGray border-none p-4 shadow-none rounded-3xl">
+          <Card.Content className="p-0 overflow-visible">
             <div className="w-full h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={barData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -148,7 +152,7 @@ const ReportsScreen = () => {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-          </CardBody>
+          </Card.Content>
         </Card>
       </div>
     </div>

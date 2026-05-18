@@ -1,13 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import { 
-  Card, CardBody, Button, Listbox, ListboxItem, 
-  Pagination, Modal, ModalContent, ModalHeader, ModalBody, 
-  ModalFooter
+  Card, Button, ListBox, 
+  Modal
 } from '@heroui/react';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectCategories, bootstrapCategories } from '@/features/categories/store/categoriesSlice';
 import { deleteTransaction, bootstrapTransactions } from '@/features/transactions/store/transactionsSlice';
-import { Trash2, ArrowUpCircle, ArrowDownCircle, RefreshCw } from 'lucide-react';
+import { Trash2, ArrowUpCircle, ArrowDownCircle, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const ExtractScreen = () => {
   const dispatch = useAppDispatch();
@@ -24,6 +23,8 @@ const ExtractScreen = () => {
     const start = (page - 1) * ITEMS_PER_PAGE;
     return transactions.slice(start, start + ITEMS_PER_PAGE);
   }, [transactions, page]);
+
+  const totalPages = Math.ceil(transactions.length / ITEMS_PER_PAGE);
 
   const handleRefresh = () => {
     dispatch(bootstrapTransactions());
@@ -42,89 +43,101 @@ const ExtractScreen = () => {
     <div className="max-w-md mx-auto p-4 pb-24 space-y-6">
       <div className="flex justify-between items-center pt-4">
         <h1 className="text-3xl font-bold">Extrato</h1>
-        <Button isIconOnly variant="flat" onPress={handleRefresh}>
+        <Button isIconOnly variant="primary" onPress={handleRefresh} className="rounded-xl">
           <RefreshCw size={20} />
         </Button>
       </div>
 
       <Card className="bg-ios-darkGray border-none overflow-hidden shadow-none">
-        <CardBody className="p-0">
-          <Listbox 
+        <Card.Content className="p-0">
+          <ListBox 
             aria-label="Extrato"
             className="p-0"
-            itemClasses={{
-              base: "px-4 py-3 border-b border-white/5 last:border-none data-[hover=true]:bg-white/5",
-              title: "text-base font-semibold",
-              description: "text-xs text-ios-gray"
-            }}
           >
             {paginatedTransactions.map((tx) => {
               const category = categories.find(c => c.id === tx.categoryId);
               return (
-                <ListboxItem
+                <ListBox.Item
                   key={tx.id}
+                  id={tx.id}
                   textValue={category?.name}
-                  description={new Date(tx.occurredAt).toLocaleDateString()}
-                  startContent={
-                    tx.type === 'income' ? 
-                    <ArrowUpCircle className="text-ios-green" size={24} /> : 
-                    <ArrowDownCircle className="text-ios-red" size={24} />
-                  }
-                  endContent={
-                    <div className="flex items-center gap-3">
-                      <span className={`font-bold ${tx.type === 'expense' ? 'text-ios-red' : 'text-ios-green'}`}>
-                        {tx.type === 'expense' ? '-' : '+'} R$ {tx.amount.toFixed(2)}
-                      </span>
-                      <Button 
-                        isIconOnly 
-                        size="sm" 
-                        variant="light" 
-                        onPress={() => {
-                          setDeleteId(tx.id);
-                          setIsDeleteModalOpen(true);
-                        }}
-                      >
-                        <Trash2 size={16} className="text-ios-red opacity-60" />
-                      </Button>
-                    </div>
-                  }
+                  className="px-4 py-3 border-b border-white/5 last:border-none data-[hover=true]:bg-white/5 flex items-center justify-between outline-none cursor-default"
                 >
-                  {category?.name || 'Sem Categoria'}
-                </ListboxItem>
+                  <div className="flex items-center gap-3">
+                    {tx.type === 'income' ? 
+                      <ArrowUpCircle className="text-ios-green" size={24} /> : 
+                      <ArrowDownCircle className="text-ios-red" size={24} />
+                    }
+                    <div className="flex flex-col">
+                      <span className="text-base font-semibold text-foreground">{category?.name || 'Sem Categoria'}</span>
+                      <span className="text-xs text-ios-gray">{new Date(tx.occurredAt).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <span className={`font-bold ${tx.type === 'expense' ? 'text-ios-red' : 'text-ios-green'}`}>
+                      {tx.type === 'expense' ? '-' : '+'} R$ {tx.amount.toFixed(2)}
+                    </span>
+                    <Button 
+                      isIconOnly 
+                      variant="ghost" 
+                      className="border-none hover:bg-ios-red/10"
+                      onPress={() => {
+                        setDeleteId(tx.id);
+                        setIsDeleteModalOpen(true);
+                      }}
+                    >
+                      <Trash2 size={16} className="text-ios-red opacity-60" />
+                    </Button>
+                  </div>
+                </ListBox.Item>
               );
             })}
-          </Listbox>
+          </ListBox>
           {paginatedTransactions.length === 0 && (
             <div className="py-12 text-center text-ios-gray">
               Nenhuma transação encontrada
             </div>
           )}
-        </CardBody>
+        </Card.Content>
       </Card>
       
-      <div className="flex justify-center pt-4">
-        <Pagination 
-          total={Math.ceil(transactions.length / ITEMS_PER_PAGE)} 
-          page={page} 
-          onChange={setPage}
-          color="primary"
-          variant="flat"
-        />
-      </div>
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-4 pt-4">
+          <Button 
+            isIconOnly 
+            variant="ghost" 
+            isDisabled={page === 1} 
+            onPress={() => setPage(p => p - 1)}
+            className="border-white/10"
+          >
+            <ChevronLeft size={20} />
+          </Button>
+          <span className="text-sm font-medium">Página {page} de {totalPages}</span>
+          <Button 
+            isIconOnly 
+            variant="ghost" 
+            isDisabled={page === totalPages} 
+            onPress={() => setPage(p => p + 1)}
+            className="border-white/10"
+          >
+            <ChevronRight size={20} />
+          </Button>
+        </div>
+      )}
 
-      <Modal isOpen={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen} size="xs" backdrop="blur" className="dark text-foreground">
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader>Excluir?</ModalHeader>
-              <ModalFooter>
-                <Button variant="light" onPress={onClose}>Cancelar</Button>
-                <Button color="danger" onPress={confirmDelete}>Excluir</Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
+      <Modal.Root isOpen={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
+        <Modal.Backdrop className="bg-black/50 backdrop-blur-sm" />
+        <Modal.Container placement="center" className="p-4 w-full max-w-xs">
+          <Modal.Dialog className="bg-ios-darkGray rounded-3xl p-6 outline-none shadow-2xl">
+            <Modal.Header className="text-xl font-bold mb-4 text-center">Excluir?</Modal.Header>
+            <Modal.Footer className="flex gap-3 mt-4">
+              <Button variant="ghost" onPress={() => setIsDeleteModalOpen(false)} className="flex-1 border-white/10">Cancelar</Button>
+              <Button variant="danger" onPress={confirmDelete} className="flex-1">Excluir</Button>
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Root>
     </div>
   );
 };

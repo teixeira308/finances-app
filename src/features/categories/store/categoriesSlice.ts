@@ -3,6 +3,7 @@ import { createAsyncThunk, createSlice, nanoid } from "@reduxjs/toolkit";
 import type { Category } from "@/shared/models/finance";
 import { listCategories, saveCategory } from "@/features/categories/services/categoryService";
 import type { RootState } from "@/store/rootReducer";
+import { categoryRepository } from "@/storage/repositories/categoryRepository";
 
 interface CategoriesState {
   items: Category[];
