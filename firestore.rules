@@ -1,0 +1,25 @@
+ rules_version = '2';
+    service cloud.firestore {
+      match /databases/{database}/documents {
+   
+        // Função para verificar se está logado
+        function isAuthenticated() {
+          return request.auth != null;
+        }
+   
+        // Regra: CRUD restrito apenas ao dono do dado
+        match /transactions/{transactionId} {
+          allow read, write: if isAuthenticated() &&
+                              request.auth.uid == resource.data.userId;
+          allow create: if isAuthenticated() &&
+                          request.auth.uid == request.resource.data.userId;
+        }
+   
+        match /categories/{categoryId} {
+          allow read, write: if isAuthenticated() &&
+                              request.auth.uid == resource.data.userId;
+          allow create: if isAuthenticated() &&
+                          request.auth.uid == request.resource.data.userId;
+        }
+      }
+    }
