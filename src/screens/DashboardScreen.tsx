@@ -4,7 +4,7 @@ import {
   Modal, ModalContent, ModalHeader, ModalBody, 
   ModalFooter, Input, Select, SelectItem, Textarea,
   Chip, Tabs, Tab
-} from '@nextui-org/react';
+} from '@heroui/react';
 import { 
   PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip
 } from 'recharts';

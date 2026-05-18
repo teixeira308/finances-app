@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, CardBody, Input, Button, Chip } from '@nextui-org/react';
+import { Card, CardBody, Input, Button, Chip } from '@heroui/react';
 import { login } from '@/features/auth/services/authService';
 
 const LoginScreen = () => {

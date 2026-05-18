@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { type User } from 'firebase/auth';
 import { subscribeToAuthChanges } from '@/features/auth/services/authService';
-import { Spinner } from '@nextui-org/react';
+import { Spinner } from '@heroui/react';
 
 interface AuthContextType {
   user: User | null;

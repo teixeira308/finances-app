@@ -3,7 +3,7 @@ import {
   Card, CardBody, Button, Listbox, ListboxItem, 
   Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, 
   Input, Chip
-} from '@nextui-org/react';
+} from '@heroui/react';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectCategories, createCategory, deleteCategory, bootstrapCategories } from '@/features/categories/store/categoriesSlice';
 import { Plus, Tag, ChevronRight, Trash2, RefreshCw } from 'lucide-react';

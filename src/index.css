@@ -1,6 +1,18 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@plugin "./hero.ts";
+
+@source "../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}";
+
+@theme {
+  --color-ios-blue: #0079f2;
+  --color-ios-green: #30D158;
+  --color-ios-red: #FF453A;
+  --color-ios-gray: #8E8E93;
+  --color-ios-dark-gray: #1C1C1E;
+}
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
   color-scheme: dark;

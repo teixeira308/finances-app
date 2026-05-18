@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { 
   Card, CardBody, Button, Select, SelectItem, 
   Divider, Chip
-} from '@nextui-org/react';
+} from '@heroui/react';
 import { 
   PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip,
   BarChart, Bar, XAxis, YAxis, CartesianGrid

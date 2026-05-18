@@ -3,7 +3,7 @@ import {
   Card, CardBody, Button, Listbox, ListboxItem, 
   Pagination, Modal, ModalContent, ModalHeader, ModalBody, 
   ModalFooter
-} from '@nextui-org/react';
+} from '@heroui/react';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectCategories, bootstrapCategories } from '@/features/categories/store/categoriesSlice';
 import { deleteTransaction, bootstrapTransactions } from '@/features/transactions/store/transactionsSlice';

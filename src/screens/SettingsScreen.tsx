@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardBody, Listbox, ListboxItem } from '@nextui-org/react';
+import { Card, CardBody, Listbox, ListboxItem } from '@heroui/react';
 import { Shield, HelpCircle, ChevronRight, LogOut } from 'lucide-react';
 import { logout } from '@/features/auth/services/authService';
 
@@ -71,8 +71,8 @@ const SettingsScreen = () => {
       </Card>
 
       <div className="text-center space-y-1 pt-4">
-        <p className="text-xs text-ios-gray">Versão 2.0.0 (NextUI Edition)</p>
-        <p className="text-[10px] text-ios-gray/40 uppercase tracking-tighter">Powered by NextUI & Firebase</p>
+        <p className="text-xs text-ios-gray">Versão 3.0.0 (HeroUI Edition)</p>
+        <p className="text-[10px] text-ios-gray/40 uppercase tracking-tighter">Powered by HeroUI & Firebase</p>
       </div>
     </div>
   );
