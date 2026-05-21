@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import { 
-  PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip
+  PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip,
+  AreaChart, Area, XAxis, YAxis, CartesianGrid
 } from 'recharts';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { calculateMonthlySummary } from '@/shared/models/finance';
@@ -31,6 +32,20 @@ const DashboardScreen = () => {
       };
     });
   }, [summary, categories]);
+
+  const dailyData = useMemo(() => {
+    const data: Record<string, { income: number; expense: number }> = {};
+    transactions
+      .filter(tx => tx.occurredAt.startsWith(monthRef))
+      .sort((a, b) => new Date(a.occurredAt).getTime() - new Date(b.occurredAt).getTime())
+      .forEach(tx => {
+        const date = new Date(tx.occurredAt).getDate().toString();
+        if (!data[date]) data[date] = { income: 0, expense: 0 };
+        if (tx.type === 'income') data[date].income += tx.amount;
+        else data[date].expense += tx.amount;
+      });
+    return Object.entries(data).map(([date, values]) => ({ date, ...values }));
+  }, [transactions, monthRef]);
 
   const handleRefresh = () => {
     dispatch(bootstrapTransactions());
@@ -76,6 +91,25 @@ const DashboardScreen = () => {
           </Card>
         </Col>
       </Row>
+
+      <h3 className="h5 fw-bold mb-3 px-1">Entradas vs Saídas</h3>
+      <Card className="bg-ios-dark-gray border-0 p-3 mb-4">
+        <Card.Body className="p-0">
+          <div style={{ width: '100%', height: '200px' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={dailyData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
+                <XAxis dataKey="date" tick={{ fill: '#8E8E93', fontSize: 10 }} axisLine={false} tickLine={false} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#1C1C1E', border: 'none', borderRadius: '10px' }}
+                />
+                <Area type="monotone" dataKey="income" name="Entradas" stroke="#30D158" fill="#30D158" fillOpacity={0.2} />
+                <Area type="monotone" dataKey="expense" name="Saídas" stroke="#FF453A" fill="#FF453A" fillOpacity={0.2} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </Card.Body>
+      </Card>
 
       <h3 className="h5 fw-bold mb-3 px-1">Distribuição</h3>
       <Card className="bg-ios-dark-gray border-0 p-3 mb-5">

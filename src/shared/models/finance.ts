@@ -17,6 +17,7 @@ export interface Transaction {
 export interface Category {
   id: string;
   name: string;
+  type: TransactionType;
   kind: "default" | "custom";
   colorToken: string;
   iconToken: string;

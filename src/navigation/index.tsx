@@ -7,7 +7,7 @@ const Navigation = () => {
   const location = useLocation();
 
   const navItemsLeft = [
-    { label: 'Início', path: '/', icon: LayoutDashboard },
+    { label: 'Bem-vindo(a)', path: '/', icon: LayoutDashboard },
     { label: 'Extrato', path: '/extrato', icon: ListOrdered },
   ];
 

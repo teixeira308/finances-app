@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Card, Button, Form, Nav, Badge } from 'react-bootstrap';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectCategories } from '@/features/categories/store/categoriesSlice';
 import { createTransaction, bootstrapTransactions } from '@/features/transactions/store/transactionsSlice';
 import { ChevronDown, ArrowLeft } from 'lucide-react';
+import { TransactionType } from '@/shared/models/finance';
 
 const NewTransactionScreen = () => {
   const navigate = useNavigate();
@@ -12,15 +13,40 @@ const NewTransactionScreen = () => {
   const categories = useAppSelector(selectCategories);
   
   const [txType, setTxType] = useState('expense');
-  const [amount, setAmount] = useState('');
-  const [categoryId, setCategoryId] = useState(categories[0]?.id || '');
+  const filteredCategories = useMemo(() => categories.filter(c => c.type === txType), [categories, txType]);
+  
+  const [displayAmount, setDisplayAmount] = useState('R$ 0,00');
+  const [rawAmount, setRawAmount] = useState(0);
+  const [categoryId, setCategoryId] = useState('');
+  
+  // Atualiza o categoryId quando o tipo muda
+  React.useEffect(() => {
+    setCategoryId(filteredCategories[0]?.id || '');
+  }, [txType, filteredCategories]);
+
   const [occurredAt, setOccurredAt] = useState(new Date().toISOString().slice(0, 16));
   const [note, setNote] = useState('');
   const [txError, setTxError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, '');
+    const numericValue = parseInt(value, 10) / 100;
+    
+    if (isNaN(numericValue)) {
+      setRawAmount(0);
+      setDisplayAmount('R$ 0,00');
+    } else {
+      setRawAmount(numericValue);
+      setDisplayAmount(new Intl.NumberFormat('pt-BR', { 
+        style: 'currency', 
+        currency: 'BRL' 
+      }).format(numericValue));
+    }
+  };
+
   const handleSaveTransaction = async () => {
-    if (!amount || Number(amount) <= 0) {
+    if (rawAmount <= 0) {
       setTxError('Informe um valor válido');
       return;
     }
@@ -32,8 +58,8 @@ const NewTransactionScreen = () => {
     setIsLoading(true);
     try {
       await dispatch(createTransaction({
-        type: txType as 'income' | 'expense',
-        amount: Number(amount),
+        type: txType as TransactionType,
+        amount: rawAmount,
         categoryId,
         occurredAt: new Date(occurredAt).toISOString(),
         note
@@ -53,11 +79,11 @@ const NewTransactionScreen = () => {
         <Button 
           variant="link" 
           onClick={() => navigate(-1)} 
-          className="p-2 text-white border-0 bg-white bg-opacity-5 rounded-3"
+          className="p-2 text-white border-0 bg-grey bg-opacity-5 rounded-3"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={32} />
         </Button>
-        <h1 className="h1 fw-bold m-0 text-truncate">Nova Transação</h1>
+        <h1 className="h3 fw-bold m-0 text-truncate">Nova Transação</h1>
       </div>
 
       <Card className="bg-ios-dark-gray border-0 p-4 mb-4 shadow-none">
@@ -66,7 +92,7 @@ const NewTransactionScreen = () => {
             variant="pills" 
             activeKey={txType} 
             onSelect={(k) => setTxType(k as string)}
-            className="bg-white bg-opacity-5 p-1 rounded-3 mb-4"
+            className="bg-black bg-opacity-5 p-1 rounded-3 mb-4"
           >
             <Nav.Item className="flex-grow-1">
               <Nav.Link 
@@ -89,14 +115,17 @@ const NewTransactionScreen = () => {
           <Form className="space-y-4">
             <Form.Group className="mb-4">
               <Form.Label className="small fw-bold text-ios-gray mb-1">VALOR</Form.Label>
-              <Form.Control 
-                type="number"
-                placeholder="0,00"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                autoFocus
-                className="text-center py-3 fs-3 fw-bold border-0 bg-white bg-opacity-5"
-              />
+              <div className="position-relative">
+                <Form.Control 
+                  type="text"
+                  inputMode="decimal"
+                  value={displayAmount}
+                  onChange={handleAmountChange}
+                  autoFocus
+                  className="text-center py-4 border-0 bg-transparent fs-1 fw-bold text-white shadow-none"
+                  style={{ fontSize: '3rem' }}
+                />
+              </div>
             </Form.Group>
 
             <Form.Group className="mb-4">
@@ -107,7 +136,7 @@ const NewTransactionScreen = () => {
                   onChange={(e) => setCategoryId(e.target.value)}
                   className="py-3 fw-bold border-0 bg-white bg-opacity-5"
                 >
-                  {categories.map((c) => (
+                  {filteredCategories.map((c) => (
                     <option key={c.id} value={c.id}>{c.name}</option>
                   ))}
                 </Form.Select>

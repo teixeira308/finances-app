@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Container, Card, Button, ListGroup, Modal, Form, Badge } from 'react-bootstrap';
+import { Container, Card, Button, ListGroup, Modal, Form, Badge, Nav } from 'react-bootstrap';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectCategories, createCategory, deleteCategory, bootstrapCategories } from '@/features/categories/store/categoriesSlice';
 import { Plus, Tag, Trash2, RefreshCw } from 'lucide-react';
 import { bootstrapTransactions } from '@/features/transactions/store/transactionsSlice';
+import { TransactionType } from '@/shared/models/finance';
 
 const CategoriesScreen = () => {
   const dispatch = useAppDispatch();
@@ -12,6 +13,7 @@ const CategoriesScreen = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [name, setName] = useState('');
   const [color, setColor] = useState('#0A84FF');
+  const [categoryType, setCategoryType] = useState<TransactionType>('expense');
   const [error, setError] = useState<string | null>(null);
   
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -22,6 +24,7 @@ const CategoriesScreen = () => {
     setIsModalOpen(false);
     setName('');
     setColor('#0A84FF');
+    setCategoryType('expense');
     setError(null);
   };
 
@@ -39,6 +42,7 @@ const CategoriesScreen = () => {
     try {
       await dispatch(createCategory({
         name: name.trim(),
+        type: categoryType,
         colorToken: color,
         iconToken: 'tag'
       })).unwrap();
@@ -89,24 +93,22 @@ const CategoriesScreen = () => {
                 >
                   <Tag size={20} style={{ color: category.colorToken }} />
                 </div>
-                <div className="d-flex flex-col">
+                <div className="d-flex flex-column">
                   <span className="fw-bold text-white">{category.name}</span>
-                  <span className="small text-ios-gray">{category.kind === 'default' ? 'Sistema' : 'Personalizada'}</span>
+                  <span className="small text-ios-gray text-capitalize">{category.type}</span>
                 </div>
               </div>
               
-              {category.kind !== 'default' && (
-                <Button 
-                  variant="link" 
-                  className="p-1 text-ios-red opacity-50 shadow-none"
-                  onClick={() => {
-                    setDeleteId(category.id);
-                    setIsDeleteModalOpen(true);
-                  }}
-                >
-                  <Trash2 size={16} />
-                </Button>
-              )}
+              <Button 
+                variant="link" 
+                className="p-1 text-ios-red opacity-50 shadow-none"
+                onClick={() => {
+                  setDeleteId(category.id);
+                  setIsDeleteModalOpen(true);
+                }}
+              >
+                <Trash2 size={16} />
+              </Button>
             </ListGroup.Item>
           ))}
         </ListGroup>
@@ -130,6 +132,30 @@ const CategoriesScreen = () => {
           <Modal.Title className="w-100 text-center fw-bold">Nova Categoria</Modal.Title>
         </Modal.Header>
         <Modal.Body className="p-4">
+          <Nav 
+            variant="pills" 
+            activeKey={categoryType} 
+            onSelect={(k) => setCategoryType(k as TransactionType)}
+            className="bg-white bg-opacity-5 p-1 rounded-3 mb-4"
+          >
+            <Nav.Item className="flex-grow-1">
+              <Nav.Link 
+                eventKey="expense" 
+                className={`text-center py-2 border-0 rounded-2 fw-bold ${categoryType === 'expense' ? 'bg-ios-red text-white' : 'text-ios-gray'}`}
+              >
+                Despesa
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item className="flex-grow-1">
+              <Nav.Link 
+                eventKey="income" 
+                className={`text-center py-2 border-0 rounded-2 fw-bold ${categoryType === 'income' ? 'bg-ios-green text-white' : 'text-ios-gray'}`}
+              >
+                Receita
+              </Nav.Link>
+            </Nav.Item>
+          </Nav>
+
           <Form className="space-y-4">
             <Form.Group className="mb-4">
               <Form.Label className="small fw-bold text-ios-gray mb-1">NOME</Form.Label>

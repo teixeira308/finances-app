@@ -9,6 +9,7 @@ import LoginScreen from './screens/LoginScreen';
 import NewTransactionScreen from './screens/NewTransactionScreen';
 import ReportsScreen from './screens/ReportsScreen';
 import Navigation from './navigation';
+import { ScrollToTop } from './shared/components/ScrollToTop';
 import { useAppDispatch } from './store/hooks';
 import { bootstrapTransactions } from './features/transactions/store/transactionsSlice';
 import { bootstrapCategories } from './features/categories/store/categoriesSlice';
@@ -39,6 +40,7 @@ function App() {
 
   return (
     <Router>
+      <ScrollToTop />
       <div className="min-vh-100 bg-black text-white" style={{ paddingBottom: '100px' }}>
         <Routes>
           <Route path="/" element={<DashboardScreen />} />

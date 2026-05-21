@@ -65,9 +65,8 @@ const SettingsScreen = () => {
       </Card>
 
       <div className="text-center mt-5 mb-5 opacity-40">
-        <p className="small m-0 text-ios-gray">Versão 3.1.0 (Bootstrap Edition)</p>
-        <p className="text-uppercase tracking-tighter m-0" style={{ fontSize: '8px' }}>Powered by Bootstrap & Firebase</p>
-      </div>
+        <p className="small m-0 text-ios-gray">Versão 3.1.0</p>
+        </div>
     </Container>
   );
 };
