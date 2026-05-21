@@ -1,7 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { 
-  Card, Button, Select, ListBox, Label
-} from '@heroui/react';
+import { Container, Row, Col, Card, Form } from 'react-bootstrap';
 import { 
   PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip,
   BarChart, Bar, XAxis, YAxis, CartesianGrid
@@ -14,7 +12,7 @@ import { ChevronDown } from 'lucide-react';
 const ReportsScreen = () => {
   const transactions = useAppSelector((state) => state.transactions.items);
   const categories = useAppSelector(selectCategories);
-  
+
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
 
   const availableMonths = useMemo(() => {
@@ -47,52 +45,53 @@ const ReportsScreen = () => {
   ];
 
   return (
-    <div className="max-w-md mx-auto p-4 pb-24 space-y-6">
-      <h1 className="text-3xl font-bold pt-4">Relatórios</h1>
-
-      <div className="w-full">
-        <Select selectedKey={selectedMonth} onSelectionChange={(key) => setSelectedMonth(key as string)}>
-          <Label className="text-xs text-ios-gray mb-1 block">Mês de Referência</Label>
-          <Select.Trigger className="w-full bg-ios-darkGray border-none shadow-sm h-14 rounded-xl px-4 flex items-center justify-between outline-none">
-            <Select.Value className="text-foreground font-semibold">
-              {(value) => value ? new Date(String(value) + '-02').toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }) : 'Selecione o mês'}
-            </Select.Value>
-            <Select.Indicator>
-              <ChevronDown size={18} className="text-ios-gray" />
-            </Select.Indicator>
-          </Select.Trigger>
-          <Select.Popover className="bg-ios-darkGray border border-white/10 rounded-xl shadow-2xl min-w-[var(--trigger-width)]">
-            <ListBox className="p-1 outline-none">
-              {availableMonths.map((month) => (
-                <ListBox.Item key={month} id={month} textValue={month} className="px-3 py-3 rounded-lg data-[hover=true]:bg-white/10 outline-none cursor-pointer text-sm">
-                  {new Date(month + '-02').toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
-                </ListBox.Item>
-              ))}
-            </ListBox>
-          </Select.Popover>
-        </Select>
+    <Container className="mobile-container p-4 pb-5">
+      <div className="pt-4 mb-4">
+        <h1 className="h1 fw-bold m-0">Relatórios</h1>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <Card className="bg-ios-green/10 border-none shadow-none rounded-2xl">
-          <Card.Content className="p-4 text-center">
-            <p className="text-xs text-ios-green uppercase tracking-wider mb-1">Entradas</p>
-            <p className="text-xl font-bold text-ios-green">R$ {summary.incomeTotal.toFixed(2)}</p>
-          </Card.Content>
-        </Card>
-        <Card className="bg-ios-red/10 border-none shadow-none rounded-2xl">
-          <Card.Content className="p-4 text-center">
-            <p className="text-xs text-ios-red uppercase tracking-wider mb-1">Saídas</p>
-            <p className="text-xl font-bold text-ios-red">R$ {summary.expenseTotal.toFixed(2)}</p>
-          </Card.Content>
-        </Card>
-      </div>
+      <Form.Group className="mb-4">
+        <Form.Label className="small fw-bold text-ios-gray mb-1">MÊS DE REFERÊNCIA</Form.Label>
+        <div className="position-relative">
+          <Form.Select 
+            value={selectedMonth} 
+            onChange={(e) => setSelectedMonth(e.target.value)}
+            className="h-14 fw-bold"
+          >
+            {availableMonths.map((month) => (
+              <option key={month} value={month}>
+                {new Date(month + '-02').toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
+              </option>
+            ))}
+          </Form.Select>
+          <ChevronDown size={18} className="position-absolute text-ios-gray" style={{ right: '1rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+        </div>
+      </Form.Group>
 
-      <div className="space-y-4 pt-2">
-        <h3 className="text-xl font-bold px-1">Distribuição</h3>
-        <Card className="bg-ios-darkGray border-none p-4 shadow-none rounded-3xl">
-          <Card.Content className="p-0 overflow-visible">
-            <div className="w-full h-[300px]">
+      <Row className="g-3 mb-4">
+        <Col xs={6}>
+          <Card className="border-0 h-100" style={{ backgroundColor: 'rgba(48, 209, 88, 0.1)' }}>
+            <Card.Body className="p-3 text-center">
+              <p className="text-uppercase small fw-bold text-ios-green mb-1">Entradas</p>
+              <p className="h4 fw-bold text-ios-green m-0">R$ {summary.incomeTotal.toFixed(2)}</p>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col xs={6}>
+          <Card className="border-0 h-100" style={{ backgroundColor: 'rgba(255, 69, 58, 0.1)' }}>
+            <Card.Body className="p-3 text-center">
+              <p className="text-uppercase small fw-bold text-ios-red mb-1">Saídas</p>
+              <p className="h4 fw-bold text-ios-red m-0">R$ {summary.expenseTotal.toFixed(2)}</p>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
+      <div className="mb-5">
+        <h3 className="h5 fw-bold mb-3 px-1">Distribuição</h3>
+        <Card className="bg-ios-dark-gray border-0 p-3">
+          <Card.Body className="p-0 overflow-visible">
+            <div style={{ width: '100%', height: '300px' }}>
               {pieData.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -119,32 +118,31 @@ const ReportsScreen = () => {
                   </PieChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="flex items-center justify-center h-full text-ios-gray">
+                <div className="d-flex align-items-center justify-content-center h-100 text-ios-gray">
                   Sem despesas neste mês
                 </div>
               )}
             </div>
-          </Card.Content>
+          </Card.Body>
         </Card>
       </div>
 
-      <div className="space-y-4 pt-2">
-        <h3 className="text-xl font-bold px-1">Comparativo</h3>
-        <Card className="bg-ios-darkGray border-none p-4 shadow-none rounded-3xl">
-          <Card.Content className="p-0 overflow-visible">
-            <div className="w-full h-[250px]">
+      <div className="mb-5">
+        <h3 className="h5 fw-bold mb-3 px-1">Fluxo de Caixa</h3>
+        <Card className="bg-ios-dark-gray border-0 p-3">
+          <Card.Body className="p-0">
+            <div style={{ width: '100%', height: '300px' }}>
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={barData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#333" />
+                <BarChart data={barData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#8E8E93', fontSize: 12 }} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#8E8E93', fontSize: 12 }} />
+                  <YAxis hide />
                   <Tooltip 
-                    cursor={{ fill: 'rgba(255,255,255,0.05)' }}
-                    contentStyle={{ backgroundColor: '#1C1C1E', borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }}
+                    contentStyle={{ backgroundColor: '#1C1C1E', borderRadius: '12px', border: 'none' }}
                     itemStyle={{ color: '#fff' }}
-                    formatter={(value: any) => `R$ ${Number(value).toFixed(2)}`} 
+                    cursor={{ fill: '#ffffff05' }}
                   />
-                  <Bar dataKey="valor" radius={[6, 6, 0, 0]}>
+                  <Bar dataKey="valor" radius={[10, 10, 0, 0]}>
                     {barData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
@@ -152,10 +150,10 @@ const ReportsScreen = () => {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-          </Card.Content>
+          </Card.Body>
         </Card>
       </div>
-    </div>
+    </Container>
   );
 };
 

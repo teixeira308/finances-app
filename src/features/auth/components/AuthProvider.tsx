@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { type User } from 'firebase/auth';
-import { subscribeToAuthChanges } from '@/features/auth/services/authService';
-import { Spinner } from '@heroui/react';
+import { onAuthStateChanged, type User } from 'firebase/auth';
+import { auth } from '@/shared/services/firebase';
+import { Spinner } from 'react-bootstrap';
 
 interface AuthContextType {
   user: User | null;
@@ -15,22 +15,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = subscribeToAuthChanges((user) => {
+    return onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
     });
-    return unsubscribe;
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-background">
-        <Spinner size="lg" />
-      </div>
-    );
-  }
-
-  return <AuthContext.Provider value={{ user, loading }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, loading }}>
+      {loading ? (
+        <div className="d-flex min-vh-100 align-items-center justify-content-center bg-black">
+          <Spinner animation="border" variant="primary" />
+        </div>
+      ) : (
+        children
+      )}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => useContext(AuthContext);

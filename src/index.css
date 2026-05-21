@@ -1,41 +1,114 @@
-@import "tailwindcss";
-
-@plugin "../hero.ts";
-
-@source "../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}";
-
-@theme {
-  --color-ios-blue: #0079f2;
-  --color-ios-green: #30D158;
-  --color-ios-red: #FF453A;
-  --color-ios-gray: #8E8E93;
-  --color-ios-dark-gray: #1C1C1E;
+body {
+  background-color: #000000;
+  color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
-
-@custom-variant dark (&:is(.dark *));
 
 :root {
-  color-scheme: dark;
+  --ios-blue: #0079f2;
+  --ios-green: #30D158;
+  --ios-red: #FF453A;
+  --ios-gray: #8E8E93;
+  --ios-dark-gray: #1C1C1E;
+  --bs-body-bg: #000000;
+  --bs-body-color: #ffffff;
 }
 
-body {
-  @apply bg-background text-foreground antialiased;
+/* Helper Classes */
+.bg-black { background-color: #000000 !important; }
+.bg-ios-dark-gray { background-color: var(--ios-dark-gray) !important; }
+.text-ios-gray { color: var(--ios-gray) !important; }
+.text-ios-green { color: var(--ios-green) !important; }
+.text-ios-red { color: var(--ios-red) !important; }
+
+.h-14 { height: 3.5rem !important; }
+.rounded-4 { border-radius: 1rem !important; }
+
+.tracking-widest { letter-spacing: 0.1em; }
+.tracking-tighter { letter-spacing: -0.05em; }
+
+/* Custom rounded corners for cards like iOS */
+.card {
+  border-radius: 1.5rem;
+  background-color: var(--ios-dark-gray);
+  color: white;
+  border: none;
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 8px;
+/* Bottom navigation customization */
+.bottom-nav {
+  height: 80px;
+  background-color: rgba(28, 28, 30, 0.9);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
+/* Mobile container on desktop */
+.mobile-container {
+  max-width: 448px;
+  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+  background-color: #000000;
 }
 
-::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 10px;
+/* Bootstrap Overrides for Dark Mode */
+.form-control, .form-select {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: none !important;
+  color: white !important;
+  border-radius: 0.75rem !important;
+  padding: 0.75rem 1rem !important;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #444;
+.form-control::placeholder {
+  color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.form-control:focus, .form-select:focus {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+  box-shadow: 0 0 0 0.25rem rgba(0, 121, 242, 0.25) !important;
+}
+
+.btn-primary {
+  background-color: var(--ios-blue) !important;
+  border: none !important;
+  border-radius: 0.75rem !important;
+  padding: 0.75rem 1.5rem !important;
+  font-weight: bold !important;
+}
+
+.btn-danger {
+  background-color: var(--ios-red) !important;
+  border: none !important;
+  border-radius: 0.75rem !important;
+}
+
+.btn-outline-light {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.modal-content {
+  background-color: var(--ios-dark-gray) !important;
+  border-radius: 2rem !important;
+  border: none !important;
+  color: white !important;
+}
+
+.list-group-item {
+  border-color: rgba(255, 255, 255, 0.05) !important;
+  color: white !important;
+}
+
+.nav-pills .nav-link {
+  color: var(--ios-gray);
+  border-radius: 0.5rem;
+}
+
+/* Spinner adjustment */
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
 }
