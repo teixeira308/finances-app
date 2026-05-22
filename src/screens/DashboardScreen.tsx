@@ -1,17 +1,17 @@
 import React, { useMemo } from 'react';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card } from 'react-bootstrap';
 import { 
   PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip,
   AreaChart, Area, XAxis, YAxis, CartesianGrid
 } from 'recharts';
-import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { useAppSelector } from '@/store/hooks';
 import { calculateMonthlySummary } from '@/shared/models/finance';
 import { selectCategories } from '@/features/categories/store/categoriesSlice';
-import { bootstrapTransactions } from '@/features/transactions/store/transactionsSlice';
-import { RefreshCw } from 'lucide-react';
+import logoNome from '@/assets/logo-nome.png';
+import { MoneyValue } from '@/shared/components/MoneyValue';
+import { PrivacyToggle } from '@/shared/components/PrivacyToggle';
 
 const DashboardScreen = () => {
-  const dispatch = useAppDispatch();
   const transactions = useAppSelector((state) => state.transactions.items);
   const categories = useAppSelector(selectCategories);
   const goals = useAppSelector((state) => state.goals.items);
@@ -47,28 +47,20 @@ const DashboardScreen = () => {
     return Object.entries(data).map(([date, values]) => ({ date, ...values }));
   }, [transactions, monthRef]);
 
-  const handleRefresh = () => {
-    dispatch(bootstrapTransactions());
-  };
-
   return (
     <Container className="mobile-container p-4 pb-5">
-      <div className="d-flex justify-content-between align-items-center pt-4 mb-4">
-        <h1 className="h1 fw-bold m-0">Início</h1>
-        <Button 
-          variant="primary" 
-          onClick={handleRefresh} 
-          className="rounded-3 d-flex align-items-center justify-content-center p-2"
-        >
-          <RefreshCw size={20} />
-        </Button>
+      <div className="d-flex justify-content-center align-items-center pt-4 mb-4 position-relative">
+        <img src={logoNome} alt="Gastos Mensais" style={{ height: '50px' }} />
+        <div className="position-absolute end-0">
+          <PrivacyToggle />
+        </div>
       </div>
       
       <Card className="bg-transparent border-2 mb-4" style={{ borderColor: summary.netBalance >= 0 ? 'var(--ios-green)' : 'var(--ios-red)' }}>
         <Card.Body className="py-5 px-4">
           <p className="text-uppercase small fw-bold tracking-widest text-ios-gray mb-1">Saldo Atual</p>
           <h2 className="display-4 fw-bold m-0" style={{ color: summary.netBalance >= 0 ? 'var(--ios-green)' : 'var(--ios-red)' }}>
-            R$ {summary.netBalance.toFixed(2)}
+            <MoneyValue value={summary.netBalance} />
           </h2>
         </Card.Body>
       </Card>
@@ -78,7 +70,7 @@ const DashboardScreen = () => {
           <Card className="border-0 h-100" style={{ backgroundColor: 'rgba(48, 209, 88, 0.1)' }}>
             <Card.Body className="p-3 text-center">
               <p className="text-uppercase small fw-bold text-ios-green mb-1">Entradas</p>
-              <p className="h4 fw-bold text-ios-green m-0">R$ {summary.incomeTotal.toFixed(2)}</p>
+              <p className="h4 fw-bold text-ios-green m-0"><MoneyValue value={summary.incomeTotal} /></p>
             </Card.Body>
           </Card>
         </Col>
@@ -86,13 +78,13 @@ const DashboardScreen = () => {
           <Card className="border-0 h-100" style={{ backgroundColor: 'rgba(255, 69, 58, 0.1)' }}>
             <Card.Body className="p-3 text-center">
               <p className="text-uppercase small fw-bold text-ios-red mb-1">Saídas</p>
-              <p className="h4 fw-bold text-ios-red m-0">R$ {summary.expenseTotal.toFixed(2)}</p>
+              <p className="h4 fw-bold text-ios-red m-0"><MoneyValue value={summary.expenseTotal} /></p>
             </Card.Body>
           </Card>
         </Col>
       </Row>
 
-      <h3 className="h5 fw-bold mb-3 px-1">Entradas vs Saídas</h3>
+      <h3 className="h5 fw-bold mb-3 px-1">Evolução Diária</h3>
       <Card className="bg-ios-dark-gray border-0 p-3 mb-4">
         <Card.Body className="p-0">
           <div style={{ width: '100%', height: '200px' }}>

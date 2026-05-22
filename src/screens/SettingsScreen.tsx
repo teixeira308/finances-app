@@ -1,16 +1,24 @@
 import React from 'react';
-import { Container, Card, ListGroup, Button } from 'react-bootstrap';
+import { Container, Card, ListGroup } from 'react-bootstrap';
 import { Shield, HelpCircle, ChevronRight, LogOut } from 'lucide-react';
 import { logout } from '@/features/auth/services/authService';
+import logoNome from '@/assets/logo-nome.png';
 
 const SettingsScreen = () => {
   return (
     <Container className="mobile-container p-4 pb-5">
       <div className="pt-4 mb-4">
-        <h1 className="h1 fw-bold m-0">Ajustes</h1>
+        <img src={logoNome} alt="Gastos Mensais" style={{ height: '30px' }} />
       </div>
 
-      <Card className="bg-ios-dark-gray border-0 overflow-hidden mb-4 shadow-none mt-4">
+      <div className="text-center p-3 mb-4 rounded-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.08)' }}>
+        <p className="text-white fw-bold mb-2">Controle suas finanças de forma rápida e intuitiva.</p>
+        <p className="small text-white-50 m-0">
+          O Nexo ajuda você a visualizar gastos, acompanhar metas e manter sua vida financeira organizada.
+        </p>
+      </div>
+
+      <Card className="bg-ios-dark-gray border-0 overflow-hidden mb-4 shadow-none mt-4 rounded-3">
         <ListGroup variant="flush" className="bg-transparent">
           <ListGroup.Item
             action
@@ -46,7 +54,7 @@ const SettingsScreen = () => {
         </ListGroup>
       </Card>
 
-      <Card className="bg-ios-dark-gray border-0 overflow-hidden mb-4 shadow-none">
+      <Card className="bg-ios-dark-gray border-0 overflow-hidden mb-4 shadow-none rounded-3">
         <ListGroup variant="flush" className="bg-transparent">
           <ListGroup.Item
             action
@@ -66,7 +74,7 @@ const SettingsScreen = () => {
 
       <div className="text-center mt-5 mb-5 opacity-40">
         <p className="small m-0 text-ios-gray">Versão 3.1.0</p>
-        </div>
+      </div>
     </Container>
   );
 };

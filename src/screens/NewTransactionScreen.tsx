@@ -1,11 +1,12 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Card, Button, Form, Nav, Badge } from 'react-bootstrap';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectCategories } from '@/features/categories/store/categoriesSlice';
 import { createTransaction, bootstrapTransactions } from '@/features/transactions/store/transactionsSlice';
+import { createRecurringTransaction } from '@/features/transactions/store/recurringTransactionsSlice';
 import { ChevronDown, ArrowLeft } from 'lucide-react';
-import { TransactionType } from '@/shared/models/finance';
+import { TransactionType, RecurrenceType } from '@/shared/models/finance';
 
 const NewTransactionScreen = () => {
   const navigate = useNavigate();
@@ -19,8 +20,13 @@ const NewTransactionScreen = () => {
   const [rawAmount, setRawAmount] = useState(0);
   const [categoryId, setCategoryId] = useState('');
   
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [frequency, setFrequency] = useState<RecurrenceType>('monthly');
+  const [startDate, setStartDate] = useState(new Date().toISOString().slice(0, 10));
+  const [endDate, setEndDate] = useState('');
+  
   // Atualiza o categoryId quando o tipo muda
-  React.useEffect(() => {
+  useEffect(() => {
     setCategoryId(filteredCategories[0]?.id || '');
   }, [txType, filteredCategories]);
 
@@ -64,6 +70,22 @@ const NewTransactionScreen = () => {
         occurredAt: new Date(occurredAt).toISOString(),
         note
       })).unwrap();
+
+      if (isRecurring) {
+        const date = new Date(startDate);
+        await dispatch(createRecurringTransaction({
+          name: note || 'Transação Recorrente',
+          type: txType as TransactionType,
+          amount: rawAmount,
+          categoryId,
+          frequency,
+          dayOfMonth: date.getDate(),
+          startDate,
+          endDate: endDate || undefined,
+          isActive: true
+        })).unwrap();
+      }
+
       dispatch(bootstrapTransactions());
       navigate('/');
     } catch (err) {
@@ -79,7 +101,7 @@ const NewTransactionScreen = () => {
         <Button 
           variant="link" 
           onClick={() => navigate(-1)} 
-          className="p-2 text-white border-0 bg-grey bg-opacity-5 rounded-3"
+          className="p-2 text-white border-0 bg-white bg-opacity-5 rounded-3"
         >
           <ArrowLeft size={32} />
         </Button>
@@ -162,6 +184,50 @@ const NewTransactionScreen = () => {
                 onChange={(e) => setNote(e.target.value)}
                 className="py-3 border-0 bg-white bg-opacity-5"
               />
+            </Form.Group>
+
+            <Form.Group className="mb-4">
+              <Form.Check 
+                type="switch"
+                label="É transação recorrente?"
+                checked={isRecurring}
+                onChange={(e) => setIsRecurring(e.target.checked)}
+                className="text-white fw-bold"
+              />
+              {isRecurring && (
+                <div className="mt-3 space-y-3">
+                  <Form.Group>
+                    <Form.Label className="small fw-bold text-ios-gray mb-1">FREQUÊNCIA</Form.Label>
+                    <Form.Select 
+                      value={frequency}
+                      onChange={(e) => setFrequency(e.target.value as RecurrenceType)}
+                      className="py-2 border-0 bg-white bg-opacity-5"
+                    >
+                      <option value="weekly">Semanal</option>
+                      <option value="monthly">Mensal</option>
+                      <option value="yearly">Anual</option>
+                    </Form.Select>
+                  </Form.Group>
+                  <Form.Group>
+                    <Form.Label className="small fw-bold text-ios-gray mb-1">DATA DE INÍCIO</Form.Label>
+                    <Form.Control 
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      className="py-2 border-0 bg-white bg-opacity-5"
+                    />
+                  </Form.Group>
+                  <Form.Group>
+                    <Form.Label className="small fw-bold text-ios-gray mb-1">DATA DE TÉRMINO (OPCIONAL)</Form.Label>
+                    <Form.Control 
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      className="py-2 border-0 bg-white bg-opacity-5"
+                    />
+                  </Form.Group>
+                </div>
+              )}
             </Form.Group>
 
             {txError && <Badge bg="danger" className="w-100 py-2 bg-opacity-25 text-danger border-0">{txError}</Badge>}

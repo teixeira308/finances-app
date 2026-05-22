@@ -1,5 +1,6 @@
 export type TransactionType = "income" | "expense";
 export type SyncStatus = "local_only" | "pending_sync" | "synced" | "sync_conflict";
+export type RecurrenceType = "weekly" | "monthly" | "yearly";
 
 export interface Transaction {
   id: string;
@@ -12,6 +13,22 @@ export interface Transaction {
   updatedAt: string;
   syncStatus: SyncStatus;
   deletedAt?: string;
+}
+
+export interface RecurringTransaction {
+  id: string;
+  name: string;
+  type: TransactionType;
+  amount: number;
+  categoryId: string;
+  frequency: RecurrenceType;
+  dayOfWeek?: number; // 0 (Sun) - 6 (Sat)
+  dayOfMonth?: number; // 1 - 31
+  monthOfYear?: number; // 1 - 12
+  startDate: string;
+  endDate?: string;
+  isActive: boolean;
+  createdAt: string;
 }
 
 export interface Category {
@@ -113,4 +130,3 @@ export function calculateMonthlySummary(
     lastComputedAt: new Date().toISOString()
   };
 }
-
