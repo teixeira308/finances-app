@@ -53,12 +53,30 @@ input[type=number]::-webkit-outer-spin-button {
 
 /* Mobile container on desktop */
 .mobile-container {
+  width: 100%;
   max-width: 448px;
   margin: 0 auto;
   min-height: 100vh;
   position: relative;
   background-color: #000000;
-  box-shadow: 0 0 20px rgba(255,255,255,0.05);
+}
+
+@media (min-width: 768px) {
+  .mobile-container {
+    max-width: 100%;
+    margin: 0;
+    padding-left: 40px !important;
+    padding-right: 40px !important;
+  }
+
+  /* Main content will adjust based on Sidebar width in MainLayout */
+  main {
+    padding-bottom: 0 !important;
+  }
+
+  .bottom-nav {
+    display: none !important;
+  }
 }
 
 /* Bootstrap Overrides for Dark Mode */

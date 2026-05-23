@@ -8,7 +8,7 @@ import SettingsScreen from './screens/SettingsScreen';
 import LoginScreen from './screens/LoginScreen';
 import NewTransactionScreen from './screens/NewTransactionScreen';
 import ReportsScreen from './screens/ReportsScreen';
-import Navigation from './navigation';
+import { MainLayout } from './shared/components/MainLayout';
 import { ScrollToTop } from './shared/components/ScrollToTop';
 import { useAppDispatch } from './store/hooks';
 import { bootstrapTransactions } from './features/transactions/store/transactionsSlice';
@@ -41,7 +41,7 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
-      <div className="min-vh-100 bg-black text-white" style={{ paddingBottom: '100px' }}>
+      <MainLayout>
         <Routes>
           <Route path="/" element={<DashboardScreen />} />
           <Route path="/extrato" element={<ExtractScreen />} />
@@ -51,8 +51,7 @@ function App() {
           <Route path="/settings" element={<SettingsScreen />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-        <Navigation />
-      </div>
+      </MainLayout>
     </Router>
   );
 }
