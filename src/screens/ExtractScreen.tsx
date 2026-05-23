@@ -65,57 +65,59 @@ const ExtractScreen = () => {
         </div>
       </div>
 
-      {Object.keys(groupedTransactions).length > 0 ? (
-        Object.entries(groupedTransactions).map(([date, txs]) => (
-          <div key={date} className="mb-4">
-            <h5 className="small fw-bold text-ios-gray px-2 mb-2">{date}</h5>
-            <Card className="bg-ios-dark-gray border-0 overflow-hidden shadow-none">
-              <ListGroup variant="flush" className="bg-transparent">
-                {txs.map((tx) => {
-                  const category = categories.find(c => c.id === tx.categoryId);
-                  return (
-                    <ListGroup.Item
-                      key={tx.id}
-                      className="bg-transparent border-light border-opacity-10 px-3 py-3 d-flex align-items-center justify-content-between"
-                    >
-                      <div className="d-flex align-items-center gap-3">
-                        <div className="rounded-3 d-flex align-items-center justify-content-center" style={{ width: '44px', height: '44px', backgroundColor: 'rgba(255,255,255,0.05)' }}>
-                          {tx.type === 'income' ? 
-                            <ArrowUpCircle className="text-ios-green" size={24} /> : 
-                            categoryIcons[category?.iconToken || 'default']
-                          }
-                        </div>
-                        <div className="d-flex flex-column">
-                          <div className="d-flex align-items-center gap-2">
-                            <span className="fw-bold text-white">{category?.name || 'Sem Categoria'}</span>
-                            <Badge bg="secondary" className="bg-white bg-opacity-10 text-ios-gray small text-uppercase">
-                              {tx.type === 'income' ? 'Receita' : 'Despesa'}
-                            </Badge>
+      <div className="mx-auto" style={{ maxWidth: '900px' }}>
+        {Object.keys(groupedTransactions).length > 0 ? (
+          Object.entries(groupedTransactions).map(([date, txs]) => (
+            <div key={date} className="mb-4">
+              <h5 className="small fw-bold text-ios-gray px-2 mb-2">{date}</h5>
+              <Card className="bg-ios-dark-gray border-0 overflow-hidden shadow-none">
+                <ListGroup variant="flush" className="bg-transparent">
+                  {txs.map((tx) => {
+                    const category = categories.find(c => c.id === tx.categoryId);
+                    return (
+                      <ListGroup.Item
+                        key={tx.id}
+                        className="bg-transparent border-light border-opacity-10 px-3 py-3 d-flex align-items-center justify-content-between"
+                      >
+                        <div className="d-flex align-items-center gap-3">
+                          <div className="rounded-3 d-flex align-items-center justify-content-center" style={{ width: '44px', height: '44px', backgroundColor: 'rgba(255,255,255,0.05)' }}>
+                            {tx.type === 'income' ? 
+                              <ArrowUpCircle className="text-ios-green" size={24} /> : 
+                              categoryIcons[category?.iconToken || 'default']
+                            }
                           </div>
-                          {tx.note && <span className="small text-ios-gray">{tx.note}</span>}
+                          <div className="d-flex flex-column">
+                            <div className="d-flex align-items-center gap-2">
+                              <span className="fw-bold text-white">{category?.name || 'Sem Categoria'}</span>
+                              <Badge bg="secondary" className="bg-white bg-opacity-10 text-ios-gray small text-uppercase">
+                                {tx.type === 'income' ? 'Receita' : 'Despesa'}
+                              </Badge>
+                            </div>
+                            {tx.note && <span className="small text-ios-gray">{tx.note}</span>}
+                          </div>
                         </div>
-                      </div>
-                      
-                      <div className="d-flex align-items-center gap-3">
-                        <span className={`fw-bold ${tx.type === 'expense' ? 'text-ios-red' : 'text-ios-green'}`}>
-                          {tx.type === 'expense' ? '-' : '+'} <MoneyValue value={tx.amount} />
-                        </span>
-                        <Button variant="link" className="p-1 text-ios-red opacity-50 shadow-none" onClick={() => { setDeleteId(tx.id); setIsDeleteModalOpen(true); }}>
-                          <Trash2 size={16} />
-                        </Button>
-                      </div>
-                    </ListGroup.Item>
-                  );
-                })}
-              </ListGroup>
-            </Card>
+                        
+                        <div className="d-flex align-items-center gap-3">
+                          <span className={`fw-bold ${tx.type === 'expense' ? 'text-ios-red' : 'text-ios-green'}`}>
+                            {tx.type === 'expense' ? '-' : '+'} <MoneyValue value={tx.amount} />
+                          </span>
+                          <Button variant="link" className="p-1 text-ios-red opacity-50 shadow-none" onClick={() => { setDeleteId(tx.id); setIsDeleteModalOpen(true); }}>
+                            <Trash2 size={16} />
+                          </Button>
+                        </div>
+                      </ListGroup.Item>
+                    );
+                  })}
+                </ListGroup>
+              </Card>
+            </div>
+          ))
+        ) : (
+          <div className="py-5 text-center text-ios-gray">
+            Nenhuma transação encontrada
           </div>
-        ))
-      ) : (
-        <div className="py-5 text-center text-ios-gray">
-          Nenhuma transação encontrada
-        </div>
-      )}
+        )}
+      </div>
       
       <Modal show={isDeleteModalOpen} onHide={() => setIsDeleteModalOpen(false)} centered>
         <Modal.Header closeButton closeVariant="white" className="border-0 pb-0">

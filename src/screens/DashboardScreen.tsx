@@ -49,97 +49,118 @@ const DashboardScreen = () => {
 
   return (
     <Container className="mobile-container p-4 pb-5">
-      <div className="d-flex justify-content-center align-items-center pt-4 mb-4 position-relative">
+      <div className="d-flex d-md-none justify-content-center align-items-center pt-4 mb-4 position-relative">
         <img src={logoNome} alt="Gastos Mensais" style={{ height: '50px' }} />
         <div className="position-absolute end-0">
           <PrivacyToggle />
         </div>
       </div>
+
+      {/* Desktop Header */}
+      <div className="d-none d-md-flex justify-content-between align-items-center pt-4 mb-4">
+        <h1 className="h3 fw-bold m-0">Resumo de {new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</h1>
+        <PrivacyToggle />
+      </div>
       
-      <Card className="bg-transparent border-2 mb-4" style={{ borderColor: summary.netBalance >= 0 ? 'var(--ios-green)' : 'var(--ios-red)' }}>
-        <Card.Body className="py-5 px-4">
-          <p className="text-uppercase small fw-bold tracking-widest text-ios-gray mb-1">Saldo Atual</p>
-          <h2 className="display-4 fw-bold m-0" style={{ color: summary.netBalance >= 0 ? 'var(--ios-green)' : 'var(--ios-red)' }}>
-            <MoneyValue value={summary.netBalance} />
-          </h2>
-        </Card.Body>
-      </Card>
-      
-      <Row className="g-3 mb-4">
-        <Col xs={6}>
-          <Card className="border-0 h-100" style={{ backgroundColor: 'rgba(48, 209, 88, 0.1)' }}>
-            <Card.Body className="p-3 text-center">
-              <p className="text-uppercase small fw-bold text-ios-green mb-1">Entradas</p>
-              <p className="h4 fw-bold text-ios-green m-0"><MoneyValue value={summary.incomeTotal} /></p>
+      <Row className="g-4">
+        {/* Left Column: Summary and Balance */}
+        <Col xs={12} lg={5}>
+          <Card className="bg-transparent border-2 mb-4" style={{ borderColor: summary.netBalance >= 0 ? 'var(--ios-green)' : 'var(--ios-red)' }}>
+            <Card.Body className="py-5 px-4">
+              <p className="text-uppercase small fw-bold tracking-widest text-ios-gray mb-1">Saldo Atual</p>
+              <h2 className="display-4 fw-bold m-0" style={{ color: summary.netBalance >= 0 ? 'var(--ios-green)' : 'var(--ios-red)' }}>
+                <MoneyValue value={summary.netBalance} />
+              </h2>
+            </Card.Body>
+          </Card>
+          
+          <Row className="g-3 mb-4">
+            <Col xs={6}>
+              <Card className="border-0 h-100" style={{ backgroundColor: 'rgba(48, 209, 88, 0.1)' }}>
+                <Card.Body className="p-3 text-center">
+                  <p className="text-uppercase small fw-bold text-ios-green mb-1">Entradas</p>
+                  <p className="h4 fw-bold text-ios-green m-0"><MoneyValue value={summary.incomeTotal} /></p>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col xs={6}>
+              <Card className="border-0 h-100" style={{ backgroundColor: 'rgba(255, 69, 58, 0.1)' }}>
+                <Card.Body className="p-3 text-center">
+                  <p className="text-uppercase small fw-bold text-ios-red mb-1">Saídas</p>
+                  <p className="h4 fw-bold text-ios-red m-0"><MoneyValue value={summary.expenseTotal} /></p>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+
+          <h3 className="h5 fw-bold mb-3 px-1 d-md-none">Distribuição</h3>
+          <Card className="bg-ios-dark-gray border-0 p-3 mb-4 d-md-none">
+            <Card.Body className="p-0">
+               {/* Pie Chart content handled below for desktop but visible here for mobile only if we want to change order */}
             </Card.Body>
           </Card>
         </Col>
-        <Col xs={6}>
-          <Card className="border-0 h-100" style={{ backgroundColor: 'rgba(255, 69, 58, 0.1)' }}>
-            <Card.Body className="p-3 text-center">
-              <p className="text-uppercase small fw-bold text-ios-red mb-1">Saídas</p>
-              <p className="h4 fw-bold text-ios-red m-0"><MoneyValue value={summary.expenseTotal} /></p>
+
+        {/* Right Column: Charts */}
+        <Col xs={12} lg={7}>
+          <h3 className="h5 fw-bold mb-3 px-1">Evolução Diária</h3>
+          <Card className="bg-ios-dark-gray border-0 p-3 mb-4">
+            <Card.Body className="p-0">
+              <div style={{ width: '100%', height: '250px' }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={dailyData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
+                    <XAxis dataKey="date" tick={{ fill: '#8E8E93', fontSize: 10 }} axisLine={false} tickLine={false} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#1C1C1E', border: 'none', borderRadius: '10px' }}
+                    />
+                    <Area type="monotone" dataKey="income" name="Entradas" stroke="#30D158" fill="#30D158" fillOpacity={0.2} />
+                    <Area type="monotone" dataKey="expense" name="Saídas" stroke="#FF453A" fill="#FF453A" fillOpacity={0.2} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </Card.Body>
+          </Card>
+
+          <h3 className="h5 fw-bold mb-3 px-1">Distribuição de Gastos</h3>
+          <Card className="bg-ios-dark-gray border-0 p-3 mb-5">
+            <Card.Body className="p-0">
+              <div style={{ width: '100%', height: '300px' }}>
+                {pieData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={pieData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={90}
+                        paddingAngle={5}
+                        dataKey="value"
+                        stroke="none"
+                      >
+                        {pieData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: '#1C1C1E', borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }}
+                        itemStyle={{ color: '#fff' }}
+                        formatter={(value: any) => `R$ ${Number(value).toFixed(2)}`} 
+                      />
+                      <Legend verticalAlign="bottom" height={36} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="d-flex align-items-center justify-content-center h-100 text-ios-gray">
+                    Sem despesas neste mês
+                  </div>
+                )}
+              </div>
             </Card.Body>
           </Card>
         </Col>
       </Row>
-
-      <h3 className="h5 fw-bold mb-3 px-1">Evolução Diária</h3>
-      <Card className="bg-ios-dark-gray border-0 p-3 mb-4">
-        <Card.Body className="p-0">
-          <div style={{ width: '100%', height: '200px' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={dailyData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
-                <XAxis dataKey="date" tick={{ fill: '#8E8E93', fontSize: 10 }} axisLine={false} tickLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#1C1C1E', border: 'none', borderRadius: '10px' }}
-                />
-                <Area type="monotone" dataKey="income" name="Entradas" stroke="#30D158" fill="#30D158" fillOpacity={0.2} />
-                <Area type="monotone" dataKey="expense" name="Saídas" stroke="#FF453A" fill="#FF453A" fillOpacity={0.2} />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </Card.Body>
-      </Card>
-
-      <h3 className="h5 fw-bold mb-3 px-1">Distribuição</h3>
-      <Card className="bg-ios-dark-gray border-0 p-3 mb-5">
-        <Card.Body className="p-0">
-          <div style={{ width: '100%', height: '300px' }}>
-            {pieData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={90}
-                    paddingAngle={5}
-                    dataKey="value"
-                    stroke="none"
-                  >
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#1C1C1E', borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }}
-                    itemStyle={{ color: '#fff' }}
-                    formatter={(value: any) => `R$ ${Number(value).toFixed(2)}`} 
-                  />
-                  <Legend verticalAlign="bottom" height={36} />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="d-flex align-items-center justify-center h-100 text-ios-gray">
-                Sem despesas neste mês
-              </div>
-            )}
-          </div>
-        </Card.Body>
-      </Card>
     </Container>
   );
 };
