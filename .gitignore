@@ -1,12 +1,19 @@
+# Dependencies
 node_modules/
 dist/
 build/
-.expo/
-.expo-shared/
 coverage/
+
+# Firebase / Secret Management
 .env
 .env.*
-*.log
+!.env.example
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+.firebase/
+
+# OS / IDE
 .DS_Store
 Thumbs.db
 *.tmp
@@ -14,5 +21,6 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Custom
 web/src/shared/services/firebase.ts
 web/.env

@@ -1,124 +1,138 @@
-# Implementation Plan: Gastos Mensais Mobile
+# Implementation Plan: [FEATURE]
 
-**Branch**: `001-gastos-mensais-app` | **Date**: 2026-05-16 | **Spec**: [spec.md](./spec.md)
+**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
 
-**Input**: Feature specification from `/specs/001-gastos-mensais-app/spec.md`
+**Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
+
+**Note**: This template is filled in by the `/speckit-plan` command. See `.specify/templates/plan-template.md` for the execution workflow.
 
 ## Summary
 
-Build a React Native mobile app for monthly expense and income tracking with fast
-transaction entry, monthly dashboard summaries, category-based reporting, custom
-categories, monthly goals, onboarding, and offline-first local persistence. The
-implementation will use a feature-first MVVM structure with Redux Toolkit state,
-React Navigation, React Native Paper, Victory Native XL charts, SQLite-backed local
-storage, and secure local protection for sensitive financial data.
+[Extract from feature spec: primary requirement + technical approach from research]
 
 ## Technical Context
 
-**Language/Version**: TypeScript on React Native with Expo-managed workflow
+<!--
+  ACTION REQUIRED: Replace the content in this section with the technical details
+  for the project. The structure here is presented in advisory capacity to guide
+  the iteration process.
+-->
 
-**Primary Dependencies**: React Native, Expo, Redux Toolkit, React Navigation,
-React Native Paper, Victory Native XL, expo-sqlite, expo-secure-store, Async Storage
+**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]
 
-**Storage**: SQLite for structured local records, Secure Store for sensitive keys and
-lightweight protected preferences, Async Storage for non-sensitive UI cache
+**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]
 
-**Testing**: Jest, React Native Testing Library, targeted integration tests around
-storage and state transitions
+**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
 
-**Target Platform**: Android and iOS smartphones
+**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]
 
-**Project Type**: Mobile app with optional future sync API layer
+**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
 
-**Performance Goals**: Transaction entry completion in under 10 seconds for practiced
-users, dashboard ready within 2 seconds on warm local data, filtered history results
-within 1 second for a typical monthly dataset, chart interactions perceived as
-instantaneous
+**Project Type**: [e.g., library/cli/web-service/mobile-app/compiler/desktop-app or NEEDS CLARIFICATION]
 
-**Constraints**: Offline-first for primary flows, local financial data protected at
-rest, one-user-per-device in v1, clear light/dark theme support, no mandatory login
-for the first release
+**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]
 
-**Scale/Scope**: 5 primary user-facing areas, local-first personal finance dataset,
-monthly histories and reports for a single device user
+**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]
+
+**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-- **Code Quality**: PASS. Feature-first MVVM separates screens, view models, domain
-  services, storage, and sync boundaries. TypeScript, ESLint, and Prettier are
-  mandatory quality gates, and Redux Toolkit is chosen to keep state transitions
-  explicit and testable.
-- **Testing**: PASS. Unit tests will cover calculations, validation, reducers, and
-  selectors. Integration tests will cover SQLite repositories, persistence flows, and
-  offline state recovery. React Native Testing Library will cover critical mobile
-  journeys such as onboarding, transaction entry, dashboard reads, and category
-  editing.
-- **UX Consistency**: PASS. Navigation will be standardized across Dashboard,
-  Transactions, Reports, Categories, and Settings with consistent feedback states,
-  light/dark theme parity, and explicit handling for empty, loading, success,
-  validation error, and offline states.
-- **Offline, Security, and Performance**: PASS. SQLite supports reliable offline
-  transactions, Secure Store protects sensitive values, the sync layer remains
-  isolated for future backend adoption, and explicit mobile performance budgets are
-  defined for entry, filtering, and dashboard load.
-- **Observability and Reviewability**: PASS. Domain-level error surfaces, redacted
-  diagnostics, and small feature-scoped modules keep changes reviewable without
-  leaking sensitive financial data.
+- **Code Quality**: Identify affected modules, simplifications, TypeScript or
+  interface boundaries, lint/format checks, and any new abstraction that needs
+  explicit justification.
+- **Testing**: List the unit, integration, regression, and screen-flow or end-to-end
+  tests required to prove the mobile journey. If any automated coverage cannot be
+  added, document why and define the manual verification plan.
+- **UX Consistency**: Describe impacted user flows, confirm reuse of existing
+  interaction and copy patterns, and list loading, empty, success, validation error,
+  and sync-conflict states across Android and iOS.
+- **Offline, Security, and Performance**: Define the local storage behavior, sync
+  and conflict-resolution rules, encryption or sensitive-data handling needs, and the
+  measurable performance budgets or non-regression thresholds for the affected path.
+- **Observability and Reviewability**: Record required logs, metrics, feature flags,
+  rollout notes, and any dependency or risk that reviewers must inspect without
+  exposing sensitive financial data.
 
 ## Project Structure
 
 ### Documentation (this feature)
 
 ```text
-specs/001-gastos-mensais-app/
-├── plan.md
-├── research.md
-├── data-model.md
-├── quickstart.md
-├── contracts/
-│   ├── mobile-ui-contract.md
-│   └── sync-data-contract.md
-└── tasks.md
+specs/[###-feature]/
+├── plan.md              # This file (/speckit-plan command output)
+├── research.md          # Phase 0 output (/speckit-plan command)
+├── data-model.md        # Phase 1 output (/speckit-plan command)
+├── quickstart.md        # Phase 1 output (/speckit-plan command)
+├── contracts/           # Phase 1 output (/speckit-plan command)
+└── tasks.md             # Phase 2 output (/speckit-tasks command - NOT created by /speckit-plan)
 ```
 
 ### Source Code (repository root)
+<!--
+  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
+  for this feature. Delete unused options and expand the chosen structure with
+  real paths (e.g., apps/admin, packages/something). The delivered plan must
+  not include Option labels.
+-->
 
 ```text
-app/
+# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
+src/
+├── models/
+├── services/
+├── cli/
+└── lib/
+
+tests/
+├── contract/
+├── integration/
+└── unit/
+
+# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
+backend/
+├── src/
+│   ├── models/
+│   ├── services/
+│   └── api/
+└── tests/
+
+frontend/
 ├── src/
 │   ├── components/
-│   ├── navigation/
+│   ├── pages/
+│   └── services/
+└── tests/
+
+# [REMOVE IF UNUSED] Option 3: React Native mobile app
+app/
+├── src/
 │   ├── screens/
-│   ├── theme/
-│   ├── store/
-│   ├── shared/
-│   │   ├── ui/
-│   │   ├── utils/
-│   │   └── validation/
+│   ├── components/
+│   ├── navigation/
+│   ├── features/
 │   ├── storage/
 │   ├── sync/
-│   └── features/
-│       ├── onboarding/
-│       ├── dashboard/
-│       ├── transactions/
-│       ├── reports/
-│       ├── categories/
-│       └── settings/
+│   └── theme/
 └── tests/
-    ├── unit/
     ├── integration/
-    └── ui/
+    ├── unit/
+    └── e2e/
 
-backend/
-└── api-contracts/        # Deferred until optional sync backend is introduced
+backend/                     # Optional if sync services are introduced
+└── [same as backend above]
 ```
 
-**Structure Decision**: Use a single React Native app with feature-first folders and
-shared platform services. This preserves mobile cohesion while isolating domain
-behavior, persistence, and future sync logic.
+**Structure Decision**: [Document the selected structure and reference the real
+directories captured above]
 
 ## Complexity Tracking
 
-No constitution violations require justification at this stage.
+> **Fill ONLY if Constitution Check has violations that must be justified**
+
+| Violation | Why Needed | Simpler Alternative Rejected Because |
+|-----------|------------|-------------------------------------|
+| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
+| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |

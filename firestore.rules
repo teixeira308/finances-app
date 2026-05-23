@@ -1,25 +1,56 @@
- rules_version = '2';
-    service cloud.firestore {
-      match /databases/{database}/documents {
-   
-        // Função para verificar se está logado
-        function isAuthenticated() {
-          return request.auth != null;
-        }
-   
-        // Regra: CRUD restrito apenas ao dono do dado
-        match /transactions/{transactionId} {
-          allow read, write: if isAuthenticated() &&
-                              request.auth.uid == resource.data.userId;
-          allow create: if isAuthenticated() &&
-                          request.auth.uid == request.resource.data.userId;
-        }
-   
-        match /categories/{categoryId} {
-          allow read, write: if isAuthenticated() &&
-                              request.auth.uid == resource.data.userId;
-          allow create: if isAuthenticated() &&
-                          request.auth.uid == request.resource.data.userId;
-        }
-      }
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper: Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
     }
+
+    // Helper: Check if the user owns the document
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Helper: Validate transaction data schema
+    function isValidTransaction(data) {
+      return data.userId is string &&
+             data.amount is number &&
+             data.description is string &&
+             data.date is timestamp &&
+             data.categoryId is string;
+    }
+
+    // Helper: Validate category data schema
+    function isValidCategory(data) {
+      return data.userId is string &&
+             data.name is string &&
+             data.color is string;
+    }
+
+    // Rule: Transactions collection
+    match /transactions/{transactionId} {
+      // Allow read/update/delete only if the user owns the transaction
+      // Note: resource.data.userId is the existing document's owner
+      allow read, update, delete: if isOwner(resource.data.userId);
+      
+      // Allow create if authenticated and setting self as owner
+      allow create: if isAuthenticated() && 
+                    request.auth.uid == request.resource.data.userId &&
+                    isValidTransaction(request.resource.data);
+    }
+
+    // Rule: Categories collection
+    match /categories/{categoryId} {
+      allow read, update, delete: if isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && 
+                    request.auth.uid == request.resource.data.userId &&
+                    isValidCategory(request.resource.data);
+    }
+
+    // Rule: Deny everything else by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
