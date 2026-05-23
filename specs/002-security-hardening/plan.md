@@ -1,138 +1,74 @@
-# Implementation Plan: [FEATURE]
+# Implementation Plan: Security and Cost Hardening
 
-**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
+**Branch**: `003-security-hardening` | **Date**: 2026-05-23 | **Spec**: [spec.md](spec.md)
 
-**Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
-
-**Note**: This template is filled in by the `/speckit-plan` command. See `.specify/templates/plan-template.md` for the execution workflow.
+**Input**: Feature specification from `/specs/002-security-hardening/spec.md`
 
 ## Summary
-
-[Extract from feature spec: primary requirement + technical approach from research]
+Implement a multi-layered security and cost management strategy for the Finance Web App. This includes securing the frontend via HTTP headers, hardening the database with granular Firestore rules, preventing bot abuse with Firebase App Check, and establishing monitoring/alerting for cloud costs.
 
 ## Technical Context
 
-<!--
-  ACTION REQUIRED: Replace the content in this section with the technical details
-  for the project. The structure here is presented in advisory capacity to guide
-  the iteration process.
--->
+**Language/Version**: TypeScript 6.0 (Vite + React)
 
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]
+**Primary Dependencies**: Firebase SDK (Auth, Firestore, App Check), React, Material UI
 
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]
+**Storage**: Firestore (Database), Vercel (Hosting)
 
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
+**Testing**: NEEDS CLARIFICATION (No test framework detected in package.json)
 
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]
+**Target Platform**: Web (Vercel)
 
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
+**Project Type**: Single Page Application (SPA)
 
-**Project Type**: [e.g., library/cli/web-service/mobile-app/compiler/desktop-app or NEEDS CLARIFICATION]
+**Performance Goals**: Low latency for authenticated requests; minimal overhead for security headers.
 
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]
+**Constraints**: Firebase Free Tier limits (until scaling); Vercel deployment configuration limits.
 
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]
-
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+**Scale/Scope**: personal finance app; focus on protecting user data and preventing unexpected billings.
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-- **Code Quality**: Identify affected modules, simplifications, TypeScript or
-  interface boundaries, lint/format checks, and any new abstraction that needs
-  explicit justification.
-- **Testing**: List the unit, integration, regression, and screen-flow or end-to-end
-  tests required to prove the mobile journey. If any automated coverage cannot be
-  added, document why and define the manual verification plan.
-- **UX Consistency**: Describe impacted user flows, confirm reuse of existing
-  interaction and copy patterns, and list loading, empty, success, validation error,
-  and sync-conflict states across Android and iOS.
-- **Offline, Security, and Performance**: Define the local storage behavior, sync
-  and conflict-resolution rules, encryption or sensitive-data handling needs, and the
-  measurable performance budgets or non-regression thresholds for the affected path.
-- **Observability and Reviewability**: Record required logs, metrics, feature flags,
-  rollout notes, and any dependency or risk that reviewers must inspect without
-  exposing sensitive financial data.
+- **Code Quality**: Security headers will be managed via `vercel.json`. Firestore rules will be modularized or thoroughly documented in `firestore.rules`. Environment variable usage will follow strict typing.
+- **Testing**: NEEDS CLARIFICATION. We need to define how to test security rules (Firebase Emulator) and headers (manual or automated check).
+- **UX Consistency**: Bot protection (App Check) must be transparent to users or provide clear instructions if a challenge fails. Error monitoring must not leak sensitive data.
+- **Offline, Security, and Performance**: App Check adds a small overhead to request initialization. Security headers improve browser-side protection (XSS, Clickjacking). Costs are managed via alerts, not just limits, to avoid downtime.
+- **Observability and Reviewability**: Implement basic error tracking and cost dashboards. Review all Firestore rules for potential data leaks.
 
 ## Project Structure
 
 ### Documentation (this feature)
 
 ```text
-specs/[###-feature]/
-├── plan.md              # This file (/speckit-plan command output)
-├── research.md          # Phase 0 output (/speckit-plan command)
-├── data-model.md        # Phase 1 output (/speckit-plan command)
-├── quickstart.md        # Phase 1 output (/speckit-plan command)
-├── contracts/           # Phase 1 output (/speckit-plan command)
-└── tasks.md             # Phase 2 output (/speckit-tasks command - NOT created by /speckit-plan)
+specs/002-security-hardening/
+├── plan.md              # This file
+├── research.md          # Phase 0 output
+├── data-model.md        # Phase 1 output (N/A for this feature)
+├── quickstart.md        # Phase 1 output
+├── contracts/           # Phase 1 output (N/A)
+└── tasks.md             # Phase 2 output
 ```
 
 ### Source Code (repository root)
-<!--
-  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
-  for this feature. Delete unused options and expand the chosen structure with
-  real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
--->
 
 ```text
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
-src/
-├── models/
-├── services/
-├── cli/
-└── lib/
-
-tests/
-├── contract/
-├── integration/
-└── unit/
-
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
+/
+├── vercel.json          # Security headers
+├── firestore.rules      # Database hardening
 ├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
-
-frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
-
-# [REMOVE IF UNUSED] Option 3: React Native mobile app
-app/
-├── src/
-│   ├── screens/
-│   ├── components/
-│   ├── navigation/
-│   ├── features/
-│   ├── storage/
-│   ├── sync/
-│   └── theme/
-└── tests/
-    ├── integration/
-    ├── unit/
-    └── e2e/
-
-backend/                     # Optional if sync services are introduced
-└── [same as backend above]
+│   ├── shared/
+│   │   ├── services/
+│   │   │   └── firebase.ts # App Check initialization
+│   │   └── utils/
+│   │       └── logger.ts   # Error monitoring integration
 ```
 
-**Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+**Structure Decision**: Single project SPA structure as it's already established. Focus on configuration files (`vercel.json`, `firestore.rules`) and core service initialization.
 
 ## Complexity Tracking
 
-> **Fill ONLY if Constitution Check has violations that must be justified**
-
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+| [None] | | |
