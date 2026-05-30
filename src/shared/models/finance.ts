@@ -1,6 +1,7 @@
 export type TransactionType = "income" | "expense";
 export type SyncStatus = "local_only" | "pending_sync" | "synced" | "sync_conflict";
 export type RecurrenceType = "weekly" | "monthly" | "yearly";
+export type BusinessDayConfig = 'first' | 'last' | 'fifth';
 
 export interface Transaction {
   id: string;
@@ -25,6 +26,7 @@ export interface RecurringTransaction {
   dayOfWeek?: number; // 0 (Sun) - 6 (Sat)
   dayOfMonth?: number; // 1 - 31
   monthOfYear?: number; // 1 - 12
+  businessDayConfig?: BusinessDayConfig;
   startDate: string;
   endDate?: string;
   isActive: boolean;

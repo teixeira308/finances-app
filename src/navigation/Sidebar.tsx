@@ -79,12 +79,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
               style={{ 
                 borderRadius: '12px',
                 textAlign: 'left',
-                backgroundColor: isActive ? 'rgba(0, 121, 242, 0.1)' : 'transparent',
+                backgroundColor: isActive ? 'var(--ios-blue)' : 'transparent',
+                color: isActive ? 'white' : 'var(--ios-gray)',
                 justifyContent: isCollapsed ? 'center' : 'flex-start'
               }}
               title={isCollapsed ? item.label : ''}
             >
-              <Icon size={22} strokeWidth={isActive ? 2.5 : 2} style={{ color: isActive ? 'var(--ios-blue)' : 'inherit', minWidth: '22px' }} />
+              <Icon size={22} strokeWidth={isActive ? 2.5 : 2} style={{ color: isActive ? 'white' : 'inherit', minWidth: '22px' }} />
               {!isCollapsed && <span style={{ fontWeight: isActive ? 600 : 500, whiteSpace: 'nowrap' }}>{item.label}</span>}
             </button>
           );

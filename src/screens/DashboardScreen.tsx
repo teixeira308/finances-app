@@ -7,19 +7,29 @@ import {
 import { useAppSelector } from '@/store/hooks';
 import { calculateMonthlySummary } from '@/shared/models/finance';
 import { selectCategories } from '@/features/categories/store/categoriesSlice';
+import { selectRecurringTransactions } from '@/features/transactions/store/recurringTransactionsSlice';
+import { projectRecurringTransactions } from '@/shared/utils/projection';
 import logoNome from '@/assets/logo-nome.png';
 import { MoneyValue } from '@/shared/components/MoneyValue';
 import { PrivacyToggle } from '@/shared/components/PrivacyToggle';
 
 const DashboardScreen = () => {
   const transactions = useAppSelector((state) => state.transactions.items);
+  const recurringTransactions = useAppSelector(selectRecurringTransactions);
   const categories = useAppSelector(selectCategories);
   const goals = useAppSelector((state) => state.goals.items);
   
   const monthRef = new Date().toISOString().slice(0, 7);
+  
+  const allTransactions = useMemo(() => {
+    const actual = transactions.filter(tx => tx.occurredAt.startsWith(monthRef));
+    const projected = projectRecurringTransactions(recurringTransactions, monthRef);
+    return [...actual, ...projected];
+  }, [transactions, recurringTransactions, monthRef]);
+
   const summary = useMemo(
-    () => calculateMonthlySummary(monthRef, transactions, goals.find((goal) => goal.monthRef === monthRef)),
-    [goals, monthRef, transactions]
+    () => calculateMonthlySummary(monthRef, allTransactions, goals.find((goal) => goal.monthRef === monthRef)),
+    [goals, monthRef, allTransactions]
   );
 
   const pieData = useMemo(() => {
@@ -35,8 +45,7 @@ const DashboardScreen = () => {
 
   const dailyData = useMemo(() => {
     const data: Record<string, { income: number; expense: number }> = {};
-    transactions
-      .filter(tx => tx.occurredAt.startsWith(monthRef))
+    allTransactions
       .sort((a, b) => new Date(a.occurredAt).getTime() - new Date(b.occurredAt).getTime())
       .forEach(tx => {
         const date = new Date(tx.occurredAt).getDate().toString();
@@ -45,7 +54,7 @@ const DashboardScreen = () => {
         else data[date].expense += tx.amount;
       });
     return Object.entries(data).map(([date, values]) => ({ date, ...values }));
-  }, [transactions, monthRef]);
+  }, [allTransactions]);
 
   return (
     <Container className="mobile-container p-4 pb-5">
@@ -67,7 +76,7 @@ const DashboardScreen = () => {
         <Col xs={12} lg={5}>
           <Card className="bg-transparent border-2 mb-4" style={{ borderColor: summary.netBalance >= 0 ? 'var(--ios-green)' : 'var(--ios-red)' }}>
             <Card.Body className="py-5 px-4">
-              <p className="text-uppercase small fw-bold tracking-widest text-ios-gray mb-1">Saldo Atual</p>
+              <p className="text-uppercase small fw-bold tracking-widest text-ios-gray mb-1">Saldo Previsto</p>
               <h2 className="display-4 fw-bold m-0" style={{ color: summary.netBalance >= 0 ? 'var(--ios-green)' : 'var(--ios-red)' }}>
                 <MoneyValue value={summary.netBalance} />
               </h2>
@@ -76,7 +85,7 @@ const DashboardScreen = () => {
           
           <Row className="g-3 mb-4">
             <Col xs={6}>
-              <Card className="border-0 h-100" style={{ backgroundColor: 'rgba(48, 209, 88, 0.1)' }}>
+              <Card className="border-0 h-100 bg-ios-secondary">
                 <Card.Body className="p-3 text-center">
                   <p className="text-uppercase small fw-bold text-ios-green mb-1">Entradas</p>
                   <p className="h4 fw-bold text-ios-green m-0"><MoneyValue value={summary.incomeTotal} /></p>
@@ -84,7 +93,7 @@ const DashboardScreen = () => {
               </Card>
             </Col>
             <Col xs={6}>
-              <Card className="border-0 h-100" style={{ backgroundColor: 'rgba(255, 69, 58, 0.1)' }}>
+              <Card className="border-0 h-100 bg-ios-secondary">
                 <Card.Body className="p-3 text-center">
                   <p className="text-uppercase small fw-bold text-ios-red mb-1">Saídas</p>
                   <p className="h4 fw-bold text-ios-red m-0"><MoneyValue value={summary.expenseTotal} /></p>

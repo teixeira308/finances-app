@@ -39,7 +39,7 @@ const LoginScreen = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="py-3 border-0 bg-white bg-opacity-5"
+                className="py-3 border-0 bg-ios-secondary text-white"
               />
             </Form.Group>
             
@@ -51,7 +51,7 @@ const LoginScreen = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="py-3 border-0 bg-white bg-opacity-5"
+                className="py-3 border-0 bg-ios-secondary text-white"
               />
             </Form.Group>
 

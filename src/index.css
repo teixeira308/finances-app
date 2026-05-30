@@ -1,8 +1,13 @@
+html {
+  font-size: 14px; /* Reduced from 16px to scale down everything by ~2px */
+}
+
 body {
   background-color: #000000;
   color: #ffffff;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 1rem; /* This will now be 14px */
 }
 
 :root {
@@ -15,6 +20,15 @@ body {
   --bs-body-color: #ffffff;
 }
 
+/* Typography refinement */
+h1, .h1 { font-size: 1.75rem !important; }
+h2, .h2 { font-size: 1.5rem !important; }
+h3, .h3 { font-size: 1.25rem !important; }
+h4, .h4 { font-size: 1.1rem !important; }
+h5, .h5 { font-size: 1rem !important; }
+h6, .h6 { font-size: 0.85rem !important; }
+.small { font-size: 0.75rem !important; }
+
 /* Hide number input spinner */
 input[type=number]::-webkit-inner-spin-button, 
 input[type=number]::-webkit-outer-spin-button { 
@@ -25,6 +39,7 @@ input[type=number]::-webkit-outer-spin-button {
 /* Helper Classes */
 .bg-black { background-color: #000000 !important; }
 .bg-ios-dark-gray { background-color: var(--ios-dark-gray) !important; }
+.bg-ios-secondary { background-color: #2C2C2E !important; }
 .text-ios-gray { color: var(--ios-gray) !important; }
 .text-ios-green { color: var(--ios-green) !important; }
 .text-ios-red { color: var(--ios-red) !important; }
@@ -41,6 +56,23 @@ input[type=number]::-webkit-outer-spin-button {
   background-color: var(--ios-dark-gray);
   color: white;
   border: none;
+}
+
+.btn-ios-secondary {
+  background-color: #2C2C2E !important;
+  color: var(--ios-gray) !important;
+  border: none !important;
+  transition: all 0.2s ease;
+}
+
+.btn-ios-secondary:hover {
+  background-color: #3A3A3C !important;
+  color: white !important;
+}
+
+.btn-ios-secondary.active {
+  background-color: var(--ios-blue) !important;
+  color: white !important;
 }
 
 /* Bottom navigation customization */

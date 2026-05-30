@@ -13,6 +13,7 @@ import { ScrollToTop } from './shared/components/ScrollToTop';
 import { useAppDispatch } from './store/hooks';
 import { bootstrapTransactions } from './features/transactions/store/transactionsSlice';
 import { bootstrapCategories } from './features/categories/store/categoriesSlice';
+import { bootstrapRecurringTransactions } from './features/transactions/store/recurringTransactionsSlice';
 import { useAuth } from './features/auth/components/AuthProvider';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
     if (user) {
       dispatch(bootstrapTransactions());
       dispatch(bootstrapCategories());
+      dispatch(bootstrapRecurringTransactions());
     }
   }, [dispatch, user]);
 
