@@ -102,7 +102,7 @@ const NewTransactionScreen = () => {
           <Button 
             variant="link" 
             onClick={() => navigate(-1)} 
-            className="p-2 text-white border-0 bg-white bg-opacity-5 rounded-3"
+            className="p-2 text-white border-0 bg-opacity-5 rounded-3"
           >
             <ArrowLeft size={32} />
           </Button>

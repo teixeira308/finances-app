@@ -47,11 +47,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
       <div className="px-3 mb-4 d-flex justify-content-center">
         <button
           onClick={() => navigate('/new-transaction')}
-          className={`btn btn-primary d-flex align-items-center justify-content-center shadow transition-all ${isCollapsed ? 'rounded-circle p-0' : 'w-100 py-3 rounded-3 gap-2'}`}
+          className={`btn d-flex align-items-center justify-content-center shadow transition-all ${isCollapsed ? 'rounded-circle' : 'btn-primary text-white w-100 py-3 rounded-3 gap-2'}`}
           style={{ 
             height: isCollapsed ? '48px' : 'auto',
             width: isCollapsed ? '48px' : '100%',
-            minWidth: isCollapsed ? '48px' : 'auto'
+            minWidth: isCollapsed ? '48px' : 'auto',
+            padding: isCollapsed ? '0' : undefined,
+            backgroundColor: isCollapsed ? 'var(--ios-blue)' : undefined,
+            color: isCollapsed ? 'white' : undefined,
+            border: 'none'
           }}
           title="Nova Transação"
         >
