@@ -8,7 +8,7 @@ const SettingsScreen = () => {
   return (
     <Container className="mobile-container p-4 pb-5">
       <div className="pt-4 mb-4">
-        <img src={logoNome} alt="Gastos Mensais" style={{ height: '30px' }} />
+        <img src={logoNome} alt="Gastos Mensais" className="rounded-3" style={{ height: '30px' }} />
       </div>
 
       <div className="text-center p-3 mb-4 rounded-3 bg-ios-secondary">
