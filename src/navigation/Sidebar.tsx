@@ -91,16 +91,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
           );
         })}
       </nav>
-
-      {/* Footer */}
-      <div className="p-3 border-top border-white border-opacity-10">
-        <div className={`d-flex align-items-center gap-3 text-ios-gray small ${isCollapsed ? 'justify-content-center' : ''}`}>
-          <div className="rounded-circle bg-secondary d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: '32px', height: '32px' }}>
-            <Settings size={16} />
-          </div>
-          {!isCollapsed && <span className="text-nowrap">Versão Web 1.0</span>}
-        </div>
-      </div>
+ 
     </div>
   );
 };

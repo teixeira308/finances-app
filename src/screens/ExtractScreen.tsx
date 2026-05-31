@@ -7,22 +7,23 @@ import { selectRecurringTransactions, bootstrapRecurringTransactions } from '@/f
 import { 
   Trash2, ArrowUpCircle, ArrowDownCircle, RefreshCw,
   ShoppingBag, Coffee, Car, Home, Film, Briefcase, Plus, Heart,
-  ChevronLeft, ChevronRight, Calendar, Search, X
+  ChevronLeft, ChevronRight, Calendar, Search, X, Tag
 } from 'lucide-react';
 import { MoneyValue } from '@/shared/components/MoneyValue';
 import { PrivacyToggle } from '@/shared/components/PrivacyToggle';
 import { projectRecurringTransactions } from '@/shared/utils/projection';
 
-// Mapeamento de ícones
-const categoryIcons: Record<string, React.ReactNode> = {
-  shopping: <ShoppingBag size={20} />,
-  food: <Coffee size={20} />,
-  transport: <Car size={20} />,
-  housing: <Home size={20} />,
-  entertainment: <Film size={20} />,
-  work: <Briefcase size={20} />,
-  health: <Heart size={20} />,
-  default: <Plus size={20} />
+// Mapeamento de componentes de ícone
+const categoryIcons: Record<string, React.ElementType> = {
+  shopping: ShoppingBag,
+  food: Coffee,
+  transport: Car,
+  housing: Home,
+  entertainment: Film,
+  work: Briefcase,
+  health: Heart,
+  tag: Tag,
+  default: Plus
 };
 
 const ExtractScreen = () => {
@@ -182,6 +183,7 @@ const ExtractScreen = () => {
                   {txs.map((tx) => {
                     const category = categories.find(c => c.id === tx.categoryId);
                     const isProjected = tx.id.startsWith('projected-');
+                    const IconComponent = categoryIcons[category?.iconToken || 'default'] || categoryIcons.default;
                     
                     return (
                       <ListGroup.Item
@@ -189,10 +191,17 @@ const ExtractScreen = () => {
                         className={`bg-transparent border-light border-opacity-10 px-3 py-3 d-flex align-items-center justify-content-between ${isProjected ? 'opacity-75' : ''}`}
                       >
                         <div className="d-flex align-items-center gap-3">
-                          <div className="rounded-3 d-flex align-items-center justify-content-center bg-ios-secondary" style={{ width: '44px', height: '44px' }}>
+                          <div 
+                            className="rounded-3 d-flex align-items-center justify-content-center" 
+                            style={{ 
+                              width: '44px', 
+                              height: '44px', 
+                              backgroundColor: tx.type === 'income' ? 'rgba(48, 209, 88, 0.1)' : `${category?.colorToken || '#8E8E93'}20`
+                            }}
+                          >
                             {tx.type === 'income' ? 
                               <ArrowUpCircle className="text-ios-green" size={24} /> : 
-                              categoryIcons[category?.iconToken || 'default']
+                              <IconComponent size={20} style={{ color: category?.colorToken || 'var(--ios-gray)' }} />
                             }
                           </div>
                           <div className="d-flex flex-column">
