@@ -87,6 +87,25 @@ export interface SyncRecord {
   remoteVersion?: string;
 }
 
+export interface UserProfile {
+  id: string; // uid
+  email: string;
+  firstName: string;
+  lastName: string;
+  displayName: string;
+  phoneNumber?: string;
+  photoURL?: string;
+  preferences: {
+    theme: 'dark';
+    privacyMode: boolean;
+  };
+  metadata: {
+    createdAt: string; // ISO
+    lastLogin: string; // ISO
+    version: number;
+  }
+}
+
 export function calculateMonthlySummary(
   monthRef: string,
   transactions: Transaction[],

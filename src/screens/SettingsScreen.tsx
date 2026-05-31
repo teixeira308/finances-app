@@ -1,10 +1,13 @@
 import React from 'react';
 import { Container, Card, ListGroup } from 'react-bootstrap';
-import { Shield, HelpCircle, ChevronRight, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Shield, HelpCircle, ChevronRight, LogOut, User, Lock } from 'lucide-react';
 import { logout } from '@/features/auth/services/authService';
 import logoNome from '@/assets/logo-nome.png';
 
 const SettingsScreen = () => {
+  const navigate = useNavigate();
+
   return (
     <Container className="mobile-container p-4 pb-5">
       <div className="pt-4 mb-4">
@@ -22,12 +25,47 @@ const SettingsScreen = () => {
         <ListGroup variant="flush" className="bg-transparent">
           <ListGroup.Item
             action
+            onClick={() => navigate('/profile')}
             className="bg-transparent border-light border-opacity-10 px-3 py-3 d-flex align-items-center justify-content-between text-white"
           >
             <div className="d-flex align-items-center gap-3">
               <div 
                 className="rounded-3 d-flex align-items-center justify-content-center"
-                style={{ width: '36px', height: '36px', backgroundColor: 'rgba(255, 69, 58, 0.2)', color: 'var(--ios-red)' }}
+                style={{ width: '36px', height: '36px', backgroundColor: 'rgba(10, 132, 255, 0.1)', color: 'var(--ios-blue)' }}
+              >
+                <User size={18} />
+              </div>
+              <span className="fw-bold">Meu Perfil</span>
+            </div>
+            <ChevronRight size={18} className="text-ios-gray opacity-40" />
+          </ListGroup.Item>
+
+          <ListGroup.Item
+            action
+            onClick={() => navigate('/security')}
+            className="bg-transparent border-light border-opacity-10 px-3 py-3 d-flex align-items-center justify-content-between text-white"
+          >
+            <div className="d-flex align-items-center gap-3">
+              <div 
+                className="rounded-3 d-flex align-items-center justify-content-center"
+                style={{ width: '36px', height: '36px', backgroundColor: 'rgba(255, 159, 10, 0.1)', color: '#FF9F0A' }}
+              >
+                <Lock size={18} />
+              </div>
+              <span className="fw-bold">Segurança</span>
+            </div>
+            <ChevronRight size={18} className="text-ios-gray opacity-40" />
+          </ListGroup.Item>
+          
+          <ListGroup.Item
+            action
+            onClick={() => navigate('/privacy')}
+            className="bg-transparent border-light border-opacity-10 px-3 py-3 d-flex align-items-center justify-content-between text-white"
+          >
+            <div className="d-flex align-items-center gap-3">
+              <div 
+                className="rounded-3 d-flex align-items-center justify-content-center"
+                style={{ width: '36px', height: '36px', backgroundColor: 'rgba(255, 69, 58, 0.1)', color: 'var(--ios-red)' }}
               >
                 <Shield size={18} />
               </div>
@@ -43,7 +81,7 @@ const SettingsScreen = () => {
             <div className="d-flex align-items-center gap-3">
               <div 
                 className="rounded-3 d-flex align-items-center justify-content-center"
-                style={{ width: '36px', height: '36px', backgroundColor: 'rgba(48, 209, 88, 0.2)', color: 'var(--ios-green)' }}
+                style={{ width: '36px', height: '36px', backgroundColor: 'rgba(48, 209, 88, 0.1)', color: 'var(--ios-green)' }}
               >
                 <HelpCircle size={18} />
               </div>
