@@ -6,11 +6,14 @@ import {
 } from 'recharts';
 import { useAppSelector } from '@/store/hooks';
 import { selectCategories } from '@/features/categories/store/categoriesSlice';
+import { selectRecurringTransactions } from '@/features/transactions/store/recurringTransactionsSlice';
+import { projectRecurringTransactions } from '@/shared/utils/projection';
 import { calculateMonthlySummary } from '@/shared/models/finance';
 import { ChevronDown } from 'lucide-react';
 
 const ReportsScreen = () => {
   const transactions = useAppSelector((state) => state.transactions.items);
+  const recurringTransactions = useAppSelector(selectRecurringTransactions);
   const categories = useAppSelector(selectCategories);
 
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
@@ -24,9 +27,15 @@ const ReportsScreen = () => {
     return Array.from(months).sort().reverse();
   }, [transactions]);
 
+  const allTransactions = useMemo(() => {
+    const actual = transactions.filter(tx => tx.occurredAt.startsWith(selectedMonth));
+    const projected = projectRecurringTransactions(recurringTransactions, selectedMonth);
+    return [...actual, ...projected];
+  }, [transactions, recurringTransactions, selectedMonth]);
+
   const summary = useMemo(() => {
-    return calculateMonthlySummary(selectedMonth, transactions);
-  }, [selectedMonth, transactions]);
+    return calculateMonthlySummary(selectedMonth, allTransactions);
+  }, [selectedMonth, allTransactions]);
 
   const pieData = useMemo(() => {
     return summary.topCategories.map(item => {
@@ -56,7 +65,7 @@ const ReportsScreen = () => {
           <Form.Select 
             value={selectedMonth} 
             onChange={(e) => setSelectedMonth(e.target.value)}
-            className="h-14 fw-bold"
+            className="h-14 fw-bold bg-ios-secondary border-0"
           >
             {availableMonths.map((month) => (
               <option key={month} value={month}>
@@ -70,7 +79,7 @@ const ReportsScreen = () => {
 
       <Row className="g-3 mb-4">
         <Col xs={6}>
-          <Card className="border-0 h-100" style={{ backgroundColor: 'rgba(48, 209, 88, 0.1)' }}>
+          <Card className="border-0 h-100 bg-ios-secondary">
             <Card.Body className="p-3 text-center">
               <p className="text-uppercase small fw-bold text-ios-green mb-1">Entradas</p>
               <p className="h4 fw-bold text-ios-green m-0">R$ {summary.incomeTotal.toFixed(2)}</p>
@@ -78,7 +87,7 @@ const ReportsScreen = () => {
           </Card>
         </Col>
         <Col xs={6}>
-          <Card className="border-0 h-100" style={{ backgroundColor: 'rgba(255, 69, 58, 0.1)' }}>
+          <Card className="border-0 h-100 bg-ios-secondary">
             <Card.Body className="p-3 text-center">
               <p className="text-uppercase small fw-bold text-ios-red mb-1">Saídas</p>
               <p className="h4 fw-bold text-ios-red m-0">R$ {summary.expenseTotal.toFixed(2)}</p>

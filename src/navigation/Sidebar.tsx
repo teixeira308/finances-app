@@ -47,11 +47,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
       <div className="px-3 mb-4 d-flex justify-content-center">
         <button
           onClick={() => navigate('/new-transaction')}
-          className={`btn btn-primary d-flex align-items-center justify-content-center shadow transition-all ${isCollapsed ? 'rounded-circle p-0' : 'w-100 py-3 rounded-3 gap-2'}`}
+          className={`btn d-flex align-items-center justify-content-center shadow transition-all ${isCollapsed ? 'rounded-circle' : 'btn-primary text-white w-100 py-3 rounded-3 gap-2'}`}
           style={{ 
             height: isCollapsed ? '48px' : 'auto',
             width: isCollapsed ? '48px' : '100%',
-            minWidth: isCollapsed ? '48px' : 'auto'
+            minWidth: isCollapsed ? '48px' : 'auto',
+            padding: isCollapsed ? '0' : undefined,
+            backgroundColor: isCollapsed ? 'var(--ios-blue)' : undefined,
+            color: isCollapsed ? 'white' : undefined,
+            border: 'none'
           }}
           title="Nova Transação"
         >
@@ -75,27 +79,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
               style={{ 
                 borderRadius: '12px',
                 textAlign: 'left',
-                backgroundColor: isActive ? 'rgba(0, 121, 242, 0.1)' : 'transparent',
+                backgroundColor: isActive ? 'var(--ios-blue)' : 'transparent',
+                color: isActive ? 'white' : 'var(--ios-gray)',
                 justifyContent: isCollapsed ? 'center' : 'flex-start'
               }}
               title={isCollapsed ? item.label : ''}
             >
-              <Icon size={22} strokeWidth={isActive ? 2.5 : 2} style={{ color: isActive ? 'var(--ios-blue)' : 'inherit', minWidth: '22px' }} />
+              <Icon size={22} strokeWidth={isActive ? 2.5 : 2} style={{ color: isActive ? 'white' : 'inherit', minWidth: '22px' }} />
               {!isCollapsed && <span style={{ fontWeight: isActive ? 600 : 500, whiteSpace: 'nowrap' }}>{item.label}</span>}
             </button>
           );
         })}
       </nav>
-
-      {/* Footer */}
-      <div className="p-3 border-top border-white border-opacity-10">
-        <div className={`d-flex align-items-center gap-3 text-ios-gray small ${isCollapsed ? 'justify-content-center' : ''}`}>
-          <div className="rounded-circle bg-secondary d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: '32px', height: '32px' }}>
-            <Settings size={16} />
-          </div>
-          {!isCollapsed && <span className="text-nowrap">Versão Web 1.0</span>}
-        </div>
-      </div>
+ 
     </div>
   );
 };

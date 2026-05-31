@@ -11,7 +11,7 @@ const SettingsScreen = () => {
         <img src={logoNome} alt="Gastos Mensais" style={{ height: '30px' }} />
       </div>
 
-      <div className="text-center p-3 mb-4 rounded-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.08)' }}>
+      <div className="text-center p-3 mb-4 rounded-3 bg-ios-secondary">
         <p className="text-white fw-bold mb-2">Controle suas finanças de forma rápida e intuitiva.</p>
         <p className="small text-white-50 m-0">
           O Nexo ajuda você a visualizar gastos, acompanhar metas e manter sua vida financeira organizada.

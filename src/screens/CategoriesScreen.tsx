@@ -126,7 +126,7 @@ const CategoriesScreen = () => {
             variant="pills" 
             activeKey={categoryType} 
             onSelect={(k) => setCategoryType(k as TransactionType)}
-            className="bg-black bg-opacity-5 p-1 rounded-3 mb-4"
+            className="bg-black p-1 rounded-3 mb-4"
           >
             <Nav.Item className="flex-grow-1">
               <Nav.Link 
@@ -153,7 +153,7 @@ const CategoriesScreen = () => {
                 placeholder="Ex: Aluguel" 
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="py-3"
+                className="py-3 bg-ios-secondary border-0 text-white"
               />
             </Form.Group>
             
@@ -174,7 +174,7 @@ const CategoriesScreen = () => {
           </Form>
         </Modal.Body>
         <Modal.Footer className="border-0 pt-0 px-4 pb-4 d-flex gap-2">
-          <Button variant="outline-light" className="flex-grow-1 border-opacity-10 py-3" onClick={handleClose}>
+          <Button variant="none" className="flex-grow-1 btn-ios-secondary py-3" onClick={handleClose}>
             Cancelar
           </Button>
           <Button variant="primary" className="flex-grow-1 py-3" onClick={handleSubmit}>
@@ -191,7 +191,7 @@ const CategoriesScreen = () => {
           Esta ação não pode ser desfeita.
         </Modal.Body>
         <Modal.Footer className="border-0 pt-0 px-4 pb-4 d-flex gap-2">
-          <Button variant="outline-light" className="flex-grow-1 border-opacity-10 py-3" onClick={() => setIsDeleteModalOpen(false)}>
+          <Button variant="none" className="flex-grow-1 btn-ios-secondary py-3" onClick={() => setIsDeleteModalOpen(false)}>
             Cancelar
           </Button>
           <Button variant="danger" className="flex-grow-1 py-3 rounded-3 fw-bold" onClick={handleDelete}>
