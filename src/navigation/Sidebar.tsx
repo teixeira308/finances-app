@@ -33,7 +33,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
         {isCollapsed ? (
           <img src={favicon} alt="Logo" style={{ width: '32px', height: '32px' }} />
         ) : (
-          <img src={logoNome} alt="Gastos Mensais" className="img-fluid" style={{ maxHeight: '32px' }} />
+          <img src={logoNome} alt="Gastos Mensais" className="img-fluid rounded-3" style={{ maxHeight: '32px' }} />
         )}
         <button 
           onClick={onToggle}

@@ -59,7 +59,7 @@ const DashboardScreen = () => {
   return (
     <Container className="mobile-container p-4 pb-5">
       <div className="d-flex d-md-none justify-content-center align-items-center pt-4 mb-4 position-relative">
-        <img src={logoNome} alt="Gastos Mensais" style={{ height: '50px' }} />
+        <img src={logoNome} alt="Gastos Mensais" className="rounded-3" style={{ height: '50px' }} />
         <div className="position-absolute end-0">
           <PrivacyToggle />
         </div>
