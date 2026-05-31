@@ -1,21 +1,52 @@
+import { 
+  collection, 
+  getDocs, 
+  setDoc, 
+  doc, 
+  deleteDoc, 
+  query, 
+  where 
+} from 'firebase/firestore';
+import { db, auth } from '@/shared/services/firebase';
 import { RecurringTransaction } from "@/shared/models/finance";
 
-const STORAGE_KEY = "recurring_transactions";
+const COLLECTION_NAME = "recurring_transactions";
 
 export const recurringTransactionRepository = {
   list: async (): Promise<RecurringTransaction[]> => {
-    const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
+    const user = auth.currentUser;
+    if (!user) return [];
+
+    try {
+      const q = query(collection(db, COLLECTION_NAME), where('userId', '==', user.uid));
+      const querySnapshot = await getDocs(q);
+      return querySnapshot.docs.map(doc => doc.data() as RecurringTransaction);
+    } catch (error) {
+      console.error("Erro ao listar transações recorrentes:", error);
+      return [];
+    }
   },
+
   save: async (transaction: RecurringTransaction): Promise<RecurringTransaction> => {
-    const list = await recurringTransactionRepository.list();
-    list.push(transaction);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-    return transaction;
+    const user = auth.currentUser;
+    if (!user) throw new Error("Usuário não autenticado");
+
+    try {
+      const transactionWithUser = { ...transaction, userId: user.uid };
+      await setDoc(doc(db, COLLECTION_NAME, transaction.id), transactionWithUser);
+      return transactionWithUser;
+    } catch (error) {
+      console.error("Erro ao salvar transação recorrente:", error);
+      throw error;
+    }
   },
+
   remove: async (id: string): Promise<void> => {
-    const list = await recurringTransactionRepository.list();
-    const filtered = list.filter(item => item.id !== id);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+    try {
+      await deleteDoc(doc(db, COLLECTION_NAME, id));
+    } catch (error) {
+      console.error("Erro ao remover transação recorrente:", error);
+      throw error;
+    }
   }
 };
