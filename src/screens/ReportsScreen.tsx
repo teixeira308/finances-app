@@ -140,8 +140,8 @@ const ReportsScreen = () => {
         <h3 className="h5 fw-bold mb-3 px-1">Fluxo de Caixa</h3>
         <Card className="bg-ios-dark-gray border-0 p-3">
           <Card.Body className="p-0">
-            <div style={{ width: '100%', height: '300px' }}>
-              <ResponsiveContainer width="100%" height="100%">
+            <div style={{ width: '100%', height: '300px', minHeight: '300px' }}>
+              <ResponsiveContainer width="100%" height="100%" debounce={100}>
                 <BarChart data={barData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#8E8E93', fontSize: 12 }} />
