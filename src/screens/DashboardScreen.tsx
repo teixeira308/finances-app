@@ -115,8 +115,8 @@ const DashboardScreen = () => {
           <h3 className="h5 fw-bold mb-3 px-1">Evolução Diária</h3>
           <Card className="bg-ios-dark-gray border-0 p-3 mb-4">
             <Card.Body className="p-0">
-              <div style={{ width: '100%', height: '250px' }}>
-                <ResponsiveContainer width="100%" height="100%">
+              <div style={{ width: '100%', height: '250px', minHeight: '250px' }}>
+                <ResponsiveContainer width="100%" height="100%" debounce={100}>
                   <AreaChart data={dailyData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
                     <XAxis dataKey="date" tick={{ fill: '#8E8E93', fontSize: 10 }} axisLine={false} tickLine={false} />
