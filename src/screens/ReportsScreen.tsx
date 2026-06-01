@@ -100,9 +100,9 @@ const ReportsScreen = () => {
         <h3 className="h5 fw-bold mb-3 px-1">Distribuição</h3>
         <Card className="bg-ios-dark-gray border-0 p-3">
           <Card.Body className="p-0 overflow-visible">
-            <div style={{ width: '100%', height: '300px' }}>
+            <div style={{ width: '100%', height: '300px', minHeight: '300px' }}>
               {pieData.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" debounce={100}>
                   <PieChart>
                     <Pie
                       data={pieData}
