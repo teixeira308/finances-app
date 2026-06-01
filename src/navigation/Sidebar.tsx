@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, ListOrdered, Tags, Settings, Plus, BarChart3, Menu, ChevronLeft } from 'lucide-react';
 import logoNome from '@/assets/logo-nome.png';
 import favicon from '/favicon.png';
+import { useUserProfile } from '@/features/auth/hooks/useUserProfile';
+import { UserAvatar } from '@/shared/components/UserAvatar';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -12,6 +14,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { profile } = useUserProfile();
 
   const navItems = [
     { label: 'Dashboard', path: '/', icon: LayoutDashboard },
@@ -91,7 +94,28 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
           );
         })}
       </nav>
- 
+
+      {/* Footer / User Profile */}
+      <div className="p-3 border-top border-white border-opacity-10">
+        <div 
+          className={`d-flex align-items-center gap-3 text-ios-gray cursor-pointer hover-white transition-all ${isCollapsed ? 'justify-content-center' : ''}`}
+          onClick={() => navigate('/profile')}
+          title="Ver Perfil"
+        >
+          <UserAvatar 
+            name={profile?.displayName || profile?.email || 'User'} 
+            size={32} 
+          />
+          {!isCollapsed && (
+            <div className="d-flex flex-column overflow-hidden">
+              <span className="text-nowrap fw-bold text-white small">
+                {profile?.firstName || profile?.displayName?.split(' ')[0] || 'Usuário'}
+              </span>
+              <span className="text-nowrap extra-small opacity-50" style={{ fontSize: '10px' }}>Meu Perfil</span>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

@@ -5,6 +5,9 @@ import DashboardScreen from './screens/DashboardScreen';
 import ExtractScreen from './screens/ExtractScreen';
 import CategoriesScreen from './screens/CategoriesScreen';
 import SettingsScreen from './screens/SettingsScreen';
+import ProfileScreen from './screens/ProfileScreen';
+import SecurityScreen from './screens/SecurityScreen';
+import PrivacyScreen from './screens/PrivacyScreen';
 import LoginScreen from './screens/LoginScreen';
 import NewTransactionScreen from './screens/NewTransactionScreen';
 import ReportsScreen from './screens/ReportsScreen';
@@ -51,6 +54,9 @@ function App() {
           <Route path="/categories" element={<CategoriesScreen />} />
           <Route path="/reports" element={<ReportsScreen />} />
           <Route path="/settings" element={<SettingsScreen />} />
+          <Route path="/profile" element={<ProfileScreen />} />
+          <Route path="/security" element={<SecurityScreen />} />
+          <Route path="/privacy" element={<PrivacyScreen />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </MainLayout>
