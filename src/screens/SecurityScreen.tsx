@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Container, Card, Button, Form, Badge, Modal, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Lock, Mail, ShieldCheck } from 'lucide-react';
-import { changePassword, changeEmail, reauthenticateUser } from '@/features/auth/services/authService';
+import { ArrowLeft, Lock, ShieldCheck } from 'lucide-react';
+import { changePassword, reauthenticateUser } from '@/features/auth/services/authService';
 
 const SecurityScreen = () => {
   const navigate = useNavigate();
@@ -10,13 +10,11 @@ const SecurityScreen = () => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [newEmail, setNewEmail] = useState('');
   
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'danger', text: string } | null>(null);
   
   const [showReauthModal, setShowReauthModal] = useState(false);
-  const [pendingAction, setPendingAction] = useState<'password' | 'email' | null>(null);
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,13 +22,6 @@ const SecurityScreen = () => {
       setMessage({ type: 'danger', text: 'As senhas não coincidem.' });
       return;
     }
-    setPendingAction('password');
-    setShowReauthModal(true);
-  };
-
-  const handleEmailChange = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setPendingAction('email');
     setShowReauthModal(true);
   };
 
@@ -39,18 +30,10 @@ const SecurityScreen = () => {
     setMessage(null);
     try {
       await reauthenticateUser(currentPassword);
-      
-      if (pendingAction === 'password') {
-        await changePassword(newPassword);
-        setMessage({ type: 'success', text: 'Senha alterada com sucesso!' });
-        setNewPassword('');
-        setConfirmPassword('');
-      } else if (pendingAction === 'email') {
-        await changeEmail(newEmail);
-        setMessage({ type: 'success', text: 'E-mail alterado com sucesso! Verifique sua nova caixa de entrada.' });
-        setNewEmail('');
-      }
-      
+      await changePassword(newPassword);
+      setMessage({ type: 'success', text: 'Senha alterada com sucesso!' });
+      setNewPassword('');
+      setConfirmPassword('');
       setShowReauthModal(false);
       setCurrentPassword('');
     } catch (err: any) {
@@ -107,28 +90,6 @@ const SecurityScreen = () => {
             </Form.Group>
             <Button type="submit" variant="primary" className="w-100 mt-4 py-3 rounded-3 fw-bold">
               Atualizar Senha
-            </Button>
-          </Card>
-        </Form>
-
-        <Form onSubmit={handleEmailChange}>
-          <h6 className="small fw-bold text-ios-gray mb-3 text-uppercase px-1">Alterar E-mail</h6>
-          <Card className="bg-ios-dark-gray border-0 p-4 mb-4 shadow-none">
-            <Form.Group>
-              <Form.Label className="small fw-bold text-ios-gray mb-1 text-uppercase">Novo E-mail</Form.Label>
-              <div className="position-relative">
-                <Mail size={16} className="position-absolute text-ios-gray" style={{ left: '1rem', top: '50%', transform: 'translateY(-50%)' }} />
-                <Form.Control 
-                  type="email"
-                  value={newEmail}
-                  onChange={(e) => setNewEmail(e.target.value)}
-                  className="py-3 ps-5 bg-ios-secondary border-0 text-white"
-                  placeholder="seu@novo-email.com"
-                />
-              </div>
-            </Form.Group>
-            <Button type="submit" variant="primary" className="w-100 mt-4 py-3 rounded-3 fw-bold">
-              Atualizar E-mail
             </Button>
           </Card>
         </Form>
