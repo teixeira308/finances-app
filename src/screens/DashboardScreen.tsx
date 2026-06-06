@@ -1,25 +1,46 @@
 import React, { useMemo } from 'react';
-import { Container, Row, Col, Card } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, ProgressBar } from 'react-bootstrap';
 import { 
-  PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip,
+  PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
   AreaChart, Area, XAxis, YAxis, CartesianGrid
 } from 'recharts';
-import { useAppSelector } from '@/store/hooks';
+import { ChevronLeft, ChevronRight, Calendar, Target, TrendingUp, AlertCircle } from 'lucide-react';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { calculateMonthlySummary } from '@/shared/models/finance';
 import { selectCategories } from '@/features/categories/store/categoriesSlice';
 import { selectRecurringTransactions } from '@/features/transactions/store/recurringTransactionsSlice';
+import { setSelectedMonth } from '@/features/dashboard/store/dashboardSlice';
 import { projectRecurringTransactions } from '@/shared/utils/projection';
-import logoNome from '@/assets/logo-nome.png';
 import { MoneyValue } from '@/shared/components/MoneyValue';
 import { PrivacyToggle } from '@/shared/components/PrivacyToggle';
 
 const DashboardScreen = () => {
+  const dispatch = useAppDispatch();
+  const monthRef = useAppSelector((state) => state.dashboard.selectedMonth);
   const transactions = useAppSelector((state) => state.transactions.items);
   const recurringTransactions = useAppSelector(selectRecurringTransactions);
   const categories = useAppSelector(selectCategories);
   const goals = useAppSelector((state) => state.goals.items);
   
-  const monthRef = new Date().toISOString().slice(0, 7);
+  const monthLabel = useMemo(() => {
+    const [year, month] = monthRef.split('-');
+    const date = new Date(parseInt(year), parseInt(month) - 1, 1);
+    return date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+  }, [monthRef]);
+
+  const handlePrevMonth = () => {
+    const [year, month] = monthRef.split('-').map(Number);
+    const date = new Date(year, month - 2, 1);
+    const newMonthRef = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    dispatch(setSelectedMonth(newMonthRef));
+  };
+
+  const handleNextMonth = () => {
+    const [year, month] = monthRef.split('-').map(Number);
+    const date = new Date(year, month, 1);
+    const newMonthRef = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    dispatch(setSelectedMonth(newMonthRef));
+  };
   
   const allTransactions = useMemo(() => {
     const actual = transactions.filter(tx => tx.occurredAt.startsWith(monthRef));
@@ -38,7 +59,8 @@ const DashboardScreen = () => {
       return {
         name: category?.name || 'Outros',
         value: item.total,
-        color: category?.colorToken || '#8E8E93'
+        color: category?.colorToken || '#8E8E93',
+        percentage: (item.total / summary.expenseTotal) * 100
       };
     });
   }, [summary, categories]);
@@ -58,21 +80,42 @@ const DashboardScreen = () => {
 
   return (
     <Container className="mobile-container p-4 pb-5">
-      <div className="d-flex d-md-none justify-content-center align-items-center pt-4 mb-4 position-relative">
-        <img src={logoNome} alt="Gastos Mensais" className="rounded-3" style={{ height: '50px' }} />
-        <div className="position-absolute end-0">
-          <PrivacyToggle />
+      <div className="d-flex justify-content-between align-items-center pt-4 mb-3">
+        <div>
+          <h1 className="h1 fw-bold m-0">Bem-vindo(a)</h1>
+          <p className="text-ios-gray mb-0">Confira seu resumo financeiro</p>
         </div>
-      </div>
-
-      {/* Desktop Header */}
-      <div className="d-none d-md-flex justify-content-between align-items-center pt-4 mb-4">
-        <h1 className="h3 fw-bold m-0">Resumo de {new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}</h1>
         <PrivacyToggle />
       </div>
+
+      {/* Navegação Mensal */}
+      <Card className="bg-ios-secondary border-0 mb-4 shadow-none">
+        <Card.Body className="p-2 d-flex align-items-center justify-content-between">
+          <Button 
+            variant="link" 
+            className="text-white p-2 shadow-none" 
+            onClick={handlePrevMonth}
+          >
+            <ChevronLeft size={20} />
+          </Button>
+          
+          <div className="d-flex align-items-center gap-2">
+            <Calendar size={16} className="text-primary" />
+            <span className="fw-bold text-capitalize small">{monthLabel}</span>
+          </div>
+
+          <Button 
+            variant="link" 
+            className="text-white p-2 shadow-none" 
+            onClick={handleNextMonth}
+          >
+            <ChevronRight size={20} />
+          </Button>
+        </Card.Body>
+      </Card>
       
       <Row className="g-4">
-        {/* Left Column: Summary and Balance */}
+        {/* Column: Summary and Balance */}
         <Col xs={12} lg={5}>
           <Card className="bg-transparent border-2 mb-4" style={{ borderColor: summary.netBalance >= 0 ? 'var(--ios-green)' : 'var(--ios-red)' }}>
             <Card.Body className="py-5 px-4">
@@ -86,37 +129,68 @@ const DashboardScreen = () => {
           <Row className="g-3 mb-4">
             <Col xs={6}>
               <Card className="border-0 h-100 bg-ios-secondary">
-                <Card.Body className="p-3 text-center">
-                  <p className="text-uppercase small fw-bold text-ios-green mb-1">Entradas</p>
-                  <p className="h4 fw-bold text-ios-green m-0"><MoneyValue value={summary.incomeTotal} /></p>
+                <Card.Body className="p-3">
+                  <p className="text-uppercase x-small fw-bold text-ios-green mb-1">Entradas</p>
+                  <p className="h5 fw-bold text-ios-green m-0"><MoneyValue value={summary.incomeTotal} /></p>
                 </Card.Body>
               </Card>
             </Col>
             <Col xs={6}>
               <Card className="border-0 h-100 bg-ios-secondary">
-                <Card.Body className="p-3 text-center">
-                  <p className="text-uppercase small fw-bold text-ios-red mb-1">Saídas</p>
-                  <p className="h4 fw-bold text-ios-red m-0"><MoneyValue value={summary.expenseTotal} /></p>
+                <Card.Body className="p-3">
+                  <p className="text-uppercase x-small fw-bold text-ios-red mb-1">Saídas</p>
+                  <p className="h5 fw-bold text-ios-red m-0"><MoneyValue value={summary.expenseTotal} /></p>
                 </Card.Body>
               </Card>
             </Col>
           </Row>
 
-          <h3 className="h5 fw-bold mb-3 px-1 d-md-none">Distribuição</h3>
-          <Card className="bg-ios-dark-gray border-0 p-3 mb-4 d-md-none">
-            <Card.Body className="p-0">
-               {/* Pie Chart content handled below for desktop but visible here for mobile only if we want to change order */}
+          {/* Goal Progress */}
+          <h3 className="h5 fw-bold mb-3 px-1">Meta de Gastos</h3>
+          <Card className="bg-ios-secondary border-0 mb-4">
+            <Card.Body className="p-3">
+              {summary.goalProgress ? (
+                <>
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <span className="small text-ios-gray">Progresso</span>
+                    <span className="small fw-bold" style={{ color: summary.goalProgress.progressRatio > 1 ? 'var(--ios-red)' : 'var(--ios-blue)' }}>
+                      {Math.round(summary.goalProgress.progressRatio * 100)}%
+                    </span>
+                  </div>
+                  <ProgressBar 
+                    now={Math.min(summary.goalProgress.progressRatio * 100, 100)} 
+                    variant={summary.goalProgress.progressRatio > 1 ? 'danger' : 'primary'}
+                    className="bg-dark bg-opacity-25 rounded-pill mb-3"
+                    style={{ height: '8px' }}
+                  />
+                  <div className="d-flex justify-content-between">
+                    <div>
+                      <p className="x-small text-ios-gray mb-0 text-uppercase fw-bold">Gasto</p>
+                      <p className="fw-bold mb-0 small"><MoneyValue value={summary.goalProgress.spentAmount} /></p>
+                    </div>
+                    <div className="text-end">
+                      <p className="x-small text-ios-gray mb-0 text-uppercase fw-bold">Meta</p>
+                      <p className="fw-bold mb-0 small text-ios-gray"><MoneyValue value={summary.goalProgress.targetAmount} /></p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-2 text-ios-gray">
+                  <Target size={24} className="mb-2 opacity-50" />
+                  <p className="small mb-0">Nenhuma meta definida para este mês</p>
+                </div>
+              )}
             </Card.Body>
           </Card>
         </Col>
 
-        {/* Right Column: Charts */}
+        {/* Column: Charts */}
         <Col xs={12} lg={7}>
           <h3 className="h5 fw-bold mb-3 px-1">Evolução Diária</h3>
           <Card className="bg-ios-dark-gray border-0 p-3 mb-4">
             <Card.Body className="p-0">
-              <div style={{ width: '100%', height: '250px', minHeight: '250px' }}>
-                <ResponsiveContainer width="100%" height="100%" debounce={100}>
+              <div style={{ width: '100%', height: '220px' }}>
+                <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={dailyData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
                     <XAxis dataKey="date" tick={{ fill: '#8E8E93', fontSize: 10 }} axisLine={false} tickLine={false} />
@@ -134,38 +208,59 @@ const DashboardScreen = () => {
           <h3 className="h5 fw-bold mb-3 px-1">Distribuição de Gastos</h3>
           <Card className="bg-ios-dark-gray border-0 p-3 mb-5">
             <Card.Body className="p-0">
-              <div style={{ width: '100%', height: '300px', minHeight: '300px' }}>
-                {pieData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%" debounce={100}>
-                    <PieChart>
-                      <Pie
-                        data={pieData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={60}
-                        outerRadius={90}
-                        paddingAngle={5}
-                        dataKey="value"
-                        stroke="none"
-                      >
-                        {pieData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip 
-                        contentStyle={{ backgroundColor: '#1C1C1E', borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }}
-                        itemStyle={{ color: '#fff' }}
-                        formatter={(value: any) => `R$ ${Number(value).toFixed(2)}`} 
-                      />
-                      <Legend verticalAlign="bottom" height={36} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="d-flex align-items-center justify-content-center h-100 text-ios-gray">
-                    Sem despesas neste mês
+              <Row className="align-items-center">
+                <Col xs={12} md={6}>
+                  <div style={{ width: '100%', height: '250px' }}>
+                    {pieData.length > 0 ? (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie
+                            data={pieData}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={60}
+                            outerRadius={80}
+                            paddingAngle={5}
+                            dataKey="value"
+                            stroke="none"
+                          >
+                            {pieData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
+                          </Pie>
+                          <Tooltip 
+                            contentStyle={{ backgroundColor: '#1C1C1E', borderRadius: '12px', border: 'none' }}
+                            itemStyle={{ color: '#fff' }}
+                            formatter={(value: any) => `R$ ${Number(value).toFixed(2)}`} 
+                          />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="d-flex align-items-center justify-content-center h-100 text-ios-gray small">
+                        Sem despesas
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
+                </Col>
+                <Col xs={12} md={6}>
+                  <div className="mt-3 mt-md-0">
+                    {pieData.slice(0, 5).map((item, index) => (
+                      <div key={index} className="d-flex align-items-center justify-content-between mb-2">
+                        <div className="d-flex align-items-center gap-2 overflow-hidden">
+                          <div className="rounded-circle" style={{ width: '10px', height: '10px', backgroundColor: item.color, flexShrink: 0 }}></div>
+                          <span className="small text-white text-truncate">{item.name}</span>
+                        </div>
+                        <span className="small fw-bold text-ios-gray ms-2">{item.percentage.toFixed(1)}%</span>
+                      </div>
+                    ))}
+                    {pieData.length > 5 && (
+                      <div className="text-center mt-2">
+                        <span className="x-small text-ios-gray">+{pieData.length - 5} outras categorias</span>
+                      </div>
+                    )}
+                  </div>
+                </Col>
+              </Row>
             </Card.Body>
           </Card>
         </Col>

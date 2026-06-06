@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Container, Row, Col, Card, Form } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 import { 
   PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip,
   BarChart, Bar, XAxis, YAxis, CartesianGrid
@@ -8,34 +8,105 @@ import { useAppSelector } from '@/store/hooks';
 import { selectCategories } from '@/features/categories/store/categoriesSlice';
 import { selectRecurringTransactions } from '@/features/transactions/store/recurringTransactionsSlice';
 import { projectRecurringTransactions } from '@/shared/utils/projection';
-import { calculateMonthlySummary } from '@/shared/models/finance';
-import { ChevronDown } from 'lucide-react';
+import { calculateSummary } from '@/shared/models/finance';
+import { ChevronDown, Calendar, BarChart3 } from 'lucide-react';
 
 const ReportsScreen = () => {
   const transactions = useAppSelector((state) => state.transactions.items);
   const recurringTransactions = useAppSelector(selectRecurringTransactions);
   const categories = useAppSelector(selectCategories);
 
+  const [periodType, setPeriodType] = useState('month');
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
+
+  const periodOptions = [
+    { label: 'Mês', value: 'month' },
+    { label: '3M', value: 'last3' },
+    { label: '6M', value: 'last6' },
+    { label: '12M', value: 'last12' },
+    { label: 'Ano', value: 'year' },
+    { label: 'Tudo', value: 'all' },
+  ];
 
   const availableMonths = useMemo(() => {
     const months = new Set<string>();
-    months.add(new Date().toISOString().slice(0, 7));
+    const currentMonth = new Date().toISOString().slice(0, 7);
+    months.add(currentMonth);
+    
     transactions.forEach(tx => {
-      months.add(tx.occurredAt.slice(0, 7));
+      if (tx.occurredAt && tx.occurredAt.length >= 7) {
+        months.add(tx.occurredAt.slice(0, 7));
+      }
     });
     return Array.from(months).sort().reverse();
   }, [transactions]);
 
+  const activeMonths = useMemo(() => {
+    const now = new Date();
+    if (periodType === 'month') return [selectedMonth];
+    
+    const months: string[] = [];
+    if (periodType === 'all') {
+      const allMonths = new Set<string>();
+      transactions.forEach(tx => {
+        if (tx.occurredAt && tx.occurredAt.length >= 7) {
+          allMonths.add(tx.occurredAt.slice(0, 7));
+        }
+      });
+      allMonths.add(now.toISOString().slice(0, 7));
+      return Array.from(allMonths);
+    }
+
+    let count = 0;
+    if (periodType === 'last3') count = 3;
+    else if (periodType === 'last6') count = 6;
+    else if (periodType === 'last12') count = 12;
+
+    if (count > 0) {
+      for (let i = 0; i < count; i++) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const year = d.getFullYear();
+        const month = (d.getMonth() + 1).toString().padStart(2, '0');
+        months.push(`${year}-${month}`);
+      }
+      return months;
+    }
+
+    if (periodType === 'year') {
+      const year = now.getFullYear();
+      for (let m = 0; m <= now.getMonth(); m++) {
+        months.push(`${year}-${(m + 1).toString().padStart(2, '0')}`);
+      }
+      return months;
+    }
+    
+    return [selectedMonth];
+  }, [periodType, selectedMonth, transactions]);
+
   const allTransactions = useMemo(() => {
-    const actual = transactions.filter(tx => tx.occurredAt.startsWith(selectedMonth));
-    const projected = projectRecurringTransactions(recurringTransactions, selectedMonth);
-    return [...actual, ...projected];
-  }, [transactions, recurringTransactions, selectedMonth]);
+    try {
+      const actual = transactions.filter(tx => tx.occurredAt && activeMonths.some(m => tx.occurredAt.startsWith(m)));
+      const projected = activeMonths.flatMap(m => {
+        try {
+          return projectRecurringTransactions(recurringTransactions, m);
+        } catch (e) {
+          console.error('Error projecting for month', m, e);
+          return [];
+        }
+      });
+      return [...actual, ...projected];
+    } catch (e) {
+      console.error('Error filtering transactions', e);
+      return [];
+    }
+  }, [transactions, recurringTransactions, activeMonths]);
 
   const summary = useMemo(() => {
-    return calculateMonthlySummary(selectedMonth, allTransactions);
-  }, [selectedMonth, allTransactions]);
+    const label = periodType === 'month' 
+      ? new Date(selectedMonth + '-02').toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+      : periodOptions.find(o => o.value === periodType)?.label || '';
+    return calculateSummary(label, allTransactions);
+  }, [periodType, selectedMonth, allTransactions]);
 
   const pieData = useMemo(() => {
     return summary.topCategories.map(item => {
@@ -45,7 +116,7 @@ const ReportsScreen = () => {
         value: item.total,
         color: category?.colorToken || '#8E8E93'
       };
-    });
+    }).filter(item => item.value > 0);
   }, [summary, categories]);
 
   const barData = [
@@ -55,42 +126,64 @@ const ReportsScreen = () => {
 
   return (
     <Container className="mobile-container p-4 pb-5">
-      <div className="pt-4 mb-4">
+      <div className="pt-4 mb-4 d-flex justify-content-between align-items-center">
         <h1 className="h1 fw-bold m-0">Relatórios</h1>
       </div>
 
-      <Form.Group className="mb-4">
-        <Form.Label className="small fw-bold text-ios-gray mb-1">MÊS DE REFERÊNCIA</Form.Label>
-        <div className="position-relative">
-          <Form.Select 
-            value={selectedMonth} 
-            onChange={(e) => setSelectedMonth(e.target.value)}
-            className="h-14 fw-bold bg-ios-secondary border-0"
+      {/* Pill Selector */}
+      <div className="d-flex gap-2 mb-4 overflow-x-auto pb-2 no-scrollbar" style={{ WebkitOverflowScrolling: 'touch' }}>
+        {periodOptions.map((opt) => (
+          <Button
+            key={opt.value}
+            variant={periodType === opt.value ? 'primary' : 'ios-secondary'}
+            className={`rounded-pill px-3 py-1 border-0 fw-bold small text-nowrap`}
+            onClick={() => setPeriodType(opt.value)}
+            style={{ 
+              fontSize: '0.8rem',
+              backgroundColor: periodType === opt.value ? 'var(--ios-blue)' : '#2C2C2E',
+              color: periodType === opt.value ? 'white' : '#8E8E93'
+            }}
           >
-            {availableMonths.map((month) => (
-              <option key={month} value={month}>
-                {new Date(month + '-02').toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
-              </option>
-            ))}
-          </Form.Select>
-          <ChevronDown size={18} className="position-absolute text-ios-gray" style={{ right: '1rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
-        </div>
-      </Form.Group>
+            {opt.label}
+          </Button>
+        ))}
+      </div>
+
+      {periodType === 'month' && (
+        <Form.Group className="mb-4">
+          <div className="position-relative">
+            <Form.Select 
+              value={selectedMonth} 
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="h-12 fw-bold bg-ios-secondary border-0 text-white rounded-3 ps-4"
+              style={{ appearance: 'none' }}
+            >
+              {availableMonths.map((month) => (
+                <option key={month} value={month}>
+                  {new Date(month + '-02').toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
+                </option>
+              ))}
+            </Form.Select>
+            <Calendar size={16} className="position-absolute text-ios-gray" style={{ left: '1rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+            <ChevronDown size={16} className="position-absolute text-ios-gray" style={{ right: '1rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+          </div>
+        </Form.Group>
+      )}
 
       <Row className="g-3 mb-4">
         <Col xs={6}>
-          <Card className="border-0 h-100 bg-ios-secondary">
+          <Card className="border-0 h-100 bg-ios-secondary shadow-sm rounded-4">
             <Card.Body className="p-3 text-center">
-              <p className="text-uppercase small fw-bold text-ios-green mb-1">Entradas</p>
-              <p className="h4 fw-bold text-ios-green m-0">R$ {summary.incomeTotal.toFixed(2)}</p>
+              <p className="text-uppercase extra-small fw-bold text-ios-green mb-1 opacity-75">Entradas</p>
+              <p className="h5 fw-bold text-ios-green m-0">R$ {summary.incomeTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
             </Card.Body>
           </Card>
         </Col>
         <Col xs={6}>
-          <Card className="border-0 h-100 bg-ios-secondary">
+          <Card className="border-0 h-100 bg-ios-secondary shadow-sm rounded-4">
             <Card.Body className="p-3 text-center">
-              <p className="text-uppercase small fw-bold text-ios-red mb-1">Saídas</p>
-              <p className="h4 fw-bold text-ios-red m-0">R$ {summary.expenseTotal.toFixed(2)}</p>
+              <p className="text-uppercase extra-small fw-bold text-ios-red mb-1 opacity-75">Saídas</p>
+              <p className="h5 fw-bold text-ios-red m-0">R$ {summary.expenseTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
             </Card.Body>
           </Card>
         </Col>
@@ -98,18 +191,18 @@ const ReportsScreen = () => {
 
       <div className="mb-5">
         <h3 className="h5 fw-bold mb-3 px-1">Distribuição</h3>
-        <Card className="bg-ios-dark-gray border-0 p-3">
+        <Card className="bg-ios-dark-gray border-0 p-3 shadow-none rounded-4">
           <Card.Body className="p-0 overflow-visible">
-            <div style={{ width: '100%', height: '300px', minHeight: '300px' }}>
+            <div style={{ width: '100%', height: '400px', minHeight: '400px' }}>
               {pieData.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%" debounce={100}>
+                <ResponsiveContainer width="100%" height="100%" debounce={50}>
                   <PieChart>
                     <Pie
                       data={pieData}
                       cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={90}
+                      cy="45%"
+                      innerRadius={70}
+                      outerRadius={100}
                       paddingAngle={5}
                       dataKey="value"
                       stroke="none"
@@ -120,15 +213,25 @@ const ReportsScreen = () => {
                     </Pie>
                     <Tooltip 
                       contentStyle={{ backgroundColor: '#1C1C1E', borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }}
-                      itemStyle={{ color: '#fff' }}
-                      formatter={(value: any) => `R$ ${Number(value).toFixed(2)}`} 
+                      itemStyle={{ color: '#fff', fontSize: '12px' }}
+                      formatter={(value: any) => `R$ ${Number(value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`} 
                     />
-                    <Legend verticalAlign="bottom" height={36} />
+                    <Legend 
+                      verticalAlign="bottom" 
+                      iconType="circle"
+                      iconSize={10}
+                      wrapperStyle={{ 
+                        paddingTop: '30px',
+                        fontSize: '11px',
+                        color: '#8E8E93'
+                      }}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="d-flex align-items-center justify-content-center h-100 text-ios-gray">
-                  Sem despesas neste mês
+                <div className="d-flex flex-column align-items-center justify-content-center h-100 text-ios-gray opacity-50">
+                  <BarChart3 size={48} className="mb-2" />
+                  <span>Sem despesas neste período</span>
                 </div>
               )}
             </div>
@@ -138,20 +241,20 @@ const ReportsScreen = () => {
 
       <div className="mb-5">
         <h3 className="h5 fw-bold mb-3 px-1">Fluxo de Caixa</h3>
-        <Card className="bg-ios-dark-gray border-0 p-3">
+        <Card className="bg-ios-dark-gray border-0 p-3 shadow-none rounded-4">
           <Card.Body className="p-0">
-            <div style={{ width: '100%', height: '300px', minHeight: '300px' }}>
-              <ResponsiveContainer width="100%" height="100%" debounce={100}>
-                <BarChart data={barData}>
+            <div style={{ width: '100%', height: '250px', minHeight: '250px' }}>
+              <ResponsiveContainer width="100%" height="100%" debounce={50}>
+                <BarChart data={barData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#8E8E93', fontSize: 12 }} />
-                  <YAxis hide />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#8E8E93', fontSize: 10 }} />
                   <Tooltip 
                     contentStyle={{ backgroundColor: '#1C1C1E', borderRadius: '12px', border: 'none' }}
-                    itemStyle={{ color: '#fff' }}
+                    itemStyle={{ color: '#fff', fontSize: '12px' }}
                     cursor={{ fill: '#ffffff05' }}
                   />
-                  <Bar dataKey="valor" radius={[10, 10, 0, 0]}>
+                  <Bar dataKey="valor" radius={[6, 6, 0, 0]} barSize={40}>
                     {barData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}

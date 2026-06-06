@@ -106,14 +106,12 @@ export interface UserProfile {
   }
 }
 
-export function calculateMonthlySummary(
-  monthRef: string,
+export function calculateSummary(
+  label: string,
   transactions: Transaction[],
   goal?: MonthlyGoal
 ): MonthlySummary {
-  const active = transactions.filter(
-    (transaction) => !transaction.deletedAt && transaction.occurredAt.startsWith(monthRef)
-  );
+  const active = transactions.filter((transaction) => !transaction.deletedAt);
   const incomeTotal = active
     .filter((transaction) => transaction.type === "income")
     .reduce((sum, transaction) => sum + transaction.amount, 0);
@@ -141,13 +139,24 @@ export function calculateMonthlySummary(
     : undefined;
 
   return {
-    monthRef,
+    monthRef: label,
     incomeTotal,
     expenseTotal,
     netBalance: incomeTotal - expenseTotal,
     transactionCount: active.length,
-    topCategories: [...categoryTotals.entries()].map(([categoryId, total]) => ({ categoryId, total })),
+    topCategories: [...categoryTotals.entries()]
+      .map(([categoryId, total]) => ({ categoryId, total }))
+      .sort((a, b) => b.total - a.total),
     goalProgress,
     lastComputedAt: new Date().toISOString()
   };
+}
+
+export function calculateMonthlySummary(
+  monthRef: string,
+  transactions: Transaction[],
+  goal?: MonthlyGoal
+): MonthlySummary {
+  const filtered = transactions.filter((tx) => tx.occurredAt.startsWith(monthRef));
+  return calculateSummary(monthRef, filtered, goal);
 }
