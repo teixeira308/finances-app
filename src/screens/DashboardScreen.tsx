@@ -1,10 +1,11 @@
 import React, { useMemo } from 'react';
-import { Container, Row, Col, Card, Button, ProgressBar } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import { 
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
   AreaChart, Area, XAxis, YAxis, CartesianGrid
 } from 'recharts';
-import { ChevronLeft, ChevronRight, Calendar, Target, TrendingUp, AlertCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, BarChart3, ArrowRight } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { calculateMonthlySummary } from '@/shared/models/finance';
 import { selectCategories } from '@/features/categories/store/categoriesSlice';
@@ -15,6 +16,7 @@ import { MoneyValue } from '@/shared/components/MoneyValue';
 import { PrivacyToggle } from '@/shared/components/PrivacyToggle';
 
 const DashboardScreen = () => {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const monthRef = useAppSelector((state) => state.dashboard.selectedMonth);
   const transactions = useAppSelector((state) => state.transactions.items);
@@ -144,44 +146,6 @@ const DashboardScreen = () => {
               </Card>
             </Col>
           </Row>
-
-          {/* Goal Progress */}
-          <h3 className="h5 fw-bold mb-3 px-1">Meta de Gastos</h3>
-          <Card className="bg-ios-secondary border-0 mb-4">
-            <Card.Body className="p-3">
-              {summary.goalProgress ? (
-                <>
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <span className="small text-ios-gray">Progresso</span>
-                    <span className="small fw-bold" style={{ color: summary.goalProgress.progressRatio > 1 ? 'var(--ios-red)' : 'var(--ios-blue)' }}>
-                      {Math.round(summary.goalProgress.progressRatio * 100)}%
-                    </span>
-                  </div>
-                  <ProgressBar 
-                    now={Math.min(summary.goalProgress.progressRatio * 100, 100)} 
-                    variant={summary.goalProgress.progressRatio > 1 ? 'danger' : 'primary'}
-                    className="bg-dark bg-opacity-25 rounded-pill mb-3"
-                    style={{ height: '8px' }}
-                  />
-                  <div className="d-flex justify-content-between">
-                    <div>
-                      <p className="x-small text-ios-gray mb-0 text-uppercase fw-bold">Gasto</p>
-                      <p className="fw-bold mb-0 small"><MoneyValue value={summary.goalProgress.spentAmount} /></p>
-                    </div>
-                    <div className="text-end">
-                      <p className="x-small text-ios-gray mb-0 text-uppercase fw-bold">Meta</p>
-                      <p className="fw-bold mb-0 small text-ios-gray"><MoneyValue value={summary.goalProgress.targetAmount} /></p>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div className="text-center py-2 text-ios-gray">
-                  <Target size={24} className="mb-2 opacity-50" />
-                  <p className="small mb-0">Nenhuma meta definida para este mês</p>
-                </div>
-              )}
-            </Card.Body>
-          </Card>
         </Col>
 
         {/* Column: Charts */}
@@ -206,7 +170,7 @@ const DashboardScreen = () => {
           </Card>
 
           <h3 className="h5 fw-bold mb-3 px-1">Distribuição de Gastos</h3>
-          <Card className="bg-ios-dark-gray border-0 p-3 mb-5">
+          <Card className="bg-ios-dark-gray border-0 p-3 mb-4">
             <Card.Body className="p-0">
               <Row className="align-items-center">
                 <Col xs={12} md={6}>
@@ -263,6 +227,16 @@ const DashboardScreen = () => {
               </Row>
             </Card.Body>
           </Card>
+
+          <Button 
+            variant="ios-primary" 
+            className="w-100 py-3 rounded-4 fw-bold d-flex align-items-center justify-content-center gap-2 mb-5"
+            onClick={() => navigate('/reports')}
+          >
+            <BarChart3 size={20} />
+            Ver Relatório Completo
+            <ArrowRight size={18} />
+          </Button>
         </Col>
       </Row>
     </Container>

@@ -7,7 +7,7 @@ const Navigation = () => {
   const location = useLocation();
 
   const navItemsLeft = [
-    { label: 'Bem-vindo(a)', path: '/', icon: LayoutDashboard },
+    { label: 'Dashboard', path: '/', icon: LayoutDashboard },
     { label: 'Extrato', path: '/extrato', icon: ListOrdered },
   ];
 
@@ -18,13 +18,16 @@ const Navigation = () => {
 
   return (
     <div className="fixed-bottom d-flex justify-content-center pointer-events-none">
-      <div className="w-100 bottom-nav d-flex align-items-center justify-content-between px-3 pb-3 pointer-events-auto position-relative" style={{ maxWidth: '448px' }}>
+      <div 
+        className="w-100 bottom-nav d-flex align-items-center px-3 pb-3 pointer-events-auto position-relative" 
+        style={{ maxWidth: '448px', backgroundColor: 'black' }}
+      >
         
-        {/* Left Side */}
-        <div className="d-flex flex-grow-1 justify-content-around">
+        {/* Left Side (2 items) */}
+        <div className="d-flex flex-grow-1 justify-content-around" style={{ flexBasis: '40%' }}>
           {navItemsLeft.map((item) => {
             const isActive = location.pathname === item.path;
-            const Icon = item.icon;
+            const Icon = item.icon!;
             return (
               <button
                 key={item.path}
@@ -33,10 +36,10 @@ const Navigation = () => {
                 style={{ background: 'none' }}
               >
                 <div style={{ color: isActive ? 'var(--ios-blue)' : 'var(--ios-gray)' }}>
-                  <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
+                  <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
                 </div>
                 <span style={{ 
-                  fontSize: '10px', 
+                  fontSize: '9px', 
                   fontWeight: 500, 
                   color: isActive ? 'var(--ios-blue)' : 'var(--ios-gray)' 
                 }}>
@@ -47,28 +50,28 @@ const Navigation = () => {
           })}
         </div>
 
-        {/* Central Button */}
-        <div className="position-relative" style={{ top: '-20px' }}>
+        {/* Central Button - Perfectly Centered */}
+        <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', top: '-25px' }}>
           <button
             onClick={() => navigate('/new-transaction')}
             className="btn rounded-circle d-flex align-items-center justify-content-center shadow"
             style={{ 
-              width: '64px', 
-              height: '64px', 
+              width: '56px', 
+              height: '56px', 
               backgroundColor: 'var(--ios-blue)', 
               color: 'white',
               border: 'none'
             }}
           >
-            <Plus size={32} strokeWidth={3} />
+            <Plus size={28} strokeWidth={3} />
           </button>
         </div>
 
-        {/* Right Side */}
-        <div className="d-flex flex-grow-1 justify-content-around">
+        {/* Right Side (2 items) */}
+        <div className="d-flex flex-grow-1 justify-content-around" style={{ flexBasis: '40%' }}>
           {navItemsRight.map((item) => {
             const isActive = location.pathname === item.path;
-            const Icon = item.icon;
+            const Icon = item.icon!;
             return (
               <button
                 key={item.path}
@@ -77,10 +80,10 @@ const Navigation = () => {
                 style={{ background: 'none' }}
               >
                 <div style={{ color: isActive ? 'var(--ios-blue)' : 'var(--ios-gray)' }}>
-                  <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
+                  <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
                 </div>
                 <span style={{ 
-                  fontSize: '10px', 
+                  fontSize: '9px', 
                   fontWeight: 500, 
                   color: isActive ? 'var(--ios-blue)' : 'var(--ios-gray)' 
                 }}>
