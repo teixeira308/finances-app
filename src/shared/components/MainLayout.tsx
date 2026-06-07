@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Sidebar from '../../navigation/Sidebar';
 import Navigation from '../../navigation';
+import { WorkspaceSwitcher } from '@/features/workspaces/components/WorkspaceSwitcher';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -23,6 +24,14 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           transition: 'margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
         }}
       >
+        {/* Top bar with Switcher */}
+        <div 
+          className="d-flex align-items-center justify-content-end px-4 py-3 sticky-top bg-black bg-opacity-80 backdrop-blur"
+          style={{ zIndex: 1020, backdropFilter: 'blur(10px)' }}
+        >
+          <WorkspaceSwitcher />
+        </div>
+
         {/* Dynamic margin for desktop */}
         <style dangerouslySetInnerHTML={{ __html: `
           @media (min-width: 768px) {

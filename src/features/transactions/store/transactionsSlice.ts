@@ -14,7 +14,7 @@ const initialState: TransactionsState = {
   items: []
 };
 
-export const bootstrapTransactions = createAsyncThunk("transactions/bootstrap", async () => listTransactions());
+export const bootstrapTransactions = createAsyncThunk("transactions/bootstrap", async (workspaceId: string) => listTransactions(workspaceId));
 
 export const deleteTransaction = createAsyncThunk(
   "transactions/delete",
@@ -42,6 +42,14 @@ export const createTransaction = createAsyncThunk(
   }
 );
 
+export const createPurchase = createAsyncThunk(
+  "transactions/createPurchase",
+  async (transactions: Transaction[]) => {
+    const saved = await Promise.all(transactions.map(tx => saveTransaction(tx)));
+    return saved;
+  }
+);
+
 const slice = createSlice({
   name: "transactions",
   initialState,
@@ -60,6 +68,10 @@ const slice = createSlice({
     });
     builder.addCase(createTransaction.rejected, (state, action) => {
       state.error = action.error.message;
+    });
+    builder.addCase(createPurchase.fulfilled, (state, action) => {
+      state.items = [...action.payload, ...state.items];
+      state.error = undefined;
     });
     builder.addCase(deleteTransaction.fulfilled, (state, action) => {
       state.items = state.items.filter(item => item.id !== action.payload);

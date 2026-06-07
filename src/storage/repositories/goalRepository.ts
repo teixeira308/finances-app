@@ -12,12 +12,16 @@ import type { MonthlyGoal } from '@/shared/models/finance';
 const COLLECTION_NAME = 'goals';
 
 export const goalRepository = {
-  async list() {
+  async list(workspaceId: string) {
     const user = auth.currentUser;
     if (!user) return [];
 
     try {
-      const q = query(collection(db, COLLECTION_NAME), where('userId', '==', user.uid));
+      const q = query(
+        collection(db, COLLECTION_NAME), 
+        where('userId', '==', user.uid),
+        where('workspaceId', '==', workspaceId)
+      );
       const querySnapshot = await getDocs(q);
       return querySnapshot.docs.map(doc => doc.data() as MonthlyGoal);
     } catch (error) {

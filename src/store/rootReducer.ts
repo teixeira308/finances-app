@@ -7,6 +7,7 @@ import { reportsReducer } from "@/features/reports/store/reportsSlice";
 import { goalsReducer } from "@/features/settings/store/goalsSlice";
 import { transactionsReducer } from "@/features/transactions/store/transactionsSlice";
 import { recurringTransactionsReducer } from "@/features/transactions/store/recurringTransactionsSlice";
+import { workspaceReducer } from "@/features/workspaces/store/workspaceSlice";
 
 export const rootReducer = combineReducers({
   transactions: transactionsReducer,
@@ -15,7 +16,8 @@ export const rootReducer = combineReducers({
   reports: reportsReducer,
   categories: categoriesReducer,
   goals: goalsReducer,
-  onboarding: onboardingReducer
+  onboarding: onboardingReducer,
+  workspaces: workspaceReducer
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

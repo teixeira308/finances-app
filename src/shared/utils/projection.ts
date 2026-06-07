@@ -100,6 +100,8 @@ export function projectRecurringTransactions(
 function createProjectedTransaction(rt: RecurringTransaction, date: Date): Transaction {
   return {
     id: `projected-${rt.id}-${date.toISOString()}`,
+    userId: rt.userId,
+    workspaceId: rt.workspaceId,
     type: rt.type,
     amount: rt.amount,
     categoryId: rt.categoryId,

@@ -2,14 +2,38 @@ export type TransactionType = "income" | "expense";
 export type SyncStatus = "local_only" | "pending_sync" | "synced" | "sync_conflict";
 export type RecurrenceType = "weekly" | "monthly" | "yearly";
 export type BusinessDayConfig = 'first' | 'last' | 'fifth';
+export type WorkspaceType = "ACCOUNT" | "CREDIT_CARD";
+
+export interface FinancialWorkspace {
+  id: string;
+  userId: string;
+  name: string;
+  type: WorkspaceType;
+  metadata?: {
+    limit?: number;
+    closingDay?: number;
+    dueDay?: number;
+    color?: string;
+    icon?: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
 
 export interface Transaction {
   id: string;
+  userId: string;
+  workspaceId: string;
   type: TransactionType;
   amount: number;
   categoryId: string;
   occurredAt: string;
   note?: string;
+  installmentInfo?: {
+    current: number;
+    total: number;
+    purchaseId: string;
+  };
   createdAt: string;
   updatedAt: string;
   syncStatus: SyncStatus;
@@ -18,6 +42,8 @@ export interface Transaction {
 
 export interface RecurringTransaction {
   id: string;
+  userId: string;
+  workspaceId: string;
   name: string;
   type: TransactionType;
   amount: number;
@@ -35,6 +61,8 @@ export interface RecurringTransaction {
 
 export interface Category {
   id: string;
+  userId: string;
+  workspaceId: string;
   name: string;
   type: TransactionType;
   kind: "default" | "custom";
@@ -47,6 +75,8 @@ export interface Category {
 
 export interface MonthlyGoal {
   id: string;
+  userId: string;
+  workspaceId: string;
   monthRef: string;
   targetAmount: number;
   scope: "expense_total";

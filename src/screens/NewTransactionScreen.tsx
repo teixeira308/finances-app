@@ -3,15 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import { Container, Card, Button, Form, Nav, Badge, Row, Col } from 'react-bootstrap';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectCategories, bootstrapCategories } from '@/features/categories/store/categoriesSlice';
-import { createTransaction, bootstrapTransactions } from '@/features/transactions/store/transactionsSlice';
+import { createTransaction, createPurchase, bootstrapTransactions } from '@/features/transactions/store/transactionsSlice';
 import { createRecurringTransaction } from '@/features/transactions/store/recurringTransactionsSlice';
 import { ChevronDown, ArrowLeft, Calendar, Info, Plus } from 'lucide-react';
 import { TransactionType, RecurrenceType, BusinessDayConfig } from '@/shared/models/finance';
+import { useWorkspaces } from '@/features/workspaces/hooks/useWorkspaces';
+import { projectInstallments } from '@/shared/utils/installments';
 
 const NewTransactionScreen = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const categories = useAppSelector(selectCategories);
+  const { activeWorkspace, activeWorkspaceId } = useWorkspaces();
   
   // Basic Info
   const [txType, setTxType] = useState('expense');
@@ -20,6 +23,7 @@ const NewTransactionScreen = () => {
   const [categoryId, setCategoryId] = useState('');
   const [note, setNote] = useState('');
   const [occurredAt, setOccurredAt] = useState(new Date().toISOString().slice(0, 16));
+  const [installments, setInstallments] = useState(1);
 
   // Recurring Info
   const [isRecurring, setIsRecurring] = useState(false);
@@ -67,11 +71,28 @@ const NewTransactionScreen = () => {
       setTxError('Selecione uma categoria');
       return;
     }
+    if (!activeWorkspaceId) {
+      setTxError('Espaço financeiro não identificado');
+      return;
+    }
 
     setIsLoading(true);
     try {
-      if (!isRecurring) {
+      if (activeWorkspace?.type === 'CREDIT_CARD' && installments > 1) {
+        const purchaseTransactions = projectInstallments({
+          userId: '', // set by repository
+          workspaceId: activeWorkspaceId,
+          type: 'expense',
+          amount: rawAmount / installments,
+          categoryId,
+          occurredAt: new Date(occurredAt).toISOString(),
+          note: note || 'Compra Parcelada'
+        }, installments);
+        await dispatch(createPurchase(purchaseTransactions)).unwrap();
+      } else if (!isRecurring) {
         await dispatch(createTransaction({
+          userId: '',
+          workspaceId: activeWorkspaceId,
           type: txType as TransactionType,
           amount: rawAmount,
           categoryId,
@@ -80,6 +101,8 @@ const NewTransactionScreen = () => {
         })).unwrap();
       } else {
         await dispatch(createRecurringTransaction({
+          userId: '',
+          workspaceId: activeWorkspaceId,
           name: note || 'Transação Recorrente',
           type: txType as TransactionType,
           amount: rawAmount,
@@ -94,7 +117,7 @@ const NewTransactionScreen = () => {
         })).unwrap();
       }
 
-      dispatch(bootstrapTransactions());
+      dispatch(bootstrapTransactions(activeWorkspaceId));
       navigate('/');
     } catch (err) {
       setTxError(err instanceof Error ? err.message : 'Erro ao salvar');
@@ -126,9 +149,24 @@ const NewTransactionScreen = () => {
 
             <Form className="space-y-4">
               <Form.Group className="mb-4">
-                <Form.Label className="small fw-bold text-ios-gray mb-1 text-uppercase">Valor</Form.Label>
+                <Form.Label className="small fw-bold text-ios-gray mb-1 text-uppercase">Valor Total</Form.Label>
                 <Form.Control type="text" inputMode="decimal" value={displayAmount} onChange={handleAmountChange} autoFocus className="text-center py-4 border-0 bg-transparent fs-1 fw-bold text-white shadow-none" style={{ fontSize: '3rem' }} />
               </Form.Group>
+
+              {activeWorkspace?.type === 'CREDIT_CARD' && (
+                <Form.Group className="mb-4">
+                  <Form.Label className="small fw-bold text-ios-gray mb-1 text-uppercase">Parcelas</Form.Label>
+                  <Form.Select 
+                    value={installments} 
+                    onChange={(e) => setInstallments(parseInt(e.target.value))}
+                    className="py-3 fw-bold border-0 bg-ios-secondary text-white"
+                  >
+                    {[1,2,3,4,5,6,7,8,9,10,11,12].map(n => (
+                      <option key={n} value={n}>{n}x {n > 1 ? `de R$ ${(rawAmount/n).toLocaleString('pt-BR', {minimumFractionDigits: 2})}` : ''}</option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              )}
 
               <Form.Group className="mb-4">
                 <div className="d-flex justify-content-between align-items-center mb-1">
@@ -146,7 +184,56 @@ const NewTransactionScreen = () => {
                 </div>
               </Form.Group>
 
-              {/* ... (rest of the form stays same) ... */}
+              <Form.Group className="mb-4">
+                <Form.Label className="small fw-bold text-ios-gray mb-1 text-uppercase">Data</Form.Label>
+                <Form.Control 
+                  type="datetime-local" 
+                  value={occurredAt} 
+                  onChange={(e) => setOccurredAt(e.target.value)}
+                  className="py-3 fw-bold border-0 bg-ios-secondary text-white"
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-4">
+                <Form.Label className="small fw-bold text-ios-gray mb-1 text-uppercase">Observação</Form.Label>
+                <Form.Control 
+                  as="textarea" 
+                  rows={2}
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder="Ex: Almoço com a família"
+                  className="py-3 border-0 bg-ios-secondary text-white shadow-none"
+                />
+              </Form.Group>
+
+              {activeWorkspace?.type === 'ACCOUNT' && (
+                <div className="mb-4">
+                  <Button 
+                    variant="link" 
+                    className="p-0 text-ios-gray text-decoration-none d-flex align-items-center gap-2"
+                    onClick={() => setIsRecurring(!isRecurring)}
+                  >
+                    <div className={`p-1 rounded-circle border ${isRecurring ? 'bg-primary border-primary' : 'border-ios-gray'}`}>
+                      {isRecurring && <Plus size={12} className="text-white" />}
+                    </div>
+                    <span>Esta é uma transação recorrente</span>
+                  </Button>
+                </div>
+              )}
+
+              {txError && (
+                <div className="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger small py-2 mb-4">
+                  {txError}
+                </div>
+              )}
+
+              <Button 
+                onClick={handleSaveTransaction}
+                disabled={isLoading}
+                className="btn btn-primary w-100 py-3 rounded-3 fw-bold fs-5 shadow-lg border-0 mt-4"
+              >
+                {isLoading ? 'Salvando...' : 'Salvar Transação'}
+              </Button>
             </Form>
           </Card.Body>
         </Card>
