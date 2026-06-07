@@ -22,20 +22,19 @@ export const useWorkspaces = () => {
   const loading = useAppSelector(selectWorkspaceLoading);
 
   useEffect(() => {
-    if (user) {
-      const fetchWorkspaces = async () => {
-        dispatch(setLoading(true));
-        try {
-          const list = await workspaceRepository.findAllByUserId(user.uid);
-          dispatch(setWorkspaces(list));
-        } catch (err) {
-          dispatch(setError(err instanceof Error ? err.message : "Erro ao carregar workspaces"));
-        } finally {
-          dispatch(setLoading(false));
-        }
-      };
-      fetchWorkspaces();
-    }
+    if (!user) return;
+
+    dispatch(setLoading(true));
+    
+    const unsubscribe = workspaceRepository.subscribeToWorkspacesByUserId(
+      user.uid,
+      (workspaces) => {
+        dispatch(setWorkspaces(workspaces));
+        dispatch(setLoading(false));
+      }
+    );
+
+    return () => unsubscribe();
   }, [user, dispatch]);
 
   const changeWorkspace = (id: string) => {

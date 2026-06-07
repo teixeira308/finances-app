@@ -9,7 +9,7 @@ import {
   query, 
   where,
   orderBy,
-  serverTimestamp 
+  onSnapshot
 } from "firebase/firestore";
 import { db } from "@/shared/services/firebase";
 import type { FinancialWorkspace } from "@/shared/models/finance";
@@ -31,6 +31,18 @@ export const workspaceRepository = {
     );
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => doc.data() as FinancialWorkspace);
+  },
+
+  subscribeToWorkspacesByUserId(userId: string, callback: (workspaces: FinancialWorkspace[]) => void) {
+    const q = query(
+      collection(db, COLLECTION_NAME),
+      where("userId", "==", userId),
+      orderBy("createdAt", "asc")
+    );
+    return onSnapshot(q, (snapshot) => {
+      const workspaces = snapshot.docs.map(doc => doc.data() as FinancialWorkspace);
+      callback(workspaces);
+    });
   },
 
   async save(workspace: FinancialWorkspace): Promise<void> {
