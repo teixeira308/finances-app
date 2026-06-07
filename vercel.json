@@ -32,7 +32,19 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!manifest.json|assets/|favicon.png).*)",
+      "source": "/manifest.json",
+      "destination": "/manifest.json"
+    },
+    {
+      "source": "/assets/(.*)",
+      "destination": "/assets/$1"
+    },
+    {
+      "source": "/favicon.png",
+      "destination": "/favicon.png"
+    },
+    {
+      "source": "/((?!api/|.*\\.).*)",
       "destination": "/index.html"
     }
   ]
