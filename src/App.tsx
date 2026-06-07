@@ -14,7 +14,7 @@ import ReportsScreen from './screens/ReportsScreen';
 import FullReportsScreen from './screens/FullReportsScreen';
 import { MainLayout } from './shared/components/MainLayout';
 import { ScrollToTop } from './shared/components/ScrollToTop';
-import { useAppDispatch } from './store/hooks';
+import { useAppDispatch, useAppSelector } from './store/hooks';
 import { bootstrapTransactions } from './features/transactions/store/transactionsSlice';
 import { bootstrapCategories } from './features/categories/store/categoriesSlice';
 import { bootstrapRecurringTransactions } from './features/transactions/store/recurringTransactionsSlice';
@@ -22,19 +22,25 @@ import { bootstrapOnboarding } from './features/onboarding/store/onboardingSlice
 import { useAuth } from './features/auth/components/AuthProvider';
 import { OnboardingGuard } from './navigation/OnboardingGuard';
 import { OnboardingScreen } from './features/onboarding/screens/OnboardingScreen';
+import { WorkspaceGuard } from './navigation/WorkspaceGuard';
+import { WorkspaceSelectionScreen } from './features/workspaces/screens/WorkspaceSelectionScreen';
+import { selectActiveWorkspaceId } from './features/workspaces/store/workspaceSlice';
+import { InvoicesScreen } from './features/workspaces/screens/InvoicesScreen';
+import { InstallmentsScreen } from './features/workspaces/screens/InstallmentsScreen';
 
 function App() {
   const dispatch = useAppDispatch();
   const { user, loading } = useAuth();
+  const activeWorkspaceId = useAppSelector(selectActiveWorkspaceId);
 
   useEffect(() => {
-    if (user) {
-      dispatch(bootstrapTransactions());
-      dispatch(bootstrapCategories());
-      dispatch(bootstrapRecurringTransactions());
+    if (user && activeWorkspaceId) {
+      dispatch(bootstrapTransactions(activeWorkspaceId));
+      dispatch(bootstrapCategories(activeWorkspaceId));
+      dispatch(bootstrapRecurringTransactions(activeWorkspaceId));
       dispatch(bootstrapOnboarding());
     }
-  }, [dispatch, user]);
+  }, [dispatch, user, activeWorkspaceId]);
 
   if (loading) {
     return (
@@ -53,23 +59,27 @@ function App() {
       <ScrollToTop />
       <Routes>
         <Route path="/onboarding" element={<OnboardingScreen />} />
-        <Route path="/full-reports" element={<FullReportsScreen />} />
+        <Route path="/workspaces" element={<WorkspaceSelectionScreen />} />
         <Route path="*" element={
           <OnboardingGuard>
-            <MainLayout>
-              <Routes>
-                <Route path="/" element={<DashboardScreen />} />
-                <Route path="/extrato" element={<ExtractScreen />} />
-                <Route path="/new-transaction" element={<NewTransactionScreen />} />
-                <Route path="/categories" element={<CategoriesScreen />} />
-                <Route path="/reports" element={<ReportsScreen />} />
-                <Route path="/settings" element={<SettingsScreen />} />
-                <Route path="/profile" element={<ProfileScreen />} />
-                <Route path="/security" element={<SecurityScreen />} />
-                <Route path="/privacy" element={<PrivacyScreen />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </MainLayout>
+            <WorkspaceGuard>
+              <MainLayout>
+                <Routes>
+                  <Route path="/" element={<DashboardScreen />} />
+                  <Route path="/extrato" element={<ExtractScreen />} />
+                  <Route path="/new-transaction" element={<NewTransactionScreen />} />
+                  <Route path="/categories" element={<CategoriesScreen />} />
+                  <Route path="/reports" element={<ReportsScreen />} />
+                  <Route path="/faturas" element={<InvoicesScreen />} />
+                  <Route path="/parcelamentos" element={<InstallmentsScreen />} />
+                  <Route path="/settings" element={<SettingsScreen />} />
+                  <Route path="/profile" element={<ProfileScreen />} />
+                  <Route path="/security" element={<SecurityScreen />} />
+                  <Route path="/privacy" element={<PrivacyScreen />} />
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </MainLayout>
+            </WorkspaceGuard>
           </OnboardingGuard>
         } />
       </Routes>

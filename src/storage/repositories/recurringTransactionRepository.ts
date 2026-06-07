@@ -13,12 +13,16 @@ import { RecurringTransaction } from "@/shared/models/finance";
 const COLLECTION_NAME = "recurring_transactions";
 
 export const recurringTransactionRepository = {
-  list: async (): Promise<RecurringTransaction[]> => {
+  list: async (workspaceId: string): Promise<RecurringTransaction[]> => {
     const user = auth.currentUser;
     if (!user) return [];
 
     try {
-      const q = query(collection(db, COLLECTION_NAME), where('userId', '==', user.uid));
+      const q = query(
+        collection(db, COLLECTION_NAME), 
+        where('userId', '==', user.uid),
+        where('workspaceId', '==', workspaceId)
+      );
       const querySnapshot = await getDocs(q);
       return querySnapshot.docs.map(doc => doc.data() as RecurringTransaction);
     } catch (error) {

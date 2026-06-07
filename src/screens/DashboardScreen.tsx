@@ -14,10 +14,13 @@ import { setSelectedMonth } from '@/features/dashboard/store/dashboardSlice';
 import { projectRecurringTransactions } from '@/shared/utils/projection';
 import { MoneyValue } from '@/shared/components/MoneyValue';
 import { PrivacyToggle } from '@/shared/components/PrivacyToggle';
+import { useWorkspaces } from '@/features/workspaces/hooks/useWorkspaces';
+import { CreditCardDashboard } from '@/features/workspaces/screens/CreditCardDashboard';
 
 const DashboardScreen = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { activeWorkspace } = useWorkspaces();
   const monthRef = useAppSelector((state) => state.dashboard.selectedMonth);
   const transactions = useAppSelector((state) => state.transactions.items);
   const recurringTransactions = useAppSelector(selectRecurringTransactions);
@@ -79,6 +82,10 @@ const DashboardScreen = () => {
       });
     return Object.entries(data).map(([date, values]) => ({ date, ...values }));
   }, [allTransactions]);
+
+  if (activeWorkspace?.type === 'CREDIT_CARD') {
+    return <CreditCardDashboard />;
+  }
 
   return (
     <Container className="mobile-container p-4 pb-5">

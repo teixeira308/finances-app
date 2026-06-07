@@ -14,7 +14,7 @@ import type { Transaction } from '@/shared/models/finance';
 const COLLECTION_NAME = 'transactions';
 
 export const transactionRepository = {
-  async list() {
+  async list(workspaceId: string) {
     const user = auth.currentUser;
     if (!user) return [];
     
@@ -22,6 +22,7 @@ export const transactionRepository = {
       const q = query(
         collection(db, COLLECTION_NAME), 
         where('userId', '==', user.uid),
+        where('workspaceId', '==', workspaceId),
         orderBy('occurredAt', 'desc')
       );
       const querySnapshot = await getDocs(q);

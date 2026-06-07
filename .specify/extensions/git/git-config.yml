@@ -49,8 +49,8 @@ auto_commit:
     enabled: true
     message: "docs: generate tasks for financial workspaces platform"
   after_implement:
-    enabled: false
-    message: "[Spec Kit] Implementation progress"
+    enabled: true
+    message: "feat: implement multi-workspace platform with credit card module"
   after_checklist:
     enabled: false
     message: "[Spec Kit] Add checklist"
