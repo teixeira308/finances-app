@@ -2,8 +2,8 @@ import { goalRepository } from "@/storage/repositories/goalRepository";
 import type { MonthlyGoal } from "@/shared/models/finance";
 import { validateGoal } from "@/shared/validation/financeSchemas";
 
-export async function listGoals() {
-  return goalRepository.list();
+export async function listGoals(workspaceId: string) {
+  return goalRepository.list(workspaceId);
 }
 
 export async function saveGoal(goal: MonthlyGoal) {

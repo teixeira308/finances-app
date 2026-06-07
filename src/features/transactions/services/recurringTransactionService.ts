@@ -1,8 +1,8 @@
 import { RecurringTransaction } from "@/shared/models/finance";
 import { recurringTransactionRepository } from "@/storage/repositories/recurringTransactionRepository";
 
-export async function listRecurringTransactions() {
-  return recurringTransactionRepository.list();
+export async function listRecurringTransactions(workspaceId: string) {
+  return recurringTransactionRepository.list(workspaceId);
 }
 
 export async function saveRecurringTransaction(transaction: RecurringTransaction) {

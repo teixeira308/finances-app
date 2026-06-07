@@ -4,10 +4,12 @@ import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectCategories, createCategory, deleteCategory, bootstrapCategories } from '@/features/categories/store/categoriesSlice';
 import { Plus, Tag, Trash2 } from 'lucide-react';
 import { TransactionType } from '@/shared/models/finance';
+import { useWorkspaces } from '@/features/workspaces/hooks/useWorkspaces';
 
 const CategoriesScreen = () => {
   const dispatch = useAppDispatch();
   const categories = useAppSelector(selectCategories);
+  const { activeWorkspaceId } = useWorkspaces();
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [name, setName] = useState('');
@@ -32,27 +34,33 @@ const CategoriesScreen = () => {
       setError('O nome da categoria é obrigatório.');
       return;
     }
+    if (!activeWorkspaceId) {
+      setError('Espaço financeiro não identificado.');
+      return;
+    }
 
     try {
       await dispatch(createCategory({
+        userId: '',
+        workspaceId: activeWorkspaceId,
         name: name.trim(),
         type: categoryType,
         colorToken: color,
         iconToken: 'tag'
       })).unwrap();
       handleClose();
-      dispatch(bootstrapCategories());
+      dispatch(bootstrapCategories(activeWorkspaceId));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao criar categoria');
     }
   };
 
   const handleDelete = async () => {
-    if (deleteId) {
+    if (deleteId && activeWorkspaceId) {
       await dispatch(deleteCategory(deleteId)).unwrap();
       setIsDeleteModalOpen(false);
       setDeleteId(null);
-      dispatch(bootstrapCategories());
+      dispatch(bootstrapCategories(activeWorkspaceId));
     }
   };
 

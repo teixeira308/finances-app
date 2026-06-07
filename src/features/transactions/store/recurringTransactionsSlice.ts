@@ -12,7 +12,7 @@ const initialState: RecurringTransactionsState = {
   items: []
 };
 
-export const bootstrapRecurringTransactions = createAsyncThunk("recurring/bootstrap", async () => listRecurringTransactions());
+export const bootstrapRecurringTransactions = createAsyncThunk("recurring/bootstrap", async (workspaceId: string) => listRecurringTransactions(workspaceId));
 
 export const createRecurringTransaction = createAsyncThunk(
   "recurring/create",

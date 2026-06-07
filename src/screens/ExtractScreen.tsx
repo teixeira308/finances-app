@@ -12,6 +12,7 @@ import {
 import { MoneyValue } from '@/shared/components/MoneyValue';
 import { PrivacyToggle } from '@/shared/components/PrivacyToggle';
 import { projectRecurringTransactions } from '@/shared/utils/projection';
+import { useWorkspaces } from '@/features/workspaces/hooks/useWorkspaces';
 
 // Mapeamento de componentes de ícone
 const categoryIcons: Record<string, React.ElementType> = {
@@ -31,6 +32,7 @@ const ExtractScreen = () => {
   const transactions = useAppSelector((state) => state.transactions.items);
   const recurringTransactions = useAppSelector(selectRecurringTransactions);
   const categories = useAppSelector(selectCategories);
+  const { activeWorkspaceId } = useWorkspaces();
   
   const [currentDate, setCurrentDate] = useState(new Date());
   const [searchTerm, setSearchTerm] = useState('');
@@ -93,13 +95,15 @@ const ExtractScreen = () => {
   };
 
   const handleRefresh = () => {
-    dispatch(bootstrapTransactions());
-    dispatch(bootstrapCategories());
-    dispatch(bootstrapRecurringTransactions());
+    if (activeWorkspaceId) {
+      dispatch(bootstrapTransactions(activeWorkspaceId));
+      dispatch(bootstrapCategories(activeWorkspaceId));
+      dispatch(bootstrapRecurringTransactions(activeWorkspaceId));
+    }
   };
 
   const confirmDelete = async () => {
-    if (deleteId) {
+    if (deleteId && activeWorkspaceId) {
       // Don't allow deleting projected transactions through this UI for now
       if (deleteId.startsWith('projected-')) {
         alert('Para remover uma transação recorrente, vá em Ajustes.');
@@ -111,7 +115,7 @@ const ExtractScreen = () => {
       await dispatch(deleteTransaction(deleteId)).unwrap();
       setIsDeleteModalOpen(false);
       setDeleteId(null);
-      dispatch(bootstrapTransactions());
+      dispatch(bootstrapTransactions(activeWorkspaceId));
     }
   };
 

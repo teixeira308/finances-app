@@ -13,7 +13,7 @@ const initialState: CategoriesState = {
   items: []
 };
 
-export const bootstrapCategories = createAsyncThunk("categories/bootstrap", async () => listCategories());
+export const bootstrapCategories = createAsyncThunk("categories/bootstrap", async (workspaceId: string) => listCategories(workspaceId));
 
 export const createCategory = createAsyncThunk(
   "categories/create",
