@@ -16,6 +16,7 @@ import { MoneyValue } from '@/shared/components/MoneyValue';
 import { PrivacyToggle } from '@/shared/components/PrivacyToggle';
 import { useWorkspaces } from '@/features/workspaces/hooks/useWorkspaces';
 import { CreditCardDashboard } from '@/features/workspaces/screens/CreditCardDashboard';
+import { WorkspaceSwitcher } from '@/features/workspaces/components/WorkspaceSwitcher';
 
 const DashboardScreen = () => {
   const navigate = useNavigate();
@@ -91,7 +92,10 @@ const DashboardScreen = () => {
     <Container className="mobile-container p-4 pb-5">
       <div className="d-flex justify-content-between align-items-center pt-4 mb-3">
         <div>
-          <h1 className="h1 fw-bold m-0">Bem-vindo(a)</h1>
+          <div className="d-flex align-items-center gap-2 mb-1">
+             <h1 className="h1 fw-bold m-0">Bem-vindo(a)</h1>
+             <WorkspaceSwitcher />
+          </div>
           <p className="text-ios-gray mb-0">Confira seu resumo financeiro</p>
         </div>
         <PrivacyToggle />
