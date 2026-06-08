@@ -20,7 +20,7 @@ export const WorkspaceSwitcher: React.FC = () => {
           className="rounded-2 p-1.5 d-flex align-items-center justify-content-center"
           style={{ backgroundColor: activeWorkspace.metadata?.color || '#1C1C1E' }}
         >
-          {activeWorkspace.type === 'ACCOUNT' ? <Landmark size={14} /> : <CreditCard size={14} />}
+          {activeWorkspace.type === 'ACCOUNT' ? <Landmark size={20} /> : <CreditCard size={20} />}
         </div>
         <span className="fw-bold small">{activeWorkspace.name}</span>
         <ChevronDown size={14} className="text-ios-gray" />
