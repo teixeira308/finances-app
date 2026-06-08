@@ -61,7 +61,7 @@ export const WorkspaceSelectionScreen: React.FC = () => {
         <img src={logoNome} alt="Nexo" style={{ height: "60px" }} />
       </div>
 
-      <h1 className="h2 fw-bold mb-5">Quem está usando?</h1>
+      <h1 className="h2 fw-bold mb-5">Gerencie suas contas:</h1>
 
       <Container style={{ maxWidth: "800px" }}>
         <Row className="justify-content-center g-4">

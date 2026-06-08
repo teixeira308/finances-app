@@ -6,6 +6,7 @@ import { logout } from '@/features/auth/services/authService';
 import logoNome from '@/assets/logo-nome.png';
 import { useUserProfile } from '@/features/auth/hooks/useUserProfile';
 import { UserAvatar } from '@/shared/components/UserAvatar';
+import { WorkspaceSwitcher } from '@/features/workspaces/components/WorkspaceSwitcher';
 
 const SettingsScreen = () => {
   const navigate = useNavigate();
@@ -15,8 +16,10 @@ const SettingsScreen = () => {
 
   return (
     <Container className="mobile-container p-4 pb-5">
-      <div className="pt-4 mb-4 d-flex justify-content-between align-items-center">
-        <img src={logoNome} alt="Gastos Mensais" className="rounded-3" style={{ height: '30px' }} />
+      <div className="pt-4 mb-4 d-flex align-items-center justify-content-between">
+        <div className="d-flex align-items-center gap-2">
+            <img src={logoNome} alt="Gastos Mensais" className="rounded-3" style={{ height: '30px' }} />
+        </div>
       </div>
 
       {/* Profile Header */}

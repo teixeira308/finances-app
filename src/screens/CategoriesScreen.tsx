@@ -5,6 +5,7 @@ import { selectCategories, createCategory, deleteCategory, bootstrapCategories }
 import { Plus, Tag, Trash2 } from 'lucide-react';
 import { TransactionType } from '@/shared/models/finance';
 import { useWorkspaces } from '@/features/workspaces/hooks/useWorkspaces';
+import { WorkspaceSwitcher } from '@/features/workspaces/components/WorkspaceSwitcher';
 
 const CategoriesScreen = () => {
   const dispatch = useAppDispatch();
@@ -67,7 +68,10 @@ const CategoriesScreen = () => {
   return (
     <Container className="mobile-container p-4 pb-5">
       <div className="d-flex justify-content-between align-items-center pt-4 mb-4">
-        <h1 className="h1 fw-bold m-0">Categorias</h1>
+        <div className="d-flex align-items-center gap-2">
+            <h1 className="h1 fw-bold m-0">Categorias</h1>
+      
+        </div>
         <Button 
           variant="primary" 
           onClick={handleOpen} 

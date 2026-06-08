@@ -24,6 +24,7 @@ import { OnboardingGuard } from './navigation/OnboardingGuard';
 import { OnboardingScreen } from './features/onboarding/screens/OnboardingScreen';
 import { WorkspaceGuard } from './navigation/WorkspaceGuard';
 import { WorkspaceSelectionScreen } from './features/workspaces/screens/WorkspaceSelectionScreen';
+import { EditWorkspaceScreen } from './features/workspaces/screens/EditWorkspaceScreen';
 import { selectActiveWorkspaceId } from './features/workspaces/store/workspaceSlice';
 import { InvoicesScreen } from './features/workspaces/screens/InvoicesScreen';
 import { InstallmentsScreen } from './features/workspaces/screens/InstallmentsScreen';
@@ -60,6 +61,7 @@ function App() {
       <Routes>
         <Route path="/onboarding" element={<OnboardingScreen />} />
         <Route path="/workspaces" element={<WorkspaceSelectionScreen />} />
+        <Route path="/workspaces/:id/edit" element={<EditWorkspaceScreen />} />
         <Route path="*" element={
           <OnboardingGuard>
             <WorkspaceGuard>

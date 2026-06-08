@@ -120,16 +120,18 @@ input[type=number]::-webkit-outer-spin-button {
   min-height: 100vh;
   position: relative;
   background-color: #000000;
-  padding-left: 1rem !important;
-  padding-right: 1rem !important;
+  padding-left: 0.75rem !important;
+  padding-right: 0.75rem !important;
+  padding-top: 0.5rem !important;
 }
 
 @media (min-width: 768px) {
   .mobile-container {
     max-width: 100%;
     margin: 0;
-    padding-left: 40px !important;
-    padding-right: 40px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    padding-top: 10px !important;
   }
 
   /* Main content will adjust based on Sidebar width in MainLayout */

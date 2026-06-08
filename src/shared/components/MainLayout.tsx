@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Sidebar from '../../navigation/Sidebar';
 import Navigation from '../../navigation';
 import { WorkspaceSwitcher } from '@/features/workspaces/components/WorkspaceSwitcher';
+import { useWorkspaces } from '@/features/workspaces/hooks/useWorkspaces';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -9,6 +10,7 @@ interface MainLayoutProps {
 
 export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { activeWorkspace } = useWorkspaces();
 
   return (
     <div className="min-vh-100 bg-black text-white d-flex">
@@ -24,10 +26,14 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           transition: 'margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
         }}
       >
-        {/* Top bar with Switcher */}
+        {/* Workspace Identification Banner */}
         <div 
-          className="d-flex align-items-center justify-content-end px-4 py-3 sticky-top bg-black bg-opacity-80 backdrop-blur"
-          style={{ zIndex: 1020, backdropFilter: 'blur(10px)' }}
+          className="d-flex align-items-center justify-content-end px-4 py-2 sticky-top transition-all"
+          style={{ 
+            zIndex: 1020, 
+            backgroundColor: activeWorkspace?.metadata?.color || '#1C1C1E',
+            transition: 'background-color 0.3s ease'
+          }}
         >
           <WorkspaceSwitcher />
         </div>
