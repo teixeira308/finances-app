@@ -94,7 +94,7 @@ const DashboardScreen = () => {
         <div>
           <div className="d-flex align-items-center gap-2 mb-1">
              <h1 className="h1 fw-bold m-0">Bem-vindo(a)</h1>
-             <WorkspaceSwitcher />
+            
           </div>
           <p className="text-ios-gray mb-0">Confira seu resumo financeiro</p>
         </div>
