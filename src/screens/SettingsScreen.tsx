@@ -1,15 +1,17 @@
 import React from 'react';
 import { Container, Card, ListGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { Shield, HelpCircle, ChevronRight, LogOut, Lock, ExternalLink } from 'lucide-react';
+import { Shield, HelpCircle, ChevronRight, LogOut, Lock, ExternalLink, Briefcase } from 'lucide-react';
 import { logout } from '@/features/auth/services/authService';
 import logoNome from '@/assets/logo-nome.png';
 import { useUserProfile } from '@/features/auth/hooks/useUserProfile';
 import { UserAvatar } from '@/shared/components/UserAvatar';
+import { useWorkspaces } from '@/features/workspaces/hooks/useWorkspaces';
 
 const SettingsScreen = () => {
   const navigate = useNavigate();
   const { profile } = useUserProfile();
+  const { activeWorkspace } = useWorkspaces();
 
   const userFullLabel = profile?.displayName || profile?.email || 'Usuário';
 
@@ -34,6 +36,23 @@ const SettingsScreen = () => {
 
       <Card className="bg-ios-dark-gray border-0 overflow-hidden mb-4 shadow-none rounded-4">
         <ListGroup variant="flush" className="bg-transparent">
+          <ListGroup.Item
+            action
+            onClick={() => activeWorkspace && navigate(`/workspaces/${activeWorkspace.id}/edit`)}
+            className="bg-transparent border-light border-opacity-10 px-3 py-3 d-flex align-items-center justify-content-between text-white"
+          >
+            <div className="d-flex align-items-center gap-3">
+              <div 
+                className="rounded-3 d-flex align-items-center justify-content-center"
+                style={{ width: '36px', height: '36px', backgroundColor: 'rgba(0, 122, 255, 0.1)', color: 'var(--ios-blue)' }}
+              >
+                <Briefcase size={18} />
+              </div>
+              <span className="fw-bold">Editar Espaço Atual</span>
+            </div>
+            <ChevronRight size={18} className="text-ios-gray opacity-40" />
+          </ListGroup.Item>
+
           <ListGroup.Item
             action
             onClick={() => navigate('/security')}
