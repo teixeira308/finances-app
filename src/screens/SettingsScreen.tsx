@@ -6,12 +6,10 @@ import { logout } from '@/features/auth/services/authService';
 import logoNome from '@/assets/logo-nome.png';
 import { useUserProfile } from '@/features/auth/hooks/useUserProfile';
 import { UserAvatar } from '@/shared/components/UserAvatar';
-import { useWorkspaces } from '@/features/workspaces/hooks/useWorkspaces';
 
 const SettingsScreen = () => {
   const navigate = useNavigate();
   const { profile } = useUserProfile();
-  const { activeWorkspace } = useWorkspaces();
 
   const userFullLabel = profile?.displayName || profile?.email || 'Usuário';
 
@@ -38,7 +36,7 @@ const SettingsScreen = () => {
         <ListGroup variant="flush" className="bg-transparent">
           <ListGroup.Item
             action
-            onClick={() => activeWorkspace && navigate(`/workspaces/${activeWorkspace.id}/edit`)}
+            onClick={() => navigate('/workspaces')}
             className="bg-transparent border-light border-opacity-10 px-3 py-3 d-flex align-items-center justify-content-between text-white"
           >
             <div className="d-flex align-items-center gap-3">
@@ -48,7 +46,7 @@ const SettingsScreen = () => {
               >
                 <Briefcase size={18} />
               </div>
-              <span className="fw-bold">Editar Espaço Atual</span>
+              <span className="fw-bold">Gerenciar Espaços</span>
             </div>
             <ChevronRight size={18} className="text-ios-gray opacity-40" />
           </ListGroup.Item>
