@@ -1,11 +1,12 @@
 import React from 'react';
 import { Container, Card, ListGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { Shield, HelpCircle, ChevronRight, LogOut, Lock, ExternalLink } from 'lucide-react';
+import { Shield, HelpCircle, ChevronRight, LogOut, Lock, ExternalLink, Briefcase } from 'lucide-react';
 import { logout } from '@/features/auth/services/authService';
 import logoNome from '@/assets/logo-nome.png';
 import { useUserProfile } from '@/features/auth/hooks/useUserProfile';
 import { UserAvatar } from '@/shared/components/UserAvatar';
+import { WorkspaceSwitcher } from '@/features/workspaces/components/WorkspaceSwitcher';
 
 const SettingsScreen = () => {
   const navigate = useNavigate();
@@ -15,8 +16,10 @@ const SettingsScreen = () => {
 
   return (
     <Container className="mobile-container p-4 pb-5">
-      <div className="pt-4 mb-4 d-flex justify-content-between align-items-center">
-        <img src={logoNome} alt="Gastos Mensais" className="rounded-3" style={{ height: '30px' }} />
+      <div className="pt-4 mb-4 d-flex align-items-center justify-content-between">
+        <div className="d-flex align-items-center gap-2">
+            <img src={logoNome} alt="Gastos Mensais" className="rounded-3" style={{ height: '30px' }} />
+        </div>
       </div>
 
       {/* Profile Header */}
@@ -34,6 +37,23 @@ const SettingsScreen = () => {
 
       <Card className="bg-ios-dark-gray border-0 overflow-hidden mb-4 shadow-none rounded-4">
         <ListGroup variant="flush" className="bg-transparent">
+          <ListGroup.Item
+            action
+            onClick={() => navigate('/workspaces')}
+            className="bg-transparent border-light border-opacity-10 px-3 py-3 d-flex align-items-center justify-content-between text-white"
+          >
+            <div className="d-flex align-items-center gap-3">
+              <div 
+                className="rounded-3 d-flex align-items-center justify-content-center"
+                style={{ width: '36px', height: '36px', backgroundColor: 'rgba(0, 122, 255, 0.1)', color: 'var(--ios-blue)' }}
+              >
+                <Briefcase size={18} />
+              </div>
+              <span className="fw-bold">Gerenciar Espaços</span>
+            </div>
+            <ChevronRight size={18} className="text-ios-gray opacity-40" />
+          </ListGroup.Item>
+
           <ListGroup.Item
             action
             onClick={() => navigate('/security')}

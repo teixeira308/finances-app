@@ -17,14 +17,14 @@ const Navigation = () => {
   ];
 
   return (
-    <div className="fixed-bottom d-flex justify-content-center pointer-events-none">
+    <div className="fixed-bottom bg-black border-top border-white border-opacity-10" style={{ zIndex: 1040 }}>
       <div 
-        className="w-100 bottom-nav d-flex align-items-center px-3 pb-3 pointer-events-auto position-relative" 
-        style={{ maxWidth: '448px', backgroundColor: 'black' }}
+        className="d-flex align-items-center justify-content-between mx-auto" 
+        style={{ maxWidth: '448px', height: '60px' }}
       >
         
-        {/* Left Side (2 items) */}
-        <div className="d-flex flex-grow-1 justify-content-around" style={{ flexBasis: '40%' }}>
+        {/* Left Side */}
+        <div className="d-flex flex-grow-1 justify-content-evenly">
           {navItemsLeft.map((item) => {
             const isActive = location.pathname === item.path;
             const Icon = item.icon!;
@@ -32,15 +32,14 @@ const Navigation = () => {
               <button
                 key={item.path}
                 onClick={() => navigate(item.path)}
-                className="btn border-0 d-flex flex-column align-items-center gap-1 shadow-none"
-                style={{ background: 'none' }}
+                className="btn border-0 d-flex flex-column align-items-center justify-content-center p-0 shadow-none"
               >
-                <div style={{ color: isActive ? 'var(--ios-blue)' : 'var(--ios-gray)' }}>
-                  <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+                <div style={{ color: isActive ? 'var(--ios-blue)' : 'var(--ios-gray)', marginBottom: '2px' }}>
+                  <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
                 </div>
                 <span style={{ 
-                  fontSize: '9px', 
-                  fontWeight: 500, 
+                  fontSize: '10px', 
+                  fontWeight: isActive ? 600 : 500, 
                   color: isActive ? 'var(--ios-blue)' : 'var(--ios-gray)' 
                 }}>
                   {item.label}
@@ -50,25 +49,26 @@ const Navigation = () => {
           })}
         </div>
 
-        {/* Central Button - Perfectly Centered */}
-        <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', top: '-25px' }}>
+        {/* Central Button */}
+        <div style={{ width: '60px', display: 'flex', justifyContent: 'center' }}>
           <button
             onClick={() => navigate('/new-transaction')}
-            className="btn rounded-circle d-flex align-items-center justify-content-center shadow"
+            className="btn rounded-circle d-flex align-items-center justify-content-center shadow-lg position-relative"
             style={{ 
-              width: '56px', 
-              height: '56px', 
+              width: '50px', 
+              height: '50px', 
               backgroundColor: 'var(--ios-blue)', 
               color: 'white',
-              border: 'none'
+              border: 'none',
+              marginTop: '-30px'
             }}
           >
             <Plus size={28} strokeWidth={3} />
           </button>
         </div>
 
-        {/* Right Side (2 items) */}
-        <div className="d-flex flex-grow-1 justify-content-around" style={{ flexBasis: '40%' }}>
+        {/* Right Side */}
+        <div className="d-flex flex-grow-1 justify-content-evenly">
           {navItemsRight.map((item) => {
             const isActive = location.pathname === item.path;
             const Icon = item.icon!;
@@ -76,15 +76,14 @@ const Navigation = () => {
               <button
                 key={item.path}
                 onClick={() => navigate(item.path)}
-                className="btn border-0 d-flex flex-column align-items-center gap-1 shadow-none"
-                style={{ background: 'none' }}
+                className="btn border-0 d-flex flex-column align-items-center justify-content-center p-0 shadow-none"
               >
-                <div style={{ color: isActive ? 'var(--ios-blue)' : 'var(--ios-gray)' }}>
-                  <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+                <div style={{ color: isActive ? 'var(--ios-blue)' : 'var(--ios-gray)', marginBottom: '2px' }}>
+                  <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
                 </div>
                 <span style={{ 
-                  fontSize: '9px', 
-                  fontWeight: 500, 
+                  fontSize: '10px', 
+                  fontWeight: isActive ? 600 : 500, 
                   color: isActive ? 'var(--ios-blue)' : 'var(--ios-gray)' 
                 }}>
                   {item.label}
@@ -93,7 +92,6 @@ const Navigation = () => {
             );
           })}
         </div>
-
       </div>
     </div>
   );

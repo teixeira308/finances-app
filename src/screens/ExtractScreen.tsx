@@ -5,7 +5,7 @@ import { selectCategories, bootstrapCategories } from '@/features/categories/sto
 import { deleteTransaction, bootstrapTransactions } from '@/features/transactions/store/transactionsSlice';
 import { selectRecurringTransactions, bootstrapRecurringTransactions } from '@/features/transactions/store/recurringTransactionsSlice';
 import { 
-  Trash2, ArrowUpCircle, ArrowDownCircle, RefreshCw,
+  Trash2, ArrowUpCircle, RefreshCw,
   ShoppingBag, Coffee, Car, Home, Film, Briefcase, Plus, Heart,
   ChevronLeft, ChevronRight, Calendar, Search, X, Tag
 } from 'lucide-react';
@@ -13,6 +13,7 @@ import { MoneyValue } from '@/shared/components/MoneyValue';
 import { PrivacyToggle } from '@/shared/components/PrivacyToggle';
 import { projectRecurringTransactions } from '@/shared/utils/projection';
 import { useWorkspaces } from '@/features/workspaces/hooks/useWorkspaces';
+import { WorkspaceSwitcher } from '@/features/workspaces/components/WorkspaceSwitcher';
 
 // Mapeamento de componentes de ícone
 const categoryIcons: Record<string, React.ElementType> = {
@@ -121,11 +122,11 @@ const ExtractScreen = () => {
 
   return (
     <Container className="mobile-container p-4 pb-5">
-      <div className="d-flex justify-content-between align-items-center pt-4 mb-4">
-        <h1 className="h1 fw-bold m-0">Extrato</h1>
-        <div className="d-flex gap-2">
-            <PrivacyToggle />
+      <div className="pt-4 mb-4 d-flex align-items-center justify-content-between">
+        <div className="d-flex align-items-center gap-2">
+            <h1 className="h1 fw-bold m-0">Extrato</h1>
         </div>
+        <PrivacyToggle />
       </div>
 
       {/* Busca */}

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Container, Row, Col, Modal, Form, Button } from "react-bootstrap";
 import { useWorkspaces } from "../hooks/useWorkspaces";
 import { useNavigate } from "react-router-dom";
-import { Plus, CreditCard, Landmark, X } from "lucide-react";
+import { Plus, CreditCard, Landmark, X, Edit2 } from "lucide-react";
 import logoNome from "@/assets/logo-nome.png";
 import { workspaceRepository } from "@/storage/repositories/workspaceRepository";
 import { nanoid } from "nanoid";
@@ -61,15 +61,14 @@ export const WorkspaceSelectionScreen: React.FC = () => {
         <img src={logoNome} alt="Nexo" style={{ height: "60px" }} />
       </div>
 
-      <h1 className="h2 fw-bold mb-5">Quem está usando?</h1>
+      <h1 className="h2 fw-bold mb-5">Gerencie suas contas:</h1>
 
       <Container style={{ maxWidth: "800px" }}>
         <Row className="justify-content-center g-4">
           {workspaces.map((ws) => (
             <Col xs={6} md={3} key={ws.id}>
               <div 
-                className="d-flex flex-column align-items-center gap-3 cursor-pointer profile-item"
-                onClick={() => handleSelect(ws.id)}
+                className="d-flex flex-column align-items-center gap-2 cursor-pointer profile-item"
               >
                 <div 
                   className="rounded-3 d-flex align-items-center justify-content-center transition-all shadow-lg"
@@ -79,6 +78,7 @@ export const WorkspaceSelectionScreen: React.FC = () => {
                     backgroundColor: ws.metadata?.color || "#1C1C1E",
                     border: "3px solid transparent"
                   }}
+                  onClick={() => handleSelect(ws.id)}
                 >
                   {ws.type === "ACCOUNT" ? (
                     <Landmark size={56} className="text-white opacity-90" />
@@ -86,9 +86,23 @@ export const WorkspaceSelectionScreen: React.FC = () => {
                     <CreditCard size={56} className="text-white opacity-90" />
                   )}
                 </div>
-                <span className="text-ios-gray fs-5 fw-medium text-center text-truncate w-100 px-2">
-                  {ws.name}
-                </span>
+                
+                <div className="d-flex align-items-center justify-content-center gap-1 w-100">
+                    <span 
+                      className="text-ios-gray fs-5 fw-medium text-truncate" 
+                      style={{ maxWidth: '100px' }}
+                      onClick={() => handleSelect(ws.id)}
+                    >
+                        {ws.name}
+                    </span>
+                    <Button 
+                      variant="link" 
+                      className="p-0 text-white opacity-40 border-0 shadow-none"
+                      onClick={() => navigate(`/workspaces/${ws.id}/edit`)}
+                    >
+                      <Edit2 size={16} />
+                    </Button>
+                </div>
               </div>
             </Col>
           ))}
