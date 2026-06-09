@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { Container, Card, Button, ListGroup, Modal, Form, Badge, Nav } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectCategories, createCategory, deleteCategory, bootstrapCategories } from '@/features/categories/store/categoriesSlice';
-import { Plus, Tag, Trash2 } from 'lucide-react';
+import { Plus, Tag, Trash2, ArrowLeft } from 'lucide-react';
 import { TransactionType } from '@/shared/models/finance';
 import { useWorkspaces } from '@/features/workspaces/hooks/useWorkspaces';
 import { WorkspaceSwitcher } from '@/features/workspaces/components/WorkspaceSwitcher';
 
 const CategoriesScreen = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const categories = useAppSelector(selectCategories);
   const { activeWorkspaceId } = useWorkspaces();
   
@@ -67,10 +69,16 @@ const CategoriesScreen = () => {
 
   return (
     <Container className="mobile-container p-4 pb-5">
-      <div className="d-flex justify-content-between align-items-center pt-4 mb-4">
-        <div className="d-flex align-items-center gap-2">
-            <h1 className="h1 fw-bold m-0">Categorias</h1>
-      
+      <div className="d-flex align-items-center pt-4 mb-4">
+        <div className="d-flex align-items-center gap-2 flex-grow-1">
+          <button
+            onClick={() => navigate(-1)}
+            className="btn btn-link p-2 text-white border-0 bg-opacity-5 rounded-3 text-decoration-none shadow-none d-flex align-items-center justify-content-center"
+            style={{ width: 40, height: 40 }}
+          >
+            <ArrowLeft size={24} />
+          </button>
+          <h1 className="h1 fw-bold m-0">Categorias</h1>
         </div>
         <Button 
           variant="primary" 

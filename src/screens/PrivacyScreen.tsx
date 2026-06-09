@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Card, Button, Badge, Modal, Spinner, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Download, Trash2, ShieldAlert, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Download, Trash2, ShieldAlert, AlertTriangle, FileText } from 'lucide-react';
 import { useAppSelector } from '@/store/hooks';
 import { selectCategories } from '@/features/categories/store/categoriesSlice';
 import { deleteUserAccount } from '@/features/auth/services/authService';
@@ -95,6 +95,23 @@ const PrivacyScreen = () => {
           >
             {isExporting ? <Spinner size="sm" /> : <Download size={20} />}
             Baixar meus dados (JSON)
+          </Button>
+        </Card>
+
+        <h6 className="small fw-bold text-ios-gray mb-3 text-uppercase px-1">Termos e Políticas</h6>
+        <Card className="bg-ios-dark-gray border-0 p-4 mb-4 shadow-none">
+          <p className="text-white small mb-4">
+            Leia os Termos de Uso e a Política de Privacidade do Nexo, em conformidade com
+            a LGPD (Lei nº 13.709/2018), o Marco Civil da Internet (Lei nº 12.965/2014) e
+            o Código de Defesa do Consumidor (Lei nº 8.078/1990).
+          </p>
+          <Button
+            variant="none"
+            onClick={() => navigate('/termos')}
+            className="w-100 py-3 btn-ios-secondary rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2"
+          >
+            <FileText size={20} />
+            Termos de Uso e Privacidade
           </Button>
         </Card>
 

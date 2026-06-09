@@ -16,6 +16,7 @@ const LoginScreen = () => {
     setIsLoading(true);
     try {
       await login(email, password);
+      window.history.replaceState(null, '', '/');
     } catch (err: any) {
       setError(err.message);
     } finally {

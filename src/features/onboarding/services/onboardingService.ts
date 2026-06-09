@@ -1,23 +1,94 @@
-import type { OnboardingState } from "@/shared/models/finance";
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { db, auth } from '@/shared/services/firebase';
 
-const STORAGE_KEY = 'onboarding_state';
+const COLLECTION_NAME = 'users';
 
-const defaultState: OnboardingState = {
-  hasSeenOnboarding: false,
-  entryMode: "skip_to_local"
-};
+export interface OnboardingState {
+  hasSeenOnboarding: boolean;
+  completedAt?: string;
+}
+
+export interface TransactionGuideState {
+  hasSeenTransactionGuide: boolean;
+}
 
 export async function loadOnboardingState(): Promise<OnboardingState> {
-  const cached = localStorage.getItem(STORAGE_KEY);
-  return cached ? (JSON.parse(cached) as OnboardingState) : defaultState;
+  const user = auth.currentUser;
+  if (!user) return { hasSeenOnboarding: false };
+
+  try {
+    const docRef = doc(db, COLLECTION_NAME, user.uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      if (data.hasSeenOnboarding === true) {
+        return {
+          hasSeenOnboarding: true,
+          completedAt: data.onboardingCompletedAt,
+        };
+      }
+    }
+    return { hasSeenOnboarding: false };
+  } catch {
+    return { hasSeenOnboarding: false };
+  }
 }
 
 export async function completeOnboarding(): Promise<OnboardingState> {
+  const user = auth.currentUser;
+  if (!user) return { hasSeenOnboarding: false };
+
   const state: OnboardingState = {
     hasSeenOnboarding: true,
     completedAt: new Date().toISOString(),
-    entryMode: "skip_to_local"
   };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+
+  try {
+    const docRef = doc(db, COLLECTION_NAME, user.uid);
+    await updateDoc(docRef, {
+      hasSeenOnboarding: true,
+      onboardingCompletedAt: state.completedAt,
+    });
+  } catch {
+    await setDoc(doc(db, COLLECTION_NAME, user.uid), {
+      hasSeenOnboarding: true,
+      onboardingCompletedAt: state.completedAt,
+    });
+  }
+
   return state;
+}
+
+export async function loadTransactionGuideState(): Promise<TransactionGuideState> {
+  const user = auth.currentUser;
+  if (!user) return { hasSeenTransactionGuide: false };
+
+  try {
+    const docRef = doc(db, COLLECTION_NAME, user.uid);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists() && docSnap.data().hasSeenTransactionGuide === true) {
+      return { hasSeenTransactionGuide: true };
+    }
+    return { hasSeenTransactionGuide: false };
+  } catch {
+    return { hasSeenTransactionGuide: false };
+  }
+}
+
+export async function completeTransactionGuide(): Promise<TransactionGuideState> {
+  const user = auth.currentUser;
+  if (!user) return { hasSeenTransactionGuide: false };
+
+  try {
+    await updateDoc(doc(db, COLLECTION_NAME, user.uid), {
+      hasSeenTransactionGuide: true,
+    });
+  } catch {
+    await setDoc(doc(db, COLLECTION_NAME, user.uid), {
+      hasSeenTransactionGuide: true,
+    });
+  }
+
+  return { hasSeenTransactionGuide: true };
 }

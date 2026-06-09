@@ -55,7 +55,7 @@ export const EditWorkspaceScreen: React.FC = () => {
           color: color,
         }
       });
-      navigate("/workspaces");
+      navigate("/");
     } catch (err) {
       console.error(err);
       setError("Erro ao salvar alterações.");
@@ -105,12 +105,12 @@ export const EditWorkspaceScreen: React.FC = () => {
 
           <Form.Group className="mb-4">
             <Form.Label className="small fw-bold text-ios-gray text-uppercase">Cor do Espaço</Form.Label>
-            <Form.Control 
+            <Form.Control
               type="color"
               value={color}
               onChange={(e) => setColor(e.target.value)}
-              className="bg-ios-secondary border-0 p-1"
-              style={{ height: '50px', cursor: 'pointer' }}
+              className="p-0 border-0 bg-transparent w-100"
+              style={{ height: '80px', cursor: 'pointer' }}
             />
           </Form.Group>
 

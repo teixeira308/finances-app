@@ -72,7 +72,7 @@ export const WorkspaceSelectionScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-vh-100 bg-black text-white d-flex flex-column align-items-center justify-content-center p-4 no-scrollbar">
+    <div className="bg-black text-white d-flex flex-column align-items-center no-scrollbar" style={{ height: '100dvh', overflowY: 'auto', padding: '2rem 1rem' }}>
       <div className="mb-5 mt-4">
         <img src={logoNome} alt="Nexo" style={{ height: "60px" }} />
       </div>

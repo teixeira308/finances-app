@@ -24,8 +24,10 @@ export const useWorkspaces = () => {
   useEffect(() => {
     if (!user) return;
 
-    dispatch(setLoading(true));
-    
+    if (workspaces.length === 0) {
+      dispatch(setLoading(true));
+    }
+
     const unsubscribe = workspaceRepository.subscribeToWorkspacesByUserId(
       user.uid,
       (workspaces) => {
