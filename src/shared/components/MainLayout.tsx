@@ -13,17 +13,18 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const { activeWorkspace } = useWorkspaces();
 
   return (
-    <div className="min-vh-100 bg-black text-white d-flex">
+    <div className="bg-black text-white d-flex" style={{ minHeight: '100dvh', height: '100dvh' }}>
       {/* Desktop Sidebar */}
       <Sidebar isCollapsed={isCollapsed} onToggle={() => setIsCollapsed(!isCollapsed)} />
 
       {/* Main Content Area */}
       <main 
-        className="flex-grow-1 min-vh-100 transition-all"
+        className="flex-grow-1 transition-all d-flex flex-column"
         style={{ 
-          marginLeft: '0px', // Default for mobile
-          paddingBottom: '100px', // Bottom nav space for mobile
-          transition: 'margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+          marginLeft: '0px',
+          paddingBottom: 'calc(100px + var(--safe-area-bottom))',
+          transition: 'margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          overflow: 'hidden'
         }}
       >
         {/* Workspace Identification Banner */}
@@ -45,10 +46,13 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               margin-left: ${isCollapsed ? '80px' : '260px'} !important;
               padding-bottom: 0 !important;
             }
+            main > .content-wrapper {
+              overflow-y: visible !important;
+            }
           }
         `}} />
         
-        <div className="content-wrapper h-100">
+        <div className="content-wrapper flex-grow-1 overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
           {children}
         </div>
       </main>

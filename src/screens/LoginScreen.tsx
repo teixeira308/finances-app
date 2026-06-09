@@ -24,7 +24,7 @@ const LoginScreen = () => {
   };
 
   return (
-    <Container className="d-flex min-vh-100 align-items-center justify-content-center p-4">
+    <Container className="d-flex align-items-center justify-content-center p-4" style={{ minHeight: '100dvh', height: '100%' }}>
       <Card className="w-100 bg-ios-dark-gray border-0 shadow-lg" style={{ maxWidth: '400px' }}>
         <Card.Body className="p-5 text-center">
           <img src={logoNome} alt="Gastos Mensais" className="mb-4 rounded-3" style={{ width: '100%', maxWidth: '200px' }} />

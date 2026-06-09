@@ -17,7 +17,7 @@ const Navigation = () => {
   ];
 
   return (
-    <div className="fixed-bottom bg-black border-top border-white border-opacity-10" style={{ zIndex: 1040 }}>
+    <div className="fixed-bottom bg-black border-top border-white border-opacity-10 safe-area-bottom" style={{ zIndex: 1040 }}>
       <div 
         className="d-flex align-items-center justify-content-between mx-auto" 
         style={{ maxWidth: '448px', height: '60px' }}
