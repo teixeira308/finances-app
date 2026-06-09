@@ -127,11 +127,11 @@ const DashboardScreen = () => {
         </Card.Body>
       </Card>
       
-      <Row className="g-4">
+      <Row className="g-3">
         {/* Column: Summary and Balance */}
         <Col xs={12} lg={5}>
-          <Card className="bg-transparent border-2 mb-4" style={{ borderColor: summary.netBalance >= 0 ? 'var(--ios-green)' : 'var(--ios-red)' }}>
-            <Card.Body className="py-5 px-4">
+          <Card className="bg-transparent border-2 mb-3" style={{ borderColor: summary.netBalance >= 0 ? 'var(--ios-green)' : 'var(--ios-red)' }}>
+            <Card.Body className="py-4 px-4">
               <p className="text-uppercase small fw-bold tracking-widest text-ios-gray mb-1">Saldo Previsto</p>
               <h2 className="display-4 fw-bold m-0" style={{ color: summary.netBalance >= 0 ? 'var(--ios-green)' : 'var(--ios-red)' }}>
                 <MoneyValue value={summary.netBalance} />

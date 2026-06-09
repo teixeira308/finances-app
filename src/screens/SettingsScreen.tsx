@@ -1,16 +1,19 @@
 import React from 'react';
 import { Container, Card, ListGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { Shield, HelpCircle, ChevronRight, LogOut, Lock, ExternalLink, Briefcase } from 'lucide-react';
+import { Shield, HelpCircle, ChevronRight, LogOut, Lock, ExternalLink, Briefcase, Settings as SettingsIcon } from 'lucide-react';
 import { logout } from '@/features/auth/services/authService';
 import logoNome from '@/assets/logo-nome.png';
 import { useUserProfile } from '@/features/auth/hooks/useUserProfile';
 import { UserAvatar } from '@/shared/components/UserAvatar';
 import { WorkspaceSwitcher } from '@/features/workspaces/components/WorkspaceSwitcher';
+import { useAppSelector } from '@/store/hooks';
+import { selectActiveWorkspaceId } from '@/features/workspaces/store/workspaceSlice';
 
 const SettingsScreen = () => {
   const navigate = useNavigate();
   const { profile } = useUserProfile();
+  const activeWorkspaceId = useAppSelector(selectActiveWorkspaceId);
 
   const userFullLabel = profile?.displayName || profile?.email || 'Usuário';
 
@@ -49,7 +52,24 @@ const SettingsScreen = () => {
               >
                 <Briefcase size={18} />
               </div>
-              <span className="fw-bold">Gerenciar Espaços</span>
+              <span className="fw-bold">Trocar Espaço</span>
+            </div>
+            <ChevronRight size={18} className="text-ios-gray opacity-40" />
+          </ListGroup.Item>
+
+          <ListGroup.Item
+            action
+            onClick={() => activeWorkspaceId && navigate(`/workspaces/${activeWorkspaceId}/edit`)}
+            className="bg-transparent border-light border-opacity-10 px-3 py-3 d-flex align-items-center justify-content-between text-white"
+          >
+            <div className="d-flex align-items-center gap-3">
+              <div 
+                className="rounded-3 d-flex align-items-center justify-content-center"
+                style={{ width: '36px', height: '36px', backgroundColor: 'rgba(0, 122, 255, 0.1)', color: 'var(--ios-blue)' }}
+              >
+                <SettingsIcon size={18} />
+              </div>
+              <span className="fw-bold">Editar Espaço Atual</span>
             </div>
             <ChevronRight size={18} className="text-ios-gray opacity-40" />
           </ListGroup.Item>

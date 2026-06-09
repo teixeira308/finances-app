@@ -6,6 +6,10 @@ export const ScrollToTop = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    const contentWrapper = document.querySelector('.content-wrapper');
+    if (contentWrapper) {
+      contentWrapper.scrollTop = 0;
+    }
   }, [pathname]);
 
   return null;
