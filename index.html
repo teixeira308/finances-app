@@ -3,13 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
-    <title>Nexo</title>
-    
-    <!-- Favicon simplificado -->
-    <link rel="icon" type="image/png" href="/favicon.png">
-    
-    <!-- Metadados básicos -->
     <meta name="theme-color" content="#000000" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
+    <title>Nexo</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <!--
+      Security notes:
+      - CSP is set via HTTP response headers (Vercel in production, Vite dev server locally).
+      - The <meta> CSP is intentionally omitted to avoid conflicts with the header-based CSP.
+      - All JavaScript is loaded as ES modules via <script type="module" src="...">,
+        which means CSP `script-src 'self'` covers it without needing 'unsafe-inline'.
+      - No inline <script> blocks are used anywhere in this app.
+    -->
   </head>
   <body>
     <div id="root"></div>
