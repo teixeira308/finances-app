@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Container, Card, Button, Badge, Modal, Spinner } from 'react-bootstrap';
+import { Container, Card, Button, Badge, Modal, Spinner, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Download, Trash2, ShieldAlert } from 'lucide-react';
+import { ArrowLeft, Download, Trash2, ShieldAlert, AlertTriangle, FileText } from 'lucide-react';
 import { useAppSelector } from '@/store/hooks';
 import { selectCategories } from '@/features/categories/store/categoriesSlice';
 import { deleteUserAccount } from '@/features/auth/services/authService';
@@ -14,6 +14,8 @@ const PrivacyScreen = () => {
   
   const [isExporting, setIsSaving] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleExportData = () => {
@@ -40,16 +42,30 @@ const PrivacyScreen = () => {
   const handleDeleteAccount = async () => {
     setIsDeleting(true);
     try {
-      // Nota: Em um sistema real, aqui chamaríamos uma Cloud Function 
-      // para deletar todos os documentos do Firestore vinculados ao UID.
       await deleteUserAccount();
-      window.location.reload(); // Força logout total
+      window.location.reload();
     } catch (err: any) {
       alert(err.message || 'Erro ao excluir conta. Re-autentique-se na aba Segurança primeiro.');
+      setShowConfirmModal(false);
     } finally {
       setIsDeleting(false);
-      setShowDeleteModal(false);
     }
+  };
+
+  const openDeleteFlow = () => {
+    setDeleteConfirmation("");
+    setShowDeleteModal(true);
+  };
+
+  const handleFirstStepConfirm = () => {
+    setShowDeleteModal(false);
+    setShowConfirmModal(true);
+  };
+
+  const closeAll = () => {
+    setShowDeleteModal(false);
+    setShowConfirmModal(false);
+    setDeleteConfirmation("");
   };
 
   return (
@@ -82,6 +98,23 @@ const PrivacyScreen = () => {
           </Button>
         </Card>
 
+        <h6 className="small fw-bold text-ios-gray mb-3 text-uppercase px-1">Termos e Políticas</h6>
+        <Card className="bg-ios-dark-gray border-0 p-4 mb-4 shadow-none">
+          <p className="text-white small mb-4">
+            Leia os Termos de Uso e a Política de Privacidade do Nexo, em conformidade com
+            a LGPD (Lei nº 13.709/2018), o Marco Civil da Internet (Lei nº 12.965/2014) e
+            o Código de Defesa do Consumidor (Lei nº 8.078/1990).
+          </p>
+          <Button
+            variant="none"
+            onClick={() => navigate('/termos')}
+            className="w-100 py-3 btn-ios-secondary rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2"
+          >
+            <FileText size={20} />
+            Termos de Uso e Privacidade
+          </Button>
+        </Card>
+
         <h6 className="small fw-bold text-ios-red mb-3 text-uppercase px-1">Zona de Perigo</h6>
         <Card className="bg-ios-dark-gray border-0 p-4 mb-4 shadow-none border border-danger border-opacity-10">
           <p className="text-white small mb-4">
@@ -89,7 +122,7 @@ const PrivacyScreen = () => {
           </p>
           <Button 
             variant="danger" 
-            onClick={() => setShowDeleteModal(true)} 
+            onClick={openDeleteFlow} 
             className="w-100 py-3 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2"
           >
             <Trash2 size={20} />
@@ -98,25 +131,86 @@ const PrivacyScreen = () => {
         </Card>
       </div>
 
-      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
-        <Modal.Header closeButton closeVariant="white" className="border-0 pb-0">
-          <Modal.Title className="w-100 text-center fw-bold text-danger">Atenção!</Modal.Title>
+      {/* Step 1 — Confirmação com digitação */}
+      <Modal show={showDeleteModal} onHide={closeAll} centered contentClassName="bg-ios-dark-gray text-white border-0 rounded-4">
+        <Modal.Header className="border-0 pb-0">
+          <Modal.Title className="w-100 text-center fw-bold text-ios-red">Excluir Conta</Modal.Title>
         </Modal.Header>
-        <Modal.Body className="p-4 text-center">
-          <div className="mb-4 text-danger">
-            <ShieldAlert size={64} />
+        <Modal.Body className="p-4">
+          <div className="text-center mb-4">
+            <div className="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style={{ width: 72, height: 72, backgroundColor: 'rgba(255, 69, 58, 0.15)' }}>
+              <ShieldAlert size={36} className="text-ios-red" />
+            </div>
+            <h5 className="fw-bold text-white mb-2">Você tem certeza?</h5>
+            <p className="text-ios-gray small mb-0">
+              Você está prestes a excluir permanentemente sua conta <strong className="text-white">Nexo</strong>.
+              Todos os seus <strong>espaços financeiros</strong>, transações, categorias, metas e
+              configurações serão perdidos <strong className="text-white">para sempre</strong>.
+            </p>
           </div>
-          <h5 className="fw-bold text-white mb-3">Tem certeza absoluta?</h5>
-          <p className="text-ios-gray small mb-0">
-            Esta ação não pode ser desfeita. Todos os seus dados financeiros serão apagados permanentemente dos nossos servidores.
-          </p>
+          <Form.Group>
+            <Form.Label className="small fw-bold text-ios-gray">
+              Digite <span className="text-white">EXCLUIR</span> para continuar:
+            </Form.Label>
+            <Form.Control 
+              value={deleteConfirmation}
+              onChange={(e) => setDeleteConfirmation(e.target.value)}
+              placeholder="EXCLUIR"
+              className="bg-ios-secondary border-0 text-white py-3 px-3 shadow-none text-center fw-bold"
+            />
+          </Form.Group>
         </Modal.Body>
         <Modal.Footer className="border-0 pt-0 px-4 pb-4 d-flex gap-2">
-          <Button variant="none" className="flex-grow-1 btn-ios-secondary py-3" onClick={() => setShowDeleteModal(false)}>
-            Manter conta
+          <Button variant="none" className="flex-grow-1 btn-ios-secondary py-3" onClick={closeAll}>
+            Cancelar
           </Button>
-          <Button variant="danger" className="flex-grow-1 py-3 fw-bold" onClick={handleDeleteAccount} disabled={isDeleting}>
-            {isDeleting ? <Spinner size="sm" /> : 'Sim, excluir tudo'}
+          <Button 
+            variant="danger" 
+            className="flex-grow-1 py-3 fw-bold"
+            onClick={handleFirstStepConfirm}
+            disabled={deleteConfirmation !== "EXCLUIR"}
+          >
+            Continuar
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Step 2 — Último aviso */}
+      <Modal show={showConfirmModal} onHide={closeAll} centered contentClassName="bg-ios-dark-gray text-white border-0 rounded-4">
+        <Modal.Header className="border-0 pb-0">
+          <Modal.Title className="w-100 text-center fw-bold text-ios-red">Último Aviso</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="p-4 text-center">
+          <div className="mb-4">
+            <div className="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style={{ width: 80, height: 80, backgroundColor: 'rgba(255, 69, 58, 0.15)' }}>
+              <AlertTriangle size={44} className="text-ios-red" />
+            </div>
+            <h5 className="fw-bold text-white mb-3">Isso é irreversível</h5>
+            <p className="text-ios-gray mb-2">
+              Esta é sua <strong className="text-white">última chance</strong>. Ao confirmar abaixo:
+            </p>
+            <ul className="text-ios-gray text-start mb-0" style={{ listStyle: 'none', padding: 0 }}>
+              <li className="mb-2">• Sua <strong className="text-white">conta Nexo</strong> será deletada dos nossos servidores</li>
+              <li className="mb-2">• Todos os <strong className="text-white">espaços financeiros</strong> serão perdidos</li>
+              <li className="mb-2">• Todo seu <strong className="text-white">histórico de transações</strong> será apagado</li>
+              <li className="mb-2">• Categorias e metas personalizadas serão removidas</li>
+              <li className="mb-2">• Se você usa o app no <strong className="text-white">Android</strong>, todo o histórico será perdido</li>
+              <li className="mb-0">• <strong className="text-white">Não há como recuperar</strong> seus dados depois disso</li>
+            </ul>
+          </div>
+        </Modal.Body>
+        <Modal.Footer className="border-0 pt-0 px-4 pb-4 d-flex gap-2">
+          <Button variant="none" className="flex-grow-1 btn-ios-secondary py-3" onClick={closeAll}>
+            Voltar
+          </Button>
+          <Button 
+            variant="danger" 
+            className="flex-grow-1 py-3 fw-bold d-flex align-items-center justify-content-center gap-2"
+            onClick={handleDeleteAccount}
+            disabled={isDeleting}
+          >
+            {isDeleting ? <Spinner size="sm" /> : <Trash2 size={18} />}
+            {isDeleting ? "Excluindo..." : "Sim, Excluir Minha Conta"}
           </Button>
         </Modal.Footer>
       </Modal>

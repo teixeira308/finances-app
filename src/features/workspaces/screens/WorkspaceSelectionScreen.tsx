@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Container, Row, Col, Modal, Form, Button } from "react-bootstrap";
 import { useWorkspaces } from "../hooks/useWorkspaces";
 import { useNavigate } from "react-router-dom";
-import { Plus, CreditCard, Landmark, X, Edit2 } from "lucide-react";
+import { Plus, CreditCard, Landmark, X } from "lucide-react";
 import logoNome from "@/assets/logo-nome.png";
 import { workspaceRepository } from "@/storage/repositories/workspaceRepository";
 import { nanoid } from "nanoid";
@@ -18,11 +18,25 @@ export const WorkspaceSelectionScreen: React.FC = () => {
   const [newWsName, setNewWsName] = useState("");
   const [newWsType, setNewWsType] = useState<WorkspaceType>("ACCOUNT");
   const [newWsLimit, setNewWsLimit] = useState("");
+  const [newWsClosingDay, setNewWsClosingDay] = useState("15");
+  const [newWsDueDay, setNewWsDueDay] = useState("22");
+  const [newWsColor, setNewWsColor] = useState("#0A84FF");
   const [isSaving, setIsLoading] = useState(false);
+
+  const isAccount = newWsType === "ACCOUNT";
 
   const handleSelect = (id: string) => {
     changeWorkspace(id);
     navigate("/");
+  };
+
+  const resetForm = () => {
+    setNewWsName("");
+    setNewWsType("ACCOUNT");
+    setNewWsLimit("");
+    setNewWsClosingDay("15");
+    setNewWsDueDay("22");
+    setNewWsColor("#0A84FF");
   };
 
   const handleCreate = async () => {
@@ -36,13 +50,13 @@ export const WorkspaceSelectionScreen: React.FC = () => {
         userId: user.uid,
         name: newWsName.trim(),
         type: newWsType,
-        metadata: newWsType === "CREDIT_CARD" ? {
-          limit: parseFloat(newWsLimit) || 0,
-          closingDay: 15,
-          dueDay: 22,
-          color: "#0A84FF"
-        } : {
-          color: "#30D158"
+        metadata: {
+          color: isAccount ? "#30D158" : newWsColor,
+          ...(newWsType === "CREDIT_CARD" && {
+            limit: parseFloat(newWsLimit) || 0,
+            closingDay: parseInt(newWsClosingDay, 10) || 15,
+            dueDay: parseInt(newWsDueDay, 10) || 22,
+          }),
         },
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
@@ -50,13 +64,15 @@ export const WorkspaceSelectionScreen: React.FC = () => {
       window.location.reload(); // Refresh list
     } catch (err) {
       console.error(err);
+      resetForm();
+      setShowModal(false);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-vh-100 bg-black text-white d-flex flex-column align-items-center justify-content-center p-4 no-scrollbar">
+    <div className="bg-black text-white d-flex flex-column align-items-center no-scrollbar" style={{ height: '100dvh', overflowY: 'auto', padding: '2rem 1rem' }}>
       <div className="mb-5 mt-4">
         <img src={logoNome} alt="Nexo" style={{ height: "60px" }} />
       </div>
@@ -87,21 +103,14 @@ export const WorkspaceSelectionScreen: React.FC = () => {
                   )}
                 </div>
                 
-                <div className="d-flex align-items-center justify-content-center gap-1 w-100">
+                <div className="d-flex align-items-center justify-content-center w-100 px-1">
                     <span 
-                      className="text-ios-gray fs-5 fw-medium text-truncate" 
-                      style={{ maxWidth: '100px' }}
+                      className="text-ios-gray fs-5 fw-medium text-center"
+                      style={{ wordBreak: 'break-word', lineHeight: 1.3 }}
                       onClick={() => handleSelect(ws.id)}
                     >
                         {ws.name}
                     </span>
-                    <Button 
-                      variant="link" 
-                      className="p-0 text-white opacity-40 border-0 shadow-none"
-                      onClick={() => navigate(`/workspaces/${ws.id}/edit`)}
-                    >
-                      <Edit2 size={16} />
-                    </Button>
                 </div>
               </div>
             </Col>
@@ -126,10 +135,10 @@ export const WorkspaceSelectionScreen: React.FC = () => {
         </Row>
       </Container>
 
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered contentClassName="bg-ios-dark-gray text-white border-0 rounded-4">
-        <Modal.Header className="border-0 pb-0">
+      <Modal show={showModal} onHide={() => { setShowModal(false); resetForm(); }} centered contentClassName="bg-ios-dark-gray text-white border-0 rounded-4">
+        <Modal.Header className="border-0 pb-0 position-relative d-flex align-items-center justify-content-center">
           <Modal.Title className="fw-bold">Novo Espaço Financeiro</Modal.Title>
-          <Button variant="link" onClick={() => setShowModal(false)} className="text-white p-0">
+          <Button variant="link" onClick={() => setShowModal(false)} className="text-white p-0 position-absolute" style={{ right: '16px', top: '50%', transform: 'translateY(-50%)' }}>
             <X size={24} />
           </Button>
         </Modal.Header>
@@ -165,17 +174,55 @@ export const WorkspaceSelectionScreen: React.FC = () => {
           </Form.Group>
 
           {newWsType === 'CREDIT_CARD' && (
-            <Form.Group className="mb-4">
-              <Form.Label className="small fw-bold text-ios-gray text-uppercase">Limite do Cartão</Form.Label>
-              <Form.Control 
-                type="number"
-                placeholder="R$ 0,00" 
-                value={newWsLimit}
-                onChange={(e) => setNewWsLimit(e.target.value)}
-                className="bg-ios-secondary border-0 text-white py-3 px-3 shadow-none"
-              />
-            </Form.Group>
+            <>
+              <Form.Group className="mb-4">
+                <Form.Label className="small fw-bold text-ios-gray text-uppercase">Limite do Cartão</Form.Label>
+                <Form.Control 
+                  type="number"
+                  placeholder="R$ 0,00" 
+                  value={newWsLimit}
+                  onChange={(e) => setNewWsLimit(e.target.value)}
+                  className="bg-ios-secondary border-0 text-white py-3 px-3 shadow-none"
+                />
+              </Form.Group>
+
+              <div className="d-flex gap-3 mb-4">
+                <Form.Group className="flex-grow-1">
+                  <Form.Label className="small fw-bold text-ios-gray text-uppercase">Dia Fechamento</Form.Label>
+                  <Form.Control 
+                    type="number" min={1} max={31}
+                    placeholder="15" 
+                    value={newWsClosingDay}
+                    onChange={(e) => setNewWsClosingDay(e.target.value)}
+                    className="bg-ios-secondary border-0 text-white py-3 px-3 shadow-none"
+                  />
+                </Form.Group>
+                <Form.Group className="flex-grow-1">
+                  <Form.Label className="small fw-bold text-ios-gray text-uppercase">Dia Vencimento</Form.Label>
+                  <Form.Control 
+                    type="number" min={1} max={31}
+                    placeholder="22" 
+                    value={newWsDueDay}
+                    onChange={(e) => setNewWsDueDay(e.target.value)}
+                    className="bg-ios-secondary border-0 text-white py-3 px-3 shadow-none"
+                  />
+                </Form.Group>
+              </div>
+            </>
           )}
+
+          <Form.Group className="mb-4">
+            <Form.Label className="small fw-bold text-ios-gray text-uppercase">Cor do Espaço</Form.Label>
+            <div className="w-100">
+              <Form.Control 
+                type="color" 
+                value={isAccount ? "#30D158" : newWsColor}
+                onChange={(e) => setNewWsColor(e.target.value)}
+                className="p-0 border-0 bg-transparent w-100"
+                style={{ height: '80px', cursor: 'pointer' }}
+              />
+            </div>
+          </Form.Group>
 
           <Button 
             variant="primary" 

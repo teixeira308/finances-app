@@ -68,9 +68,16 @@ export const InvoicesScreen: React.FC = () => {
             <MoneyValue value={total} />
           </h2>
           {total > 0 && (
-            <Button variant="primary" className="mt-4 px-4 py-2 rounded-pill fw-bold border-0 shadow">
-              Pagar Fatura
-            </Button>
+            <div className="mt-4 d-flex justify-content-center gap-4">
+              <div className="text-center">
+                <p className="text-ios-gray mb-1">Fechamento</p>
+                <p className="fw-bold text-white m-0 fs-5">Dia {activeWorkspace?.metadata?.closingDay || '--'}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-ios-gray mb-1">Vencimento</p>
+                <p className="fw-bold text-white m-0 fs-5">Dia {activeWorkspace?.metadata?.dueDay || '--'}</p>
+              </div>
+            </div>
           )}
         </Card.Body>
       </Card>

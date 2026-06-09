@@ -5,7 +5,7 @@ import {
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
   AreaChart, Area, XAxis, YAxis, CartesianGrid
 } from 'recharts';
-import { ChevronLeft, ChevronRight, Calendar, BarChart3, ArrowRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, BarChart3, ArrowRight, RefreshCw } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { calculateMonthlySummary } from '@/shared/models/finance';
 import { selectCategories } from '@/features/categories/store/categoriesSlice';
@@ -93,12 +93,20 @@ const DashboardScreen = () => {
       <div className="d-flex justify-content-between align-items-center pt-4 mb-3">
         <div>
           <div className="d-flex align-items-center gap-2 mb-1">
-             <h1 className="h1 fw-bold m-0">Bem-vindo(a)</h1>
-            
+             <h1 className="h1 fw-bold m-0 text-truncate" style={{ maxWidth: '260px' }}>{activeWorkspace?.name || 'Dashboard'}</h1>
           </div>
-          <p className="text-ios-gray mb-0">Confira seu resumo financeiro</p>
+          <p className="text-ios-gray mb-0">Resumo financeiro</p>
         </div>
-        <PrivacyToggle />
+        <div className="d-flex align-items-center gap-2">
+          <button
+            onClick={() => window.location.reload()}
+            className="btn border-0 p-2 text-ios-gray shadow-none"
+            title="Atualizar dados"
+          >
+            <RefreshCw size={20} />
+          </button>
+          <PrivacyToggle />
+        </div>
       </div>
 
       {/* Navegação Mensal */}
@@ -127,11 +135,11 @@ const DashboardScreen = () => {
         </Card.Body>
       </Card>
       
-      <Row className="g-4">
+      <Row className="g-3">
         {/* Column: Summary and Balance */}
         <Col xs={12} lg={5}>
-          <Card className="bg-transparent border-2 mb-4" style={{ borderColor: summary.netBalance >= 0 ? 'var(--ios-green)' : 'var(--ios-red)' }}>
-            <Card.Body className="py-5 px-4">
+          <Card className="bg-transparent border-2 mb-3" style={{ borderColor: summary.netBalance >= 0 ? 'var(--ios-green)' : 'var(--ios-red)' }}>
+            <Card.Body className="py-4 px-4">
               <p className="text-uppercase small fw-bold tracking-widest text-ios-gray mb-1">Saldo Previsto</p>
               <h2 className="display-4 fw-bold m-0" style={{ color: summary.netBalance >= 0 ? 'var(--ios-green)' : 'var(--ios-red)' }}>
                 <MoneyValue value={summary.netBalance} />
