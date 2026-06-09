@@ -22,7 +22,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         className="flex-grow-1 transition-all d-flex flex-column"
         style={{ 
           marginLeft: '0px',
-          paddingBottom: 'calc(100px + var(--safe-area-bottom))',
+          paddingBottom: 'calc(60px + var(--safe-area-bottom))',
           transition: 'margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           overflow: 'hidden'
         }}
@@ -40,7 +40,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         </div>
 
         {/* Dynamic margin for desktop */}
-        <style dangerouslySetInnerHTML={{ __html: `
+        <style>{`
           @media (min-width: 768px) {
             main {
               margin-left: ${isCollapsed ? '80px' : '260px'} !important;
@@ -50,7 +50,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               overflow-y: visible !important;
             }
           }
-        `}} />
+        `}</style>
         
         <div className="content-wrapper flex-grow-1 overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
           {children}

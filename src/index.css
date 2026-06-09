@@ -4,9 +4,16 @@ html, body, #root {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  /* ── WebView Hardening ────────────────────
+   * overscroll-behavior: none   – Blocks Android pull-to-refresh gesture.
+   * touch-action: manipulation  – Removes 300ms tap delay on mobile.
+   * -webkit-touch-callout: none – Prevents link preview popup in iOS WebView.
+   * -webkit-text-size-adjust   – Prevents font inflation on orientation change.
+   */
   overscroll-behavior: none;
   -webkit-text-size-adjust: 100%;
   touch-action: manipulation;
+  -webkit-touch-callout: none;
   -webkit-overflow-scrolling: auto;
 }
 
@@ -50,6 +57,14 @@ h5, .h5 { font-size: 1rem !important; }
 h6, .h6 { font-size: 0.85rem !important; }
 .small { font-size: 0.75rem !important; }
 .extra-small { font-size: 0.65rem !important; }
+
+/* ── Input safety (WebView focus zoom prevention) ──
+ * iOS Safari auto-zooms into inputs when font-size < 16px.
+ * This override ensures ALL inputs, selects, and textareas
+ * stay at 16px minimum so the WebView never scales the page. */
+input, select, textarea {
+  font-size: 16px !important;
+}
 
 /* Hide number input spinner */
 input[type=number]::-webkit-inner-spin-button, 
