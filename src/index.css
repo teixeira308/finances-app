@@ -1,14 +1,17 @@
-html, body {
+html, body, #root {
   margin: 0;
   padding: 0;
   width: 100%;
-  overflow-x: hidden;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
   -webkit-text-size-adjust: 100%;
   touch-action: manipulation;
+  -webkit-overflow-scrolling: auto;
 }
 
 html {
-  font-size: 14px; /* Reduced from 16px to scale down everything by ~2px */
+  font-size: 14px;
 }
 
 body {
@@ -16,7 +19,7 @@ body {
   color: #ffffff;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-size: 1rem; /* This will now be 14px */
+  font-size: 1rem;
 }
 
 :root {
@@ -27,6 +30,10 @@ body {
   --ios-dark-gray: #1C1C1E;
   --bs-body-bg: #000000;
   --bs-body-color: #ffffff;
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
 }
 
 img {
@@ -74,6 +81,32 @@ input[type=number]::-webkit-outer-spin-button {
   scrollbar-width: none;
 }
 
+/* Safe area helper classes */
+.safe-area-top {
+  padding-top: var(--safe-area-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: var(--safe-area-bottom);
+}
+
+.safe-area-left {
+  padding-left: var(--safe-area-left);
+}
+
+.safe-area-right {
+  padding-right: var(--safe-area-right);
+}
+
+/* dvh utility for WebView compatibility */
+.min-vh-100 {
+  min-height: 100dvh !important;
+}
+
+.h-100 {
+  height: 100% !important;
+}
+
 /* Custom rounded corners for cards like iOS */
 .card {
   border-radius: 1.5rem;
@@ -101,7 +134,8 @@ input[type=number]::-webkit-outer-spin-button {
 
 /* Bottom navigation customization */
 .bottom-nav {
-  height: 80px;
+  height: calc(80px + var(--safe-area-bottom));
+  padding-bottom: var(--safe-area-bottom);
   background-color: rgba(28, 28, 30, 0.9);
   backdrop-filter: blur(20px);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -117,12 +151,14 @@ input[type=number]::-webkit-outer-spin-button {
   width: 100%;
   max-width: 448px;
   margin: 0 auto;
-  min-height: 100vh;
+  min-height: 100dvh;
   position: relative;
   background-color: #000000;
   padding-left: 0.75rem !important;
   padding-right: 0.75rem !important;
   padding-top: 0.5rem !important;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 @media (min-width: 768px) {

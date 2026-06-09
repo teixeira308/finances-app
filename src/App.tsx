@@ -45,7 +45,7 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-vh-100 d-flex align-items-center justify-content-center bg-black">
+      <div className="d-flex align-items-center justify-content-center bg-black" style={{ minHeight: '100dvh', height: '100%' }}>
         <Spinner animation="border" variant="primary" />
       </div>
     );
