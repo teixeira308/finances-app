@@ -47,13 +47,13 @@ const SecurityScreen = () => {
     <Container className="mobile-container p-4 pb-5">
       <div className="mx-auto" style={{ maxWidth: '700px' }}>
         <div className="d-flex align-items-center gap-3 pt-4 mb-4">
-          <Button 
-            variant="none" 
-            onClick={() => navigate('/settings')} 
-            className="p-2 text-white border-0 bg-ios-secondary rounded-3"
-          >
-            <ArrowLeft size={24} />
-          </Button>
+<Button
+        variant="none"
+        onClick={() => navigate('/settings')}
+        className="p-2 text-white border-0 bg-black rounded-3"
+      >
+        <ArrowLeft size={24} />
+      </Button>
           <h1 className="h3 fw-bold m-0">Segurança</h1>
         </div>
 

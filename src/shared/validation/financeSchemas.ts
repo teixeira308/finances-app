@@ -4,7 +4,6 @@ export function validateTransaction(input: Partial<Transaction>): string[] {
   const errors: string[] = [];
 
   if (!input.type) errors.push("Tipo obrigatorio.");
-  if (!input.categoryId) errors.push("Categoria obrigatoria.");
   if (!input.occurredAt) errors.push("Data obrigatoria.");
   if (!input.amount || input.amount <= 0) errors.push("Valor deve ser maior que zero.");
   if (input.note && input.note.length > 240) errors.push("Observacao muito longa.");

@@ -22,6 +22,9 @@ const CategoriesScreen = () => {
   
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<TransactionType>('expense');
+
+  const filteredCategories = categories.filter(c => c.type === activeTab);
 
   const handleOpen = () => setIsModalOpen(true);
   const handleClose = () => {
@@ -71,7 +74,7 @@ const CategoriesScreen = () => {
         <div className="d-flex align-items-center gap-2 flex-grow-1">
           <button
             onClick={() => navigate(-1)}
-            className="btn btn-link p-2 text-white border-0 bg-opacity-5 rounded-3 text-decoration-none shadow-none d-flex align-items-center justify-content-center"
+            className="btn btn-link p-2 text-white border-0 bg-black rounded-3 text-decoration-none shadow-none d-flex align-items-center justify-content-center"
             style={{ width: 40, height: 40 }}
           >
             <ArrowLeft size={24} />
@@ -87,10 +90,34 @@ const CategoriesScreen = () => {
         </Button>
       </div>
 
+      <Nav
+        variant="pills"
+        activeKey={activeTab}
+        onSelect={(k) => setActiveTab(k as TransactionType)}
+        className="bg-black p-1 rounded-3 mb-4"
+      >
+        <Nav.Item className="flex-grow-1">
+          <Nav.Link
+            eventKey="expense"
+            className={`text-center py-2 border-0 rounded-2 fw-bold ${activeTab === 'expense' ? 'bg-ios-red text-white' : 'text-ios-gray'}`}
+          >
+            Despesa
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item className="flex-grow-1">
+          <Nav.Link
+            eventKey="income"
+            className={`text-center py-2 border-0 rounded-2 fw-bold ${activeTab === 'income' ? 'bg-ios-green text-white' : 'text-ios-gray'}`}
+          >
+            Receita
+          </Nav.Link>
+        </Nav.Item>
+      </Nav>
+
       <Card className="bg-ios-dark-gray border-0 overflow-hidden mb-4 shadow-none">
-        {categories.length > 0 ? (
+        {filteredCategories.length > 0 ? (
           <ListGroup variant="flush" className="bg-transparent">
-            {categories.map((category) => (
+            {filteredCategories.map((category) => (
               <ListGroup.Item
                 key={category.id}
                 className="bg-transparent border-light border-opacity-10 px-3 py-3 d-flex align-items-center justify-content-between"

@@ -84,7 +84,8 @@ export const EditWorkspaceScreen: React.FC = () => {
   return (
     <Container className="mobile-container p-4 pb-5">
       <div className="d-flex align-items-center gap-3 pt-4 mb-4">
-        <Button variant="link" onClick={() => navigate("/workspaces")} className="p-2 text-white border-0 bg-opacity-5 rounded-3">
+<Button variant="link" onClick={() => navigate("/workspaces")}
+            className="p-2 text-white border-0 bg-black rounded-3">
           <ArrowLeft size={32} />
         </Button>
         <h1 className="h3 fw-bold m-0 text-truncate">Editar Espaço</h1>
