@@ -13,7 +13,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const { activeWorkspace } = useWorkspaces();
 
   return (
-    <div className="bg-black text-white d-flex" style={{ minHeight: '100dvh', height: '100dvh' }}>
+    <div className="bg-black text-white d-flex" style={{ height: '100%' }}>
       {/* Desktop Sidebar */}
       <Sidebar isCollapsed={isCollapsed} onToggle={() => setIsCollapsed(!isCollapsed)} />
 
