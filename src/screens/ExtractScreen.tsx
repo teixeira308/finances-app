@@ -116,7 +116,6 @@ const ExtractScreen = () => {
       await dispatch(deleteTransaction(deleteId)).unwrap();
       setIsDeleteModalOpen(false);
       setDeleteId(null);
-      dispatch(bootstrapTransactions(activeWorkspaceId));
     }
   };
 

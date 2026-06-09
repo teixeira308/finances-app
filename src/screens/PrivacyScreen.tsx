@@ -43,7 +43,6 @@ const PrivacyScreen = () => {
     setIsDeleting(true);
     try {
       await deleteUserAccount();
-      window.location.reload();
     } catch (err: any) {
       alert(err.message || 'Erro ao excluir conta. Re-autentique-se na aba Segurança primeiro.');
       setShowConfirmModal(false);

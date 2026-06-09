@@ -61,7 +61,7 @@ export const WorkspaceSelectionScreen: React.FC = () => {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       });
-      window.location.reload(); // Refresh list
+      navigate('/');
     } catch (err) {
       console.error(err);
       resetForm();

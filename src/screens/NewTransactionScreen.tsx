@@ -2,8 +2,8 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Card, Button, Form, Nav, Badge, Row, Col } from 'react-bootstrap';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { selectCategories, bootstrapCategories } from '@/features/categories/store/categoriesSlice';
-import { createTransaction, createPurchase, bootstrapTransactions } from '@/features/transactions/store/transactionsSlice';
+import { selectCategories } from '@/features/categories/store/categoriesSlice';
+import { createTransaction, createPurchase } from '@/features/transactions/store/transactionsSlice';
 import { createRecurringTransaction } from '@/features/transactions/store/recurringTransactionsSlice';
 import { ChevronDown, ArrowLeft, Calendar, Info, Plus, ArrowRight, ChevronLeft, DollarSign, Tag, Sparkles, ArrowUpDown, ChevronRight } from 'lucide-react';
 import { TransactionType, RecurrenceType, BusinessDayConfig } from '@/shared/models/finance';
@@ -257,7 +257,6 @@ const NewTransactionScreen = () => {
         })).unwrap();
       }
 
-      dispatch(bootstrapTransactions(activeWorkspaceId));
       navigate('/');
     } catch (err) {
       setTxError(err instanceof Error ? err.message : 'Erro ao salvar');

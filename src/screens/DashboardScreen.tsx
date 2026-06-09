@@ -8,8 +8,10 @@ import {
 import { ChevronLeft, ChevronRight, Calendar, BarChart3, ArrowRight, RefreshCw } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { calculateMonthlySummary } from '@/shared/models/finance';
-import { selectCategories } from '@/features/categories/store/categoriesSlice';
-import { selectRecurringTransactions } from '@/features/transactions/store/recurringTransactionsSlice';
+import { selectCategories, bootstrapCategories } from '@/features/categories/store/categoriesSlice';
+import { selectRecurringTransactions, bootstrapRecurringTransactions } from '@/features/transactions/store/recurringTransactionsSlice';
+import { bootstrapTransactions } from '@/features/transactions/store/transactionsSlice';
+import { bootstrapGoals } from '@/features/settings/store/goalsSlice';
 import { setSelectedMonth } from '@/features/dashboard/store/dashboardSlice';
 import { projectRecurringTransactions } from '@/shared/utils/projection';
 import { MoneyValue } from '@/shared/components/MoneyValue';
@@ -21,7 +23,7 @@ import { WorkspaceSwitcher } from '@/features/workspaces/components/WorkspaceSwi
 const DashboardScreen = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { activeWorkspace } = useWorkspaces();
+  const { activeWorkspace, activeWorkspaceId } = useWorkspaces();
   const monthRef = useAppSelector((state) => state.dashboard.selectedMonth);
   const transactions = useAppSelector((state) => state.transactions.items);
   const recurringTransactions = useAppSelector(selectRecurringTransactions);
@@ -99,7 +101,14 @@ const DashboardScreen = () => {
         </div>
         <div className="d-flex align-items-center gap-2">
           <button
-            onClick={() => window.location.reload()}
+            onClick={() => {
+              if (activeWorkspaceId) {
+                dispatch(bootstrapTransactions(activeWorkspaceId));
+                dispatch(bootstrapCategories(activeWorkspaceId));
+                dispatch(bootstrapRecurringTransactions(activeWorkspaceId));
+                dispatch(bootstrapGoals(activeWorkspaceId));
+              }
+            }}
             className="btn border-0 p-2 text-ios-gray shadow-none"
             title="Atualizar dados"
           >

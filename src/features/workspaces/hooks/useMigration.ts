@@ -14,10 +14,7 @@ export const useMigration = () => {
         setMigrating(true);
         try {
           await migrationService.runMigrationV2(user.uid);
-          // After migration, we might need to refresh workspaces.
-          // Since useWorkspaces has a useEffect on user, it might not re-run
-          // unless we force it or rely on Firestore real-time (not implemented yet).
-          window.location.reload(); // Simple way to ensure everything re-syncs
+          // Workspaces updated via onSnapshot in useWorkspaces
         } catch (err) {
           console.error("Migration failed:", err);
         } finally {
