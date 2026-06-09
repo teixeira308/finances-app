@@ -24,7 +24,8 @@ export const createRecurringTransaction = createAsyncThunk(
       createdAt: now,
       isActive: true
     };
-    return saveRecurringTransaction(recurring);
+    const clean = JSON.parse(JSON.stringify(recurring));
+    return saveRecurringTransaction(clean);
   }
 );
 

@@ -271,8 +271,7 @@ export const OnboardingScreen: React.FC = () => {
               {step > 0 ? (
                 <button
                   onClick={handleBack}
-                  className="btn border-0 py-3 px-4 rounded-3 d-flex align-items-center justify-content-center gap-2 text-white"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.08)' }}
+                  className="btn border-0 py-3 px-4 rounded-3 d-flex align-items-center justify-content-center gap-2 text-white bg-black"
                 >
                   <ChevronLeft size={20} />
                   Voltar

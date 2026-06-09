@@ -106,8 +106,7 @@ const TransactionGuide: React.FC<{ onFinish: () => void }> = ({ onFinish }) => {
             {step > 0 ? (
               <button
                 onClick={() => setStep(s => s - 1)}
-                className="btn border-0 py-3 px-4 rounded-3 d-flex align-items-center justify-content-center gap-2 text-white"
-                style={{ backgroundColor: 'rgba(255,255,255,0.08)' }}
+                className="btn border-0 py-3 px-4 rounded-3 d-flex align-items-center justify-content-center gap-2 text-white bg-black"
               >
                 <ChevronLeft size={20} />
                 Voltar
@@ -167,12 +166,6 @@ const NewTransactionScreen = () => {
 
   const filteredCategories = useMemo(() => categories.filter(c => c.type === txType), [categories, txType]);
 
-  useEffect(() => {
-    if (filteredCategories.length > 0) {
-      setCategoryId(filteredCategories[0].id);
-    }
-  }, [txType, filteredCategories]);
-
   const [txError, setTxError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -205,10 +198,6 @@ const NewTransactionScreen = () => {
   const handleSaveTransaction = async () => {
     if (rawAmount <= 0) {
       setTxError('Informe um valor válido');
-      return;
-    }
-    if (!categoryId && activeWorkspace?.type !== 'CREDIT_CARD') {
-      setTxError('Selecione uma categoria');
       return;
     }
     if (!activeWorkspaceId) {
@@ -269,7 +258,7 @@ const NewTransactionScreen = () => {
     <Container className="mobile-container p-4 pb-5">
       <div className="mx-auto" style={{ maxWidth: '700px' }}>
         <div className="d-flex align-items-center gap-3 pt-4 mb-4">
-          <Button variant="link" onClick={() => navigate(-1)} className="p-2 text-white border-0 bg-opacity-5 rounded-3">
+          <Button variant="link" onClick={() => navigate(-1)} className="p-2 text-white border-0 bg-black rounded-3">
             <ArrowLeft size={32} />
           </Button>
           <h1 className="h3 fw-bold m-0 text-truncate">Nova Transação</h1>
@@ -317,9 +306,7 @@ const NewTransactionScreen = () => {
                 </div>
                 <div className="position-relative">
                   <Form.Select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className="py-3 fw-bold border-0 bg-ios-secondary text-white">
-                    {activeWorkspace?.type === 'CREDIT_CARD' && (
-                      <option value="">Sem categoria</option>
-                    )}
+                    <option value="">Sem categoria</option>
                     {filteredCategories.map((c) => (<option key={c.id} value={c.id}>{c.name}</option>))}
                   </Form.Select>
                   <ChevronDown size={18} className="position-absolute text-ios-gray" style={{ right: '1rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
