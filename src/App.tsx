@@ -19,6 +19,7 @@ import { useAppDispatch, useAppSelector } from './store/hooks';
 import { bootstrapTransactions } from './features/transactions/store/transactionsSlice';
 import { bootstrapCategories } from './features/categories/store/categoriesSlice';
 import { bootstrapRecurringTransactions } from './features/transactions/store/recurringTransactionsSlice';
+import { bootstrapGoals } from './features/settings/store/goalsSlice';
 import { bootstrapOnboarding, bootstrapTransactionGuide } from './features/onboarding/store/onboardingSlice';
 import { bootstrapTerms } from './features/terms/store/termsSlice';
 import { TermsGuard } from './navigation/TermsGuard';
@@ -42,6 +43,7 @@ function App() {
       dispatch(bootstrapTransactions(activeWorkspaceId));
       dispatch(bootstrapCategories(activeWorkspaceId));
       dispatch(bootstrapRecurringTransactions(activeWorkspaceId));
+      dispatch(bootstrapGoals(activeWorkspaceId));
     }
   }, [dispatch, user, activeWorkspaceId]);
 

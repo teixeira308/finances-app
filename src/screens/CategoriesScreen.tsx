@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Container, Card, Button, ListGroup, Modal, Form, Badge, Nav } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { selectCategories, createCategory, deleteCategory, bootstrapCategories } from '@/features/categories/store/categoriesSlice';
+import { selectCategories, createCategory, deleteCategory } from '@/features/categories/store/categoriesSlice';
 import { Plus, Tag, Trash2, ArrowLeft } from 'lucide-react';
 import { TransactionType } from '@/shared/models/finance';
 import { useWorkspaces } from '@/features/workspaces/hooks/useWorkspaces';
@@ -52,7 +52,6 @@ const CategoriesScreen = () => {
         iconToken: 'tag'
       })).unwrap();
       handleClose();
-      dispatch(bootstrapCategories(activeWorkspaceId));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao criar categoria');
     }
@@ -63,7 +62,6 @@ const CategoriesScreen = () => {
       await dispatch(deleteCategory(deleteId)).unwrap();
       setIsDeleteModalOpen(false);
       setDeleteId(null);
-      dispatch(bootstrapCategories(activeWorkspaceId));
     }
   };
 
