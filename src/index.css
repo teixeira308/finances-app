@@ -43,6 +43,20 @@ body {
   --safe-area-right: env(safe-area-inset-right, 0px);
 }
 
+/* ── Touch & Select Safety (Safari/WebView) ─────
+ * -webkit-tap-highlight-color: transparent — removes
+ *   the grey flash when tapping buttons/links on iOS.
+ * user-select: none on interactive elements — prevents
+ *   accidental text selection when tapping fast.       */
+button, a, .btn, [role="button"], input, select, textarea, label {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, .btn, nav a, .nav-link, [role="button"], .bottom-nav * {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
 img {
   max-width: 100%;
   height: auto;
