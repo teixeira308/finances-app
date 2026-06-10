@@ -205,7 +205,7 @@ const TermsOfUseScreen = () => {
       await dispatch(acceptTerms()).unwrap();
       setShowSuccess(true);
       setTimeout(() => {
-        navigate(-1);
+        navigate('/');
       }, 1500);
     } catch {
       alert('Erro ao salvar aceitação. Tente novamente.');
