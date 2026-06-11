@@ -53,7 +53,7 @@ export const WorkspaceSelectionScreen: React.FC = () => {
         name: newWsName.trim(),
         type: newWsType,
         metadata: {
-          color: isAccount ? "#30D158" : newWsColor,
+          color: newWsColor,
           ...(isAccount && {
             initialBalance: parseFloat(newWsInitialBalance) || 0,
           }),
@@ -236,7 +236,7 @@ export const WorkspaceSelectionScreen: React.FC = () => {
             <div className="w-100">
               <Form.Control 
                 type="color" 
-                value={isAccount ? "#30D158" : newWsColor}
+                value={newWsColor}
                 onChange={(e) => setNewWsColor(e.target.value)}
                 className="p-0 border-0 bg-transparent w-100"
                 style={{ height: '80px', cursor: 'pointer' }}

@@ -70,7 +70,7 @@ export const OnboardingScreen: React.FC = () => {
       try {
         const id = nanoid();
         const metadata: Record<string, unknown> = {
-          color: wsType === 'CREDIT_CARD' ? wsColor : '#30D158',
+          color: wsColor,
         };
         if (wsType === 'ACCOUNT') {
           metadata.initialBalance = parseFloat(wsInitialBalance) || 0;
@@ -204,7 +204,7 @@ export const OnboardingScreen: React.FC = () => {
               <Form.Label className="small fw-bold text-ios-gray text-uppercase">Cor do Espaço</Form.Label>
               <Form.Control
                 type="color"
-                value={wsType === 'ACCOUNT' ? '#30D158' : wsColor}
+                value={wsColor}
                 onChange={(e) => setWsColor(e.target.value)}
                 className="p-0 border-0 bg-transparent w-100"
                 style={{ height: '60px', cursor: 'pointer' }}
