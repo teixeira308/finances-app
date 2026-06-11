@@ -15,6 +15,7 @@ export interface FinancialWorkspace {
     dueDay?: number;
     color?: string;
     icon?: string;
+    initialBalance?: number;
   };
   createdAt: string;
   updatedAt: string;

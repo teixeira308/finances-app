@@ -61,6 +61,8 @@ const DashboardScreen = () => {
     [goals, monthRef, allTransactions]
   );
 
+  const totalBalance = (activeWorkspace?.metadata?.initialBalance || 0) + summary.netBalance;
+
   const pieData = useMemo(() => {
     return summary.topCategories.map(item => {
       const category = categories.find(c => c.id === item.categoryId);
@@ -147,11 +149,11 @@ const DashboardScreen = () => {
       <Row className="g-3">
         {/* Column: Summary and Balance */}
         <Col xs={12} lg={5}>
-          <Card className="bg-transparent border-2 mb-3" style={{ borderColor: summary.netBalance >= 0 ? 'var(--ios-green)' : 'var(--ios-red)' }}>
+          <Card className="bg-transparent border-2 mb-3" style={{ borderColor: totalBalance >= 0 ? 'var(--ios-green)' : 'var(--ios-red)' }}>
             <Card.Body className="py-4 px-4">
               <p className="text-uppercase small fw-bold tracking-widest text-ios-gray mb-1">Saldo Previsto</p>
-              <h2 className="display-4 fw-bold m-0" style={{ color: summary.netBalance >= 0 ? 'var(--ios-green)' : 'var(--ios-red)' }}>
-                <MoneyValue value={summary.netBalance} />
+              <h2 className="display-4 fw-bold m-0" style={{ color: totalBalance >= 0 ? 'var(--ios-green)' : 'var(--ios-red)' }}>
+                <MoneyValue value={totalBalance} />
               </h2>
             </Card.Body>
           </Card>

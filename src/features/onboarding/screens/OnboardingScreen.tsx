@@ -40,6 +40,7 @@ export const OnboardingScreen: React.FC = () => {
   const [wsClosingDay, setWsClosingDay] = useState('15');
   const [wsDueDay, setWsDueDay] = useState('22');
   const [wsColor, setWsColor] = useState('#0A84FF');
+  const [wsInitialBalance, setWsInitialBalance] = useState('');
   const [isCreating, setIsCreating] = useState(false);
 
   const isLastStep = step === steps.length;
@@ -71,6 +72,9 @@ export const OnboardingScreen: React.FC = () => {
         const metadata: Record<string, unknown> = {
           color: wsType === 'CREDIT_CARD' ? wsColor : '#30D158',
         };
+        if (wsType === 'ACCOUNT') {
+          metadata.initialBalance = parseFloat(wsInitialBalance) || 0;
+        }
         if (wsType === 'CREDIT_CARD') {
           metadata.limit = parseFloat(wsLimit) || 0;
           metadata.closingDay = parseInt(wsClosingDay, 10) || 15;
@@ -206,6 +210,21 @@ export const OnboardingScreen: React.FC = () => {
                 style={{ height: '60px', cursor: 'pointer' }}
               />
             </Form.Group>
+
+            {wsType === 'ACCOUNT' && (
+              <Form.Group className="mb-4">
+                <Form.Label className="small fw-bold text-ios-gray text-uppercase">Saldo Inicial</Form.Label>
+                <Form.Control
+                  type="number"
+                  step="0.01"
+                  placeholder="R$ 0,00"
+                  value={wsInitialBalance}
+                  onChange={(e) => setWsInitialBalance(e.target.value)}
+                  className="bg-ios-secondary border-0 text-white py-3 px-3 shadow-none"
+                />
+                <Form.Text className="text-ios-gray">Pode ser positivo ou negativo</Form.Text>
+              </Form.Group>
+            )}
 
             {wsType === 'CREDIT_CARD' && (
               <>
