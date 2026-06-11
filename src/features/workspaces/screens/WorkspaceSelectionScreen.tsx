@@ -21,6 +21,7 @@ export const WorkspaceSelectionScreen: React.FC = () => {
   const [newWsClosingDay, setNewWsClosingDay] = useState("15");
   const [newWsDueDay, setNewWsDueDay] = useState("22");
   const [newWsColor, setNewWsColor] = useState("#0A84FF");
+  const [newWsInitialBalance, setNewWsInitialBalance] = useState("");
   const [isSaving, setIsLoading] = useState(false);
 
   const isAccount = newWsType === "ACCOUNT";
@@ -37,6 +38,7 @@ export const WorkspaceSelectionScreen: React.FC = () => {
     setNewWsClosingDay("15");
     setNewWsDueDay("22");
     setNewWsColor("#0A84FF");
+    setNewWsInitialBalance("");
   };
 
   const handleCreate = async () => {
@@ -52,6 +54,9 @@ export const WorkspaceSelectionScreen: React.FC = () => {
         type: newWsType,
         metadata: {
           color: isAccount ? "#30D158" : newWsColor,
+          ...(isAccount && {
+            initialBalance: parseFloat(newWsInitialBalance) || 0,
+          }),
           ...(newWsType === "CREDIT_CARD" && {
             limit: parseFloat(newWsLimit) || 0,
             closingDay: parseInt(newWsClosingDay, 10) || 15,
@@ -172,6 +177,21 @@ export const WorkspaceSelectionScreen: React.FC = () => {
               </Button>
             </div>
           </Form.Group>
+
+          {newWsType === 'ACCOUNT' && (
+            <Form.Group className="mb-4">
+              <Form.Label className="small fw-bold text-ios-gray text-uppercase">Saldo Inicial</Form.Label>
+              <Form.Control 
+                type="number"
+                step="0.01"
+                placeholder="R$ 0,00"
+                value={newWsInitialBalance}
+                onChange={(e) => setNewWsInitialBalance(e.target.value)}
+                className="bg-ios-secondary border-0 text-white py-3 px-3 shadow-none"
+              />
+              <Form.Text className="text-ios-gray">Pode ser positivo ou negativo</Form.Text>
+            </Form.Group>
+          )}
 
           {newWsType === 'CREDIT_CARD' && (
             <>
