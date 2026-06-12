@@ -1,12 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import { Container, Card, Row, Col, Button, Form } from 'react-bootstrap';
 import { useAppSelector } from '@/store/hooks';
+import { selectCategories } from '@/features/categories/store/categoriesSlice';
 import { MoneyValue } from '@/shared/components/MoneyValue';
 import { ChevronLeft, ChevronRight, Calendar, ArrowRight } from 'lucide-react';
 import { useWorkspaces } from '../hooks/useWorkspaces';
 
 export const InvoicesScreen: React.FC = () => {
   const transactions = useAppSelector((state) => state.transactions.items);
+  const categories = useAppSelector(selectCategories);
   const { activeWorkspace } = useWorkspaces();
   
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
@@ -86,15 +88,18 @@ export const InvoicesScreen: React.FC = () => {
       <div className="d-flex flex-column gap-2 mb-5">
         {invoiceTransactions.map((tx) => (
           <Card key={tx.id} className="bg-ios-dark-gray border-0 p-3 rounded-4 shadow-none border-bottom border-white border-opacity-5">
-            <Card.Body className="p-0 d-flex justify-content-between align-items-center">
-              <div>
-                <p className="m-0 fw-bold text-white small">{tx.note || 'Compra'}</p>
+            <Card.Body className="p-0 d-flex justify-content-between align-items-start">
+              <div className="flex-grow-1 me-3">
+                <p className="m-0 fw-bold text-white small">
+                  {categories.find(c => c.id === tx.categoryId)?.name || 'Sem categoria'}
+                </p>
                 <p className="m-0 x-small text-ios-gray">
                   {new Date(tx.occurredAt).toLocaleDateString('pt-BR')} 
                   {tx.installmentInfo && ` • Parcela ${tx.installmentInfo.current}/${tx.installmentInfo.total}`}
                 </p>
+                {tx.note && <p className="m-0 x-small text-ios-gray mt-1">{tx.note}</p>}
               </div>
-              <span className="fw-bold text-white">
+              <span className="fw-bold text-white text-nowrap">
                 <MoneyValue value={tx.amount} />
               </span>
             </Card.Body>

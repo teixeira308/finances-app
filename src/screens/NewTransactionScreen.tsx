@@ -166,6 +166,12 @@ const NewTransactionScreen = () => {
 
   const filteredCategories = useMemo(() => categories.filter(c => c.type === txType), [categories, txType]);
 
+  useEffect(() => {
+    if (activeWorkspace?.type === 'CREDIT_CARD') {
+      setTxType('expense');
+    }
+  }, [activeWorkspace?.type]);
+
   const [txError, setTxError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -270,14 +276,33 @@ const NewTransactionScreen = () => {
               <Nav.Item className="flex-grow-1">
                 <Nav.Link eventKey="expense" className={`text-center py-2 border-0 rounded-2 fw-bold ${txType === 'expense' ? 'bg-ios-red text-white' : 'text-ios-gray'}`}>Despesa</Nav.Link>
               </Nav.Item>
-              <Nav.Item className="flex-grow-1">
-                <Nav.Link eventKey="income" className={`text-center py-2 border-0 rounded-2 fw-bold ${txType === 'income' ? 'bg-ios-green text-white' : 'text-ios-gray'}`}>Receita</Nav.Link>
-              </Nav.Item>
+              {activeWorkspace?.type !== 'CREDIT_CARD' && (
+                <Nav.Item className="flex-grow-1">
+                  <Nav.Link eventKey="income" className={`text-center py-2 border-0 rounded-2 fw-bold ${txType === 'income' ? 'bg-ios-green text-white' : 'text-ios-gray'}`}>Receita</Nav.Link>
+                </Nav.Item>
+              )}
             </Nav>
 
             <Form className="space-y-4">
               <Form.Group className="mb-4">
-                <Form.Label className="small fw-bold text-ios-gray mb-1 text-uppercase">Valor Total</Form.Label>
+                <div className="d-flex justify-content-between align-items-center mb-1">
+                  <Form.Label className="small fw-bold text-ios-gray m-0 text-uppercase">Categoria</Form.Label>
+                  <Button variant="link" size="sm" className="text-primary p-0 text-decoration-none" onClick={() => navigate('/categories')}>
+                    <Plus size={14} className="me-1" />
+                    Nova
+                  </Button>
+                </div>
+                <div className="position-relative">
+                  <Form.Select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className="py-3 fw-bold border-0 bg-ios-secondary text-white">
+                    <option value="">Sem categoria</option>
+                    {filteredCategories.map((c) => (<option key={c.id} value={c.id}>{c.name}</option>))}
+                  </Form.Select>
+                  <ChevronDown size={18} className="position-absolute text-ios-gray" style={{ right: '1rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                </div>
+              </Form.Group>
+
+              <Form.Group className="mb-4">
+                <Form.Label className="small fw-bold text-ios-gray mb-1 text-uppercase">Valor</Form.Label>
                 <Form.Control type="text" inputMode="decimal" value={displayAmount} onChange={handleAmountChange} autoFocus className="text-center py-4 border-0 bg-transparent fs-1 fw-bold text-white shadow-none" style={{ fontSize: '3rem' }} />
               </Form.Group>
 
@@ -295,23 +320,6 @@ const NewTransactionScreen = () => {
                   </Form.Select>
                 </Form.Group>
               )}
-
-              <Form.Group className="mb-4">
-                <div className="d-flex justify-content-between align-items-center mb-1">
-                  <Form.Label className="small fw-bold text-ios-gray m-0 text-uppercase">Categoria</Form.Label>
-                  <Button variant="link" size="sm" className="text-primary p-0 text-decoration-none" onClick={() => navigate('/categories')}>
-                    <Plus size={14} className="me-1" />
-                    Nova
-                  </Button>
-                </div>
-                <div className="position-relative">
-                  <Form.Select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className="py-3 fw-bold border-0 bg-ios-secondary text-white">
-                    <option value="">Sem categoria</option>
-                    {filteredCategories.map((c) => (<option key={c.id} value={c.id}>{c.name}</option>))}
-                  </Form.Select>
-                  <ChevronDown size={18} className="position-absolute text-ios-gray" style={{ right: '1rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
-                </div>
-              </Form.Group>
 
               <Form.Group className="mb-4">
                 <Form.Label className="small fw-bold text-ios-gray mb-1 text-uppercase">Data</Form.Label>

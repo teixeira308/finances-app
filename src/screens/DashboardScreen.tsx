@@ -1,11 +1,14 @@
 import React, { useMemo } from 'react';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, ListGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { 
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
   AreaChart, Area, XAxis, YAxis, CartesianGrid
 } from 'recharts';
-import { ChevronLeft, ChevronRight, Calendar, BarChart3, ArrowRight, RefreshCw } from 'lucide-react';
+import { 
+  ChevronLeft, ChevronRight, Calendar, BarChart3, ArrowRight, RefreshCw,
+  ShoppingBag, Coffee, Car, Home, Film, Briefcase, Heart, Plus, Tag, ArrowUpCircle
+} from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { calculateMonthlySummary } from '@/shared/models/finance';
 import { selectCategories, bootstrapCategories } from '@/features/categories/store/categoriesSlice';
@@ -19,6 +22,18 @@ import { PrivacyToggle } from '@/shared/components/PrivacyToggle';
 import { useWorkspaces } from '@/features/workspaces/hooks/useWorkspaces';
 import { CreditCardDashboard } from '@/features/workspaces/screens/CreditCardDashboard';
 import { WorkspaceSwitcher } from '@/features/workspaces/components/WorkspaceSwitcher';
+
+const categoryIcons: Record<string, React.ElementType> = {
+  shopping: ShoppingBag,
+  food: Coffee,
+  transport: Car,
+  housing: Home,
+  entertainment: Film,
+  work: Briefcase,
+  health: Heart,
+  tag: Tag,
+  default: Plus
+};
 
 const DashboardScreen = () => {
   const navigate = useNavigate();
@@ -74,6 +89,22 @@ const DashboardScreen = () => {
       };
     });
   }, [summary, categories]);
+
+  const sortedTransactions = useMemo(() => {
+    return [...allTransactions].sort((a, b) => 
+      new Date(a.occurredAt).getTime() - new Date(b.occurredAt).getTime()
+    );
+  }, [allTransactions]);
+
+  const groupedTransactions = useMemo(() => {
+    const groups: Record<string, typeof sortedTransactions> = {};
+    sortedTransactions.forEach((tx) => {
+      const date = new Date(tx.occurredAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+      if (!groups[date]) groups[date] = [];
+      groups[date].push(tx);
+    });
+    return groups;
+  }, [sortedTransactions]);
 
   const dailyData = useMemo(() => {
     const data: Record<string, { income: number; expense: number }> = {};
@@ -257,6 +288,61 @@ const DashboardScreen = () => {
               </Row>
             </Card.Body>
           </Card>
+
+          <h3 className="h5 fw-bold mb-3 px-1">Lançamentos</h3>
+          {Object.keys(groupedTransactions).length > 0 ? (
+            Object.entries(groupedTransactions).map(([date, txs]) => (
+              <div key={date} className="mb-4">
+                <div className="d-flex justify-content-between align-items-center px-1 mb-2">
+                  <span className="small fw-bold text-ios-gray">{date}</span>
+                </div>
+                <div className="d-flex flex-column gap-2">
+                  {txs.map((tx) => {
+                    const category = categories.find(c => c.id === tx.categoryId);
+                    const isProjected = tx.id.startsWith('projected-');
+                    return (
+                      <Card key={tx.id} className={`bg-ios-dark-gray border-0 p-3 rounded-4 shadow-none border-bottom border-white border-opacity-5 ${isProjected ? 'opacity-75' : ''}`}>
+                        <Card.Body className="p-0 d-flex justify-content-between align-items-start">
+                          <div className="flex-grow-1 me-3">
+                            <p className="m-0 fw-bold text-white small">
+                              {category?.name || 'Sem categoria'}
+                            </p>
+                            <p className="m-0 x-small text-ios-gray">
+                              {new Date(tx.occurredAt).toLocaleDateString('pt-BR')} 
+                              {tx.installmentInfo && ` • Parcela ${tx.installmentInfo.current}/${tx.installmentInfo.total}`}
+                            </p>
+                            {tx.note && <p className="m-0 x-small text-ios-gray mt-1">{tx.note}</p>}
+                          </div>
+                          <span className={`fw-bold text-nowrap ${tx.type === 'expense' ? 'text-ios-red' : 'text-ios-green'}`}>
+                            {tx.type === 'expense' ? '-' : '+'} <MoneyValue value={tx.amount} />
+                          </span>
+                        </Card.Body>
+                      </Card>
+                    );
+                  })}
+                </div>
+                {(() => {
+                  const dayIncome = txs.filter(tx => tx.type === 'income').reduce((s, t) => s + t.amount, 0);
+                  const dayExpense = txs.filter(tx => tx.type === 'expense').reduce((s, t) => s + t.amount, 0);
+                  const net = dayIncome - dayExpense;
+                  return (
+                    <div className="d-flex justify-content-end px-1 mt-2">
+                      <span className={`small fw-bold ${net >= 0 ? 'text-ios-green' : 'text-ios-red'}`}>
+                        Saldo do dia: {net >= 0 ? '+' : '-'} <MoneyValue value={Math.abs(net)} />
+                      </span>
+                    </div>
+                  );
+                })()}
+              </div>
+            ))
+          ) : (
+            <Card className="bg-ios-dark-gray border-0 shadow-none mb-4">
+              <Card.Body className="text-center text-ios-gray py-4">
+                <Calendar size={32} className="mb-2 opacity-25" />
+                <p className="small m-0">Nenhuma transação neste mês</p>
+              </Card.Body>
+            </Card>
+          )}
 
           <Button 
             variant="ios-primary" 

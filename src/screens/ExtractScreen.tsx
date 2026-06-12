@@ -3,7 +3,7 @@ import { Container, Card, Button, ListGroup, Modal, Badge, Form } from 'react-bo
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectCategories, bootstrapCategories } from '@/features/categories/store/categoriesSlice';
 import { deleteTransaction, bootstrapTransactions } from '@/features/transactions/store/transactionsSlice';
-import { selectRecurringTransactions, bootstrapRecurringTransactions } from '@/features/transactions/store/recurringTransactionsSlice';
+import { selectRecurringTransactions, bootstrapRecurringTransactions, deleteRecurringTransaction } from '@/features/transactions/store/recurringTransactionsSlice';
 import { 
   Trash2, ArrowUpCircle, RefreshCw,
   ShoppingBag, Coffee, Car, Home, Film, Briefcase, Plus, Heart,
@@ -71,9 +71,9 @@ const ExtractScreen = () => {
       });
     }
     
-    // Sort
+    // Sort ascending by date
     return combined.sort((a, b) => 
-      new Date(b.occurredAt).getTime() - new Date(a.occurredAt).getTime()
+      new Date(a.occurredAt).getTime() - new Date(b.occurredAt).getTime()
     );
   }, [transactions, recurringTransactions, monthRef, searchTerm, categories]);
 
@@ -105,9 +105,11 @@ const ExtractScreen = () => {
 
   const confirmDelete = async () => {
     if (deleteId && activeWorkspaceId) {
-      // Don't allow deleting projected transactions through this UI for now
       if (deleteId.startsWith('projected-')) {
-        alert('Para remover uma transação recorrente, vá em Ajustes.');
+        const recurring = recurringTransactions.find((rt: { id: string }) => deleteId.startsWith(`projected-${rt.id}`));
+        if (recurring) {
+          await dispatch(deleteRecurringTransaction(recurring.id)).unwrap();
+        }
         setIsDeleteModalOpen(false);
         setDeleteId(null);
         return;
@@ -230,7 +232,6 @@ const ExtractScreen = () => {
                             variant="link" 
                             className="p-1 text-ios-red opacity-50 shadow-none" 
                             onClick={() => { setDeleteId(tx.id); setIsDeleteModalOpen(true); }}
-                            disabled={isProjected}
                           >
                             <Trash2 size={16} />
                           </Button>
@@ -239,6 +240,18 @@ const ExtractScreen = () => {
                     );
                   })}
                 </ListGroup>
+                {(() => {
+                  const dayIncome = txs.filter(tx => tx.type === 'income').reduce((s, t) => s + t.amount, 0);
+                  const dayExpense = txs.filter(tx => tx.type === 'expense').reduce((s, t) => s + t.amount, 0);
+                  const net = dayIncome - dayExpense;
+                  return (
+                    <div className="px-3 py-2 d-flex justify-content-end border-top border-light border-opacity-10">
+                      <span className={`small fw-bold ${net >= 0 ? 'text-ios-green' : 'text-ios-red'}`}>
+                        Saldo do dia: {net >= 0 ? '+' : '-'} <MoneyValue value={Math.abs(net)} />
+                      </span>
+                    </div>
+                  );
+                })()}
               </Card>
             </div>
           ))
