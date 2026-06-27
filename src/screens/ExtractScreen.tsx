@@ -171,7 +171,7 @@ const ExtractScreen = () => {
           amount: editRawAmount,
           occurredAt: new Date(editOccurredAt).toISOString(),
           categoryId: editCategoryId,
-          note: editNote || undefined,
+          ...(editNote ? { note: editNote } : {}),
         }
       })).unwrap();
     }
@@ -296,9 +296,18 @@ const ExtractScreen = () => {
 
       <div className="mx-auto" style={{ maxWidth: '900px' }}>
         {Object.keys(groupedTransactions).length > 0 ? (
-          Object.entries(groupedTransactions).map(([date, txs]) => (
+          Object.entries(groupedTransactions).map(([date, txs]) => {
+            const dayIncome = txs.filter(tx => tx.type === 'income').reduce((s, t) => s + t.amount, 0);
+            const dayExpense = txs.filter(tx => tx.type === 'expense').reduce((s, t) => s + t.amount, 0);
+            const dayNet = dayIncome - dayExpense;
+            return (
             <div key={date} className="mb-4">
-              <h5 className="small fw-bold text-ios-gray px-2 mb-2">{date}</h5>
+              <div className="d-flex align-items-center justify-content-between px-2 mb-2">
+                <h5 className="small fw-bold text-ios-gray m-0">{date}</h5>
+                <span className={`small fw-bold ${dayNet >= 0 ? 'text-ios-green' : 'text-ios-red'}`}>
+                  {dayNet >= 0 ? '+' : '-'} <MoneyValue value={Math.abs(dayNet)} />
+                </span>
+              </div>
               <Card className="bg-ios-dark-gray border-0 overflow-hidden shadow-none">
                 <ListGroup variant="flush" className="bg-transparent">
                   {txs.map((tx) => {
@@ -384,21 +393,10 @@ const ExtractScreen = () => {
                     );
                   })}
                 </ListGroup>
-                {(() => {
-                  const dayIncome = txs.filter(tx => tx.type === 'income').reduce((s, t) => s + t.amount, 0);
-                  const dayExpense = txs.filter(tx => tx.type === 'expense').reduce((s, t) => s + t.amount, 0);
-                  const net = dayIncome - dayExpense;
-                  return (
-                    <div className="px-3 py-2 d-flex justify-content-end border-top border-light border-opacity-10">
-                      <span className={`small fw-bold ${net >= 0 ? 'text-ios-green' : 'text-ios-red'}`}>
-                        Saldo do dia: {net >= 0 ? '+' : '-'} <MoneyValue value={Math.abs(net)} />
-                      </span>
-                    </div>
-                  );
-                })()}
               </Card>
             </div>
-          ))
+            );
+          })
         ) : (
           <div className="py-5 text-center text-ios-gray">
             <Calendar size={48} className="mb-3 opacity-25" />

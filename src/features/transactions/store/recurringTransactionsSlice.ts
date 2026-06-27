@@ -39,12 +39,16 @@ export const deleteRecurringTransaction = createAsyncThunk(
 
 export const updateRecurringTransaction = createAsyncThunk(
   "recurring/update",
-  async (input: { id: string; updates: Partial<Pick<RecurringTransaction, "amount" | "name" | "categoryId" | "startDate">> }) => {
-    const recurring = {
+  async (input: { id: string; updates: Partial<Pick<RecurringTransaction, "amount" | "name" | "categoryId" | "startDate">> }, { getState }) => {
+    const state = getState() as { recurringTransactions: { items: RecurringTransaction[] } };
+    const existing = state.recurringTransactions.items.find(t => t.id === input.id);
+    if (!existing) throw new Error("Recurring transaction not found");
+
+    const recurring: RecurringTransaction = {
+      ...existing,
       ...input.updates,
-      id: input.id,
     };
-    return saveRecurringTransaction(recurring as RecurringTransaction);
+    return saveRecurringTransaction(recurring);
   }
 );
 
