@@ -4,17 +4,11 @@ html, body, #root {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  /* ── WebView Hardening ────────────────────
-   * overscroll-behavior: none   – Blocks Android pull-to-refresh gesture.
-   * touch-action: manipulation  – Removes 300ms tap delay on mobile.
-   * -webkit-touch-callout: none – Prevents link preview popup in iOS WebView.
-   * -webkit-text-size-adjust   – Prevents font inflation on orientation change.
-   */
   overscroll-behavior: none;
   -webkit-text-size-adjust: 100%;
   touch-action: manipulation;
   -webkit-touch-callout: none;
-  -webkit-overflow-scrolling: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 html {
@@ -33,7 +27,7 @@ body {
   --ios-blue: #0079f2;
   --ios-green: #30D158;
   --ios-red: #FF453A;
-  --ios-gray: #8E8E93;
+  --ios-gray: #AEAEB2;
   --ios-dark-gray: #1C1C1E;
   --bs-body-bg: #000000;
   --bs-body-color: #ffffff;
@@ -41,13 +35,13 @@ body {
   --safe-area-bottom: env(safe-area-inset-bottom, 0px);
   --safe-area-left: env(safe-area-inset-left, 0px);
   --safe-area-right: env(safe-area-inset-right, 0px);
+
+  --bp-mobile: 480px;
+  --bp-tablet: 768px;
+  --bp-desktop: 1024px;
+  --bp-large: 1440px;
 }
 
-/* ── Touch & Select Safety (Safari/WebView) ─────
- * -webkit-tap-highlight-color: transparent — removes
- *   the grey flash when tapping buttons/links on iOS.
- * user-select: none on interactive elements — prevents
- *   accidental text selection when tapping fast.       */
 button, a, .btn, [role="button"], input, select, textarea, label {
   -webkit-tap-highlight-color: transparent;
 }
@@ -62,29 +56,46 @@ img {
   height: auto;
 }
 
-/* Typography refinement */
-h1, .h1 { font-size: 1.75rem !important; }
-h2, .h2 { font-size: 1.5rem !important; }
-h3, .h3 { font-size: 1.25rem !important; }
-h4, .h4 { font-size: 1.1rem !important; }
-h5, .h5 { font-size: 1rem !important; }
-h6, .h6 { font-size: 0.85rem !important; }
+/* Typography with responsive clamp */
+h1, .h1 { font-size: clamp(1.5rem, 2.5vw + 0.5rem, 2rem) !important; }
+h2, .h2 { font-size: clamp(1.25rem, 1.8vw + 0.4rem, 1.75rem) !important; }
+h3, .h3 { font-size: clamp(1.1rem, 1.2vw + 0.4rem, 1.35rem) !important; }
+h4, .h4 { font-size: clamp(1rem, 0.8vw + 0.5rem, 1.15rem) !important; }
+h5, .h5 { font-size: clamp(0.875rem, 0.5vw + 0.5rem, 1rem) !important; }
+h6, .h6 { font-size: clamp(0.75rem, 0.4vw + 0.4rem, 0.875rem) !important; }
 .small { font-size: 0.75rem !important; }
 .extra-small { font-size: 0.65rem !important; }
 
-/* ── Input safety (WebView focus zoom prevention) ──
- * iOS Safari auto-zooms into inputs when font-size < 16px.
- * This override ensures ALL inputs, selects, and textareas
- * stay at 16px minimum so the WebView never scales the page. */
 input, select, textarea {
   font-size: 16px !important;
 }
 
-/* Hide number input spinner */
 input[type=number]::-webkit-inner-spin-button, 
 input[type=number]::-webkit-outer-spin-button { 
   -webkit-appearance: none; 
   margin: 0; 
+}
+
+/* Focus visible for keyboard navigation */
+:focus-visible {
+  outline: 2px solid var(--ios-blue);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+button:focus-visible, .btn:focus-visible, a:focus-visible {
+  outline: 2px solid var(--ios-blue);
+  outline-offset: 2px;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Helper Classes */
@@ -110,7 +121,6 @@ input[type=number]::-webkit-outer-spin-button {
   scrollbar-width: none;
 }
 
-/* Safe area helper classes */
 .safe-area-top {
   padding-top: var(--safe-area-top);
 }
@@ -127,7 +137,6 @@ input[type=number]::-webkit-outer-spin-button {
   padding-right: var(--safe-area-right);
 }
 
-/* dvh utility for WebView compatibility */
 .min-vh-100 {
   min-height: 100dvh !important;
 }
@@ -136,7 +145,6 @@ input[type=number]::-webkit-outer-spin-button {
   height: 100% !important;
 }
 
-/* Custom rounded corners for cards like iOS */
 .card {
   border-radius: 1.5rem;
   background-color: var(--ios-dark-gray);
@@ -161,12 +169,12 @@ input[type=number]::-webkit-outer-spin-button {
   color: white !important;
 }
 
-/* Bottom navigation customization */
 .bottom-nav {
   height: calc(80px + var(--safe-area-bottom));
   padding-bottom: var(--safe-area-bottom);
   background-color: rgba(28, 28, 30, 0.9);
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   position: fixed;
   bottom: 0;
@@ -175,7 +183,6 @@ input[type=number]::-webkit-outer-spin-button {
   z-index: 1000;
 }
 
-/* Mobile container on desktop */
 .mobile-container {
   width: 100%;
   max-width: 448px;
@@ -183,8 +190,8 @@ input[type=number]::-webkit-outer-spin-button {
   min-height: 100dvh;
   position: relative;
   background-color: #000000;
-  padding-left: 0.75rem !important;
-  padding-right: 0.75rem !important;
+  padding-left: clamp(0.5rem, 3vw, 1rem) !important;
+  padding-right: clamp(0.5rem, 3vw, 1rem) !important;
   padding-top: 0.5rem !important;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -194,12 +201,11 @@ input[type=number]::-webkit-outer-spin-button {
   .mobile-container {
     max-width: 100%;
     margin: 0;
-    padding-left: 20px !important;
-    padding-right: 20px !important;
+    padding-left: clamp(1rem, 3vw, 2rem) !important;
+    padding-right: clamp(1rem, 3vw, 2rem) !important;
     padding-top: 10px !important;
   }
 
-  /* Main content will adjust based on Sidebar width in MainLayout */
   main {
     padding-bottom: 0 !important;
   }
@@ -209,9 +215,23 @@ input[type=number]::-webkit-outer-spin-button {
   }
 }
 
+@media (min-width: 1024px) {
+  .mobile-container {
+    padding-left: clamp(1.5rem, 4vw, 3rem) !important;
+    padding-right: clamp(1.5rem, 4vw, 3rem) !important;
+  }
+}
+
+@media (min-width: 1440px) {
+  .mobile-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+}
+
 /* Bootstrap Overrides for Dark Mode */
 .form-control, .form-select {
-  background-color: #2C2C2E !important; /* Lighter gray */
+  background-color: #2C2C2E !important;
   border: none !important;
   color: white !important;
   border-radius: 0.75rem !important;
@@ -265,13 +285,11 @@ input[type=number]::-webkit-outer-spin-button {
   border-radius: 0.5rem;
 }
 
-/* Spinner adjustment */
 .spinner-border {
   width: 3rem;
   height: 3rem;
 }
 
-/* Fix for horizontal scroll in Rows */
 .row {
   margin-left: 0 !important;
   margin-right: 0 !important;

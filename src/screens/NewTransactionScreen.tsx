@@ -172,6 +172,13 @@ const NewTransactionScreen = () => {
     }
   }, [activeWorkspace?.type]);
 
+  useEffect(() => {
+    const date = new Date(occurredAt);
+    setSelectedDay(date.getDate());
+    setSelectedWeekDay(date.getDay());
+    setStartDate(occurredAt.slice(0, 10));
+  }, [occurredAt]);
+
   const [txError, setTxError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -252,7 +259,7 @@ const NewTransactionScreen = () => {
         })).unwrap();
       }
 
-      navigate('/');
+      navigate('/extrato');
     } catch (err) {
       setTxError(err instanceof Error ? err.message : 'Erro ao salvar');
     } finally {
@@ -261,18 +268,18 @@ const NewTransactionScreen = () => {
   };
 
   return (
-    <Container className="mobile-container p-4 pb-5">
+    <Container className="mobile-container px-4 py-3 pb-3">
       <div className="mx-auto" style={{ maxWidth: '700px' }}>
-        <div className="d-flex align-items-center gap-3 pt-4 mb-4">
-          <Button variant="link" onClick={() => navigate(-1)} className="p-2 text-white border-0 bg-black rounded-3">
+        <div className="d-flex align-items-center gap-2 pt-2 mb-3">
+          <Button variant="link" onClick={() => navigate(-1)} className="p-2 text-white border-0 bg-black rounded-3" aria-label="Voltar">
             <ArrowLeft size={32} />
           </Button>
           <h1 className="h3 fw-bold m-0 text-truncate">Nova Transação</h1>
         </div>
 
-        <Card className="bg-ios-dark-gray border-0 p-4 mb-4 shadow-none">
+        <Card className="bg-ios-dark-gray border-0 p-3 mb-3 shadow-none">
           <Card.Body className="p-0">
-            <Nav variant="pills" activeKey={txType} onSelect={(k) => setTxType(k as string)} className="bg-black p-1 rounded-3 mb-4">
+            <Nav variant="pills" activeKey={txType} onSelect={(k) => setTxType(k as string)} className="bg-black p-1 rounded-3 mb-3">
               <Nav.Item className="flex-grow-1">
                 <Nav.Link eventKey="expense" className={`text-center py-2 border-0 rounded-2 fw-bold ${txType === 'expense' ? 'bg-ios-red text-white' : 'text-ios-gray'}`}>Despesa</Nav.Link>
               </Nav.Item>
@@ -284,7 +291,7 @@ const NewTransactionScreen = () => {
             </Nav>
 
             <Form className="space-y-4">
-              <Form.Group className="mb-4">
+              <Form.Group className="mb-3">
                 <div className="d-flex justify-content-between align-items-center mb-1">
                   <Form.Label className="small fw-bold text-ios-gray m-0 text-uppercase">Categoria</Form.Label>
                   <Button variant="link" size="sm" className="text-primary p-0 text-decoration-none" onClick={() => navigate('/categories')}>
@@ -301,13 +308,13 @@ const NewTransactionScreen = () => {
                 </div>
               </Form.Group>
 
-              <Form.Group className="mb-4">
+              <Form.Group className="mb-3">
                 <Form.Label className="small fw-bold text-ios-gray mb-1 text-uppercase">Valor</Form.Label>
-                <Form.Control type="text" inputMode="decimal" value={displayAmount} onChange={handleAmountChange} autoFocus className="text-center py-4 border-0 bg-transparent fs-1 fw-bold text-white shadow-none" style={{ fontSize: '3rem' }} />
+                <Form.Control type="text" inputMode="decimal" value={displayAmount} onChange={handleAmountChange} autoFocus className="text-center py-3 border-0 bg-transparent fs-1 fw-bold text-white shadow-none" style={{ fontSize: '3rem' }} />
               </Form.Group>
 
               {activeWorkspace?.type === 'CREDIT_CARD' && (
-                <Form.Group className="mb-4">
+                <Form.Group className="mb-3">
                   <Form.Label className="small fw-bold text-ios-gray mb-1 text-uppercase">Parcelas</Form.Label>
                   <Form.Select
                     value={installments}
@@ -321,7 +328,7 @@ const NewTransactionScreen = () => {
                 </Form.Group>
               )}
 
-              <Form.Group className="mb-4">
+              <Form.Group className="mb-3">
                 <Form.Label className="small fw-bold text-ios-gray mb-1 text-uppercase">Data</Form.Label>
                 <Form.Control
                   type="datetime-local"
@@ -331,7 +338,7 @@ const NewTransactionScreen = () => {
                 />
               </Form.Group>
 
-              <Form.Group className="mb-4">
+              <Form.Group className="mb-3">
                 <Form.Label className="small fw-bold text-ios-gray mb-1 text-uppercase">Observação</Form.Label>
                 <Form.Control
                   as="textarea"
@@ -344,7 +351,7 @@ const NewTransactionScreen = () => {
               </Form.Group>
 
               {activeWorkspace?.type === 'ACCOUNT' && (
-                <div className="mb-4">
+                <div className="mb-3">
                   <Button
                     variant="link"
                     className="p-0 text-ios-gray text-decoration-none d-flex align-items-center gap-2"
@@ -355,6 +362,37 @@ const NewTransactionScreen = () => {
                     </div>
                     <span>Esta é uma transação recorrente</span>
                   </Button>
+
+                  {isRecurring && (
+                    <>
+                      <Form.Group className="mb-3 mt-3">
+                        <Form.Label className="small fw-bold text-ios-gray text-uppercase">Frequência</Form.Label>
+                        <Form.Select
+                          value={frequency}
+                          onChange={(e) => setFrequency(e.target.value as RecurrenceType)}
+                          className="py-3 fw-bold border-0 bg-ios-secondary text-white"
+                        >
+                          <option value="monthly">Mensal</option>
+                          <option value="weekly">Semanal</option>
+                          <option value="yearly">Anual</option>
+                        </Form.Select>
+                      </Form.Group>
+
+                      {frequency === 'monthly' && (
+                        <Form.Group className="mb-3">
+                          <Form.Label className="small fw-bold text-ios-gray text-uppercase">Dia do Mês</Form.Label>
+                          <Form.Control
+                            type="number"
+                            min={1}
+                            max={31}
+                            value={selectedDay}
+                            onChange={(e) => setSelectedDay(parseInt(e.target.value) || 1)}
+                            className="py-3 fw-bold border-0 bg-ios-secondary text-white"
+                          />
+                        </Form.Group>
+                      )}
+                    </>
+                  )}
                 </div>
               )}
 
@@ -367,7 +405,7 @@ const NewTransactionScreen = () => {
               <Button
                 onClick={handleSaveTransaction}
                 disabled={isLoading}
-                className="btn btn-primary w-100 py-3 rounded-3 fw-bold fs-5 shadow-lg border-0 mt-4"
+                className="btn btn-primary w-100 py-3 rounded-3 fw-bold fs-5 shadow-lg border-0 mt-3"
               >
                 {isLoading ? 'Salvando...' : 'Salvar Transação'}
               </Button>

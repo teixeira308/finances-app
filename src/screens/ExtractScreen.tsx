@@ -2,10 +2,10 @@ import React, { useMemo, useState } from 'react';
 import { Container, Card, Button, ListGroup, Modal, Badge, Form } from 'react-bootstrap';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { selectCategories, bootstrapCategories } from '@/features/categories/store/categoriesSlice';
-import { deleteTransaction, bootstrapTransactions } from '@/features/transactions/store/transactionsSlice';
-import { selectRecurringTransactions, bootstrapRecurringTransactions, deleteRecurringTransaction } from '@/features/transactions/store/recurringTransactionsSlice';
+import { deleteTransaction, updateTransaction, bootstrapTransactions } from '@/features/transactions/store/transactionsSlice';
+import { selectRecurringTransactions, bootstrapRecurringTransactions, deleteRecurringTransaction, createRecurringTransaction, updateRecurringTransaction } from '@/features/transactions/store/recurringTransactionsSlice';
 import { 
-  Trash2, ArrowUpCircle, RefreshCw,
+  Trash2, Pencil, ArrowUpCircle, RefreshCw,
   ShoppingBag, Coffee, Car, Home, Film, Briefcase, Plus, Heart,
   ChevronLeft, ChevronRight, Calendar, Search, X, Tag
 } from 'lucide-react';
@@ -14,6 +14,7 @@ import { PrivacyToggle } from '@/shared/components/PrivacyToggle';
 import { projectRecurringTransactions } from '@/shared/utils/projection';
 import { useWorkspaces } from '@/features/workspaces/hooks/useWorkspaces';
 import { WorkspaceSwitcher } from '@/features/workspaces/components/WorkspaceSwitcher';
+import type { Transaction, RecurringTransaction, TransactionType, RecurrenceType } from '@/shared/models/finance';
 
 // Mapeamento de componentes de ícone
 const categoryIcons: Record<string, React.ElementType> = {
@@ -39,6 +40,22 @@ const ExtractScreen = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  const [editAmount, setEditAmount] = useState('');
+  const [editRawAmount, setEditRawAmount] = useState(0);
+  const [editOccurredAt, setEditOccurredAt] = useState('');
+  const [editCategoryId, setEditCategoryId] = useState('');
+  const [editNote, setEditNote] = useState('');
+  const [editConvertToRecurring, setEditConvertToRecurring] = useState(false);
+  const [editRecurrenceFrequency, setEditRecurrenceFrequency] = useState<RecurrenceType>('monthly');
+  const [editRecurrenceDayOfMonth, setEditRecurrenceDayOfMonth] = useState(1);
+
+  const [editingRecurring, setEditingRecurring] = useState<RecurringTransaction | null>(null);
+  const [editRecurringAmount, setEditRecurringAmount] = useState('');
+  const [editRecurringRawAmount, setEditRecurringRawAmount] = useState(0);
+  const [editRecurringName, setEditRecurringName] = useState('');
+  const [editRecurringCategoryId, setEditRecurringCategoryId] = useState('');
+  const [editRecurringStartDate, setEditRecurringStartDate] = useState('');
 
   const monthRef = useMemo(() => {
     const year = currentDate.getFullYear();
@@ -103,6 +120,99 @@ const ExtractScreen = () => {
     }
   };
 
+  const openEditModal = (tx: Transaction) => {
+    setEditingTransaction(tx);
+    setEditRawAmount(tx.amount);
+    setEditAmount(new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(tx.amount));
+    setEditOccurredAt(tx.occurredAt.slice(0, 16));
+    setEditCategoryId(tx.categoryId);
+    setEditNote(tx.note || '');
+    setEditConvertToRecurring(false);
+    setEditRecurrenceFrequency('monthly');
+    setEditRecurrenceDayOfMonth(new Date(tx.occurredAt).getDate());
+  };
+
+  const handleEditAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, '');
+    const numericValue = parseInt(value, 10) / 100;
+    if (isNaN(numericValue)) {
+      setEditRawAmount(0);
+      setEditAmount('R$ 0,00');
+    } else {
+      setEditRawAmount(numericValue);
+      setEditAmount(new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(numericValue));
+    }
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingTransaction || !activeWorkspaceId || editRawAmount <= 0) return;
+    if (editConvertToRecurring) {
+      await dispatch(createRecurringTransaction({
+        userId: '',
+        workspaceId: activeWorkspaceId,
+        name: editNote || 'Transação Recorrente',
+        type: editingTransaction.type as TransactionType,
+        amount: editRawAmount,
+        categoryId: editCategoryId,
+        frequency: editRecurrenceFrequency,
+        dayOfMonth: editRecurrenceFrequency === 'monthly' ? editRecurrenceDayOfMonth : undefined,
+        dayOfWeek: editRecurrenceFrequency === 'weekly' ? new Date(editOccurredAt).getDay() : undefined,
+        startDate: new Date(editOccurredAt).toISOString().slice(0, 10),
+        endDate: undefined,
+        isActive: true,
+      })).unwrap();
+      await dispatch(deleteTransaction(editingTransaction.id)).unwrap();
+    } else {
+      await dispatch(updateTransaction({
+        id: editingTransaction.id,
+        updates: {
+          amount: editRawAmount,
+          occurredAt: new Date(editOccurredAt).toISOString(),
+          categoryId: editCategoryId,
+          note: editNote || undefined,
+        }
+      })).unwrap();
+    }
+    setEditingTransaction(null);
+  };
+
+  const openEditRecurringModal = (tx: Transaction) => {
+    const recurring = recurringTransactions.find((rt: RecurringTransaction) => tx.id.startsWith(`projected-${rt.id}`));
+    if (!recurring) return;
+    setEditingRecurring(recurring);
+    setEditRecurringRawAmount(recurring.amount);
+    setEditRecurringAmount(new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(recurring.amount));
+    setEditRecurringName(recurring.name);
+    setEditRecurringCategoryId(recurring.categoryId);
+    setEditRecurringStartDate(recurring.startDate.slice(0, 10));
+  };
+
+  const handleEditRecurringAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, '');
+    const numericValue = parseInt(value, 10) / 100;
+    if (isNaN(numericValue)) {
+      setEditRecurringRawAmount(0);
+      setEditRecurringAmount('R$ 0,00');
+    } else {
+      setEditRecurringRawAmount(numericValue);
+      setEditRecurringAmount(new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(numericValue));
+    }
+  };
+
+  const handleSaveEditRecurring = async () => {
+    if (!editingRecurring || editRecurringRawAmount <= 0) return;
+    await dispatch(updateRecurringTransaction({
+      id: editingRecurring.id,
+      updates: {
+        amount: editRecurringRawAmount,
+        name: editRecurringName,
+        categoryId: editRecurringCategoryId,
+        startDate: new Date(editRecurringStartDate).toISOString(),
+      }
+    })).unwrap();
+    setEditingRecurring(null);
+  };
+
   const confirmDelete = async () => {
     if (deleteId && activeWorkspaceId) {
       if (deleteId.startsWith('projected-')) {
@@ -147,6 +257,7 @@ const ExtractScreen = () => {
           <button 
             onClick={() => setSearchTerm('')}
             className="position-absolute end-0 top-50 translate-middle-y pe-3 border-0 bg-transparent text-ios-gray hover-white transition-all"
+            aria-label="Limpar busca"
           >
             <X size={18} />
           </button>
@@ -160,6 +271,7 @@ const ExtractScreen = () => {
             variant="link" 
             className="text-white p-0 shadow-none" 
             onClick={handlePrevMonth}
+            aria-label="Mês anterior"
           >
             <ChevronLeft size={24} />
           </Button>
@@ -173,6 +285,7 @@ const ExtractScreen = () => {
             variant="link" 
             className="text-white p-0 shadow-none" 
             onClick={handleNextMonth}
+            aria-label="Próximo mês"
           >
             <ChevronRight size={24} />
           </Button>
@@ -214,9 +327,8 @@ const ExtractScreen = () => {
                             <div className="d-flex align-items-center gap-2">
                               <span className="fw-bold text-white">{category?.name || 'Sem Categoria'}</span>
                               {isProjected && (
-                                <Badge bg="primary" className="bg-primary bg-opacity-10 text-primary small border-0">
-                                  <RefreshCw size={10} className="me-1" />
-                                  Recorrente
+                                <Badge bg="primary" className="bg-primary bg-opacity-10 text-primary small border-0 d-flex align-items-center p-1">
+                                  <RefreshCw size={10} />
                                 </Badge>
                               )}
                             </div>
@@ -230,8 +342,17 @@ const ExtractScreen = () => {
                           </span>
                           <Button 
                             variant="link" 
+                            className="p-1 text-ios-gray opacity-50 shadow-none" 
+                            onClick={() => isProjected ? openEditRecurringModal(tx) : openEditModal(tx)}
+                            aria-label="Editar lançamento"
+                          >
+                            <Pencil size={16} />
+                          </Button>
+                          <Button 
+                            variant="link" 
                             className="p-1 text-ios-red opacity-50 shadow-none" 
                             onClick={() => { setDeleteId(tx.id); setIsDeleteModalOpen(true); }}
+                            aria-label="Excluir lançamento"
                           >
                             <Trash2 size={16} />
                           </Button>
@@ -275,6 +396,174 @@ const ExtractScreen = () => {
         <Modal.Footer className="border-0 pt-0 px-4 pb-4 d-flex gap-2">
           <Button variant="outline-light" className="flex-grow-1 border-opacity-10 py-3" onClick={() => setIsDeleteModalOpen(false)}>Cancelar</Button>
           <Button variant="danger" className="flex-grow-1 py-3 rounded-3 fw-bold" onClick={confirmDelete}>Excluir</Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={!!editingTransaction} onHide={() => setEditingTransaction(null)} centered>
+        <Modal.Header closeButton closeVariant="white" className="border-0 pb-0">
+          <Modal.Title className="w-100 text-center fw-bold">Editar Lançamento</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="py-3">
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label className="small fw-bold text-ios-gray text-uppercase">Valor</Form.Label>
+              <Form.Control
+                type="text"
+                inputMode="decimal"
+                value={editAmount}
+                onChange={handleEditAmountChange}
+                className="text-center py-3 border-0 bg-ios-secondary fs-3 fw-bold text-white shadow-none"
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label className="small fw-bold text-ios-gray text-uppercase">Data</Form.Label>
+              <Form.Control
+                type="datetime-local"
+                value={editOccurredAt}
+                onChange={(e) => setEditOccurredAt(e.target.value)}
+                className="py-3 fw-bold border-0 bg-ios-secondary text-white"
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label className="small fw-bold text-ios-gray text-uppercase">Categoria</Form.Label>
+              <Form.Select
+                value={editCategoryId}
+                onChange={(e) => setEditCategoryId(e.target.value)}
+                className="py-3 fw-bold border-0 bg-ios-secondary text-white"
+              >
+                <option value="">Sem categoria</option>
+                {categories
+                  .filter(c => c.type === editingTransaction?.type)
+                  .map((c) => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))
+                }
+              </Form.Select>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label className="small fw-bold text-ios-gray text-uppercase">Observação</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={2}
+                value={editNote}
+                onChange={(e) => setEditNote(e.target.value)}
+                className="py-3 border-0 bg-ios-secondary text-white shadow-none"
+              />
+            </Form.Group>
+
+            <div className="mb-3">
+              <Button
+                variant="link"
+                className="p-0 text-ios-gray text-decoration-none d-flex align-items-center gap-2"
+                onClick={() => setEditConvertToRecurring(!editConvertToRecurring)}
+              >
+                <div className={`p-1 rounded-circle border ${editConvertToRecurring ? 'bg-primary border-primary' : 'border-ios-gray'}`}>
+                  {editConvertToRecurring && <Plus size={12} className="text-white" />}
+                </div>
+                <span>Transformar em recorrente</span>
+              </Button>
+            </div>
+
+            {editConvertToRecurring && (
+              <>
+                <Form.Group className="mb-3">
+                  <Form.Label className="small fw-bold text-ios-gray text-uppercase">Frequência</Form.Label>
+                  <Form.Select
+                    value={editRecurrenceFrequency}
+                    onChange={(e) => setEditRecurrenceFrequency(e.target.value as RecurrenceType)}
+                    className="py-3 fw-bold border-0 bg-ios-secondary text-white"
+                  >
+                    <option value="monthly">Mensal</option>
+                    <option value="weekly">Semanal</option>
+                    <option value="yearly">Anual</option>
+                  </Form.Select>
+                </Form.Group>
+
+                {editRecurrenceFrequency === 'monthly' && (
+                  <Form.Group className="mb-3">
+                    <Form.Label className="small fw-bold text-ios-gray text-uppercase">Dia do Mês</Form.Label>
+                    <Form.Control
+                      type="number"
+                      min={1}
+                      max={31}
+                      value={editRecurrenceDayOfMonth}
+                      onChange={(e) => setEditRecurrenceDayOfMonth(parseInt(e.target.value) || 1)}
+                      className="py-3 fw-bold border-0 bg-ios-secondary text-white"
+                    />
+                  </Form.Group>
+                )}
+              </>
+            )}
+          </Form>
+        </Modal.Body>
+        <Modal.Footer className="border-0 pt-0 px-4 pb-4 d-flex gap-2">
+          <Button variant="outline-light" className="flex-grow-1 border-opacity-10 py-3" onClick={() => setEditingTransaction(null)}>Cancelar</Button>
+          <Button variant="primary" className="flex-grow-1 py-3 rounded-3 fw-bold" onClick={handleSaveEdit}>Salvar</Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={!!editingRecurring} onHide={() => setEditingRecurring(null)} centered>
+        <Modal.Header closeButton closeVariant="white" className="border-0 pb-0">
+          <Modal.Title className="w-100 text-center fw-bold">Editar Recorrente</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="py-3">
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label className="small fw-bold text-ios-gray text-uppercase">Valor</Form.Label>
+              <Form.Control
+                type="text"
+                inputMode="decimal"
+                value={editRecurringAmount}
+                onChange={handleEditRecurringAmountChange}
+                className="text-center py-3 border-0 bg-ios-secondary fs-3 fw-bold text-white shadow-none"
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label className="small fw-bold text-ios-gray text-uppercase">Nome</Form.Label>
+              <Form.Control
+                type="text"
+                value={editRecurringName}
+                onChange={(e) => setEditRecurringName(e.target.value)}
+                className="py-3 fw-bold border-0 bg-ios-secondary text-white"
+                placeholder="Ex: Aluguel"
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label className="small fw-bold text-ios-gray text-uppercase">Categoria</Form.Label>
+              <Form.Select
+                value={editRecurringCategoryId}
+                onChange={(e) => setEditRecurringCategoryId(e.target.value)}
+                className="py-3 fw-bold border-0 bg-ios-secondary text-white"
+              >
+                <option value="">Sem categoria</option>
+                {categories
+                  .filter(c => c.type === editingRecurring?.type)
+                  .map((c) => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))
+                }
+              </Form.Select>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label className="small fw-bold text-ios-gray text-uppercase">Data de Início</Form.Label>
+              <Form.Control
+                type="date"
+                value={editRecurringStartDate}
+                onChange={(e) => setEditRecurringStartDate(e.target.value)}
+                className="py-3 fw-bold border-0 bg-ios-secondary text-white"
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer className="border-0 pt-0 px-4 pb-4 d-flex gap-2">
+          <Button variant="outline-light" className="flex-grow-1 border-opacity-10 py-3" onClick={() => setEditingRecurring(null)}>Cancelar</Button>
+          <Button variant="primary" className="flex-grow-1 py-3 rounded-3 fw-bold" onClick={handleSaveEditRecurring}>Salvar</Button>
         </Modal.Footer>
       </Modal>
     </Container>

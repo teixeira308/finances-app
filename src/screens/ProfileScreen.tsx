@@ -65,6 +65,7 @@ const ProfileScreen = () => {
         variant="none"
         onClick={() => navigate('/settings')}
         className="p-2 text-white border-0 bg-black rounded-3"
+        aria-label="Voltar"
       >
         <ArrowLeft size={24} />
       </Button>

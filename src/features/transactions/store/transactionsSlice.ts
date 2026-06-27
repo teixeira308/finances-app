@@ -24,6 +24,19 @@ export const deleteTransaction = createAsyncThunk(
   }
 );
 
+export const updateTransaction = createAsyncThunk(
+  "transactions/update",
+  async (input: { id: string; updates: Partial<Pick<Transaction, "amount" | "occurredAt" | "categoryId" | "note">> }) => {
+    const now = new Date().toISOString();
+    const transaction = {
+      ...input.updates,
+      id: input.id,
+      updatedAt: now,
+    };
+    return saveTransaction(transaction as Transaction);
+  }
+);
+
 export const createTransaction = createAsyncThunk(
   "transactions/create",
   async (input: Omit<Transaction, "id" | "createdAt" | "updatedAt" | "syncStatus">) => {
@@ -75,6 +88,16 @@ const slice = createSlice({
     });
     builder.addCase(deleteTransaction.fulfilled, (state, action) => {
       state.items = state.items.filter(item => item.id !== action.payload);
+    });
+    builder.addCase(updateTransaction.fulfilled, (state, action) => {
+      const index = state.items.findIndex(item => item.id === action.payload.id);
+      if (index !== -1) {
+        state.items[index] = action.payload;
+      }
+      state.error = undefined;
+    });
+    builder.addCase(updateTransaction.rejected, (state, action) => {
+      state.error = action.error.message;
     });
   }
 });

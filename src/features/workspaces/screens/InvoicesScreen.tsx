@@ -49,14 +49,14 @@ export const InvoicesScreen: React.FC = () => {
       {/* Month Navigator */}
       <Card className="bg-ios-dark-gray border-0 mb-4 shadow-none rounded-4">
         <Card.Body className="p-2 d-flex align-items-center justify-content-between">
-          <Button variant="link" className="text-white p-2" onClick={handlePrevMonth}>
+          <Button variant="link" className="text-white p-2" onClick={handlePrevMonth} aria-label="Mês anterior">
             <ChevronLeft size={20} />
           </Button>
           <div className="d-flex align-items-center gap-2">
             <Calendar size={16} className="text-primary" />
             <span className="fw-bold text-capitalize small">{monthLabel}</span>
           </div>
-          <Button variant="link" className="text-white p-2" onClick={handleNextMonth}>
+          <Button variant="link" className="text-white p-2" onClick={handleNextMonth} aria-label="Próximo mês">
             <ChevronRight size={20} />
           </Button>
         </Card.Body>

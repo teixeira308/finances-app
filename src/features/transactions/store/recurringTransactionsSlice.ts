@@ -37,6 +37,17 @@ export const deleteRecurringTransaction = createAsyncThunk(
   }
 );
 
+export const updateRecurringTransaction = createAsyncThunk(
+  "recurring/update",
+  async (input: { id: string; updates: Partial<Pick<RecurringTransaction, "amount" | "name" | "categoryId" | "startDate">> }) => {
+    const recurring = {
+      ...input.updates,
+      id: input.id,
+    };
+    return saveRecurringTransaction(recurring as RecurringTransaction);
+  }
+);
+
 const slice = createSlice({
   name: "recurringTransactions",
   initialState,
@@ -50,6 +61,12 @@ const slice = createSlice({
     });
     builder.addCase(deleteRecurringTransaction.fulfilled, (state, action) => {
       state.items = state.items.filter(item => item.id !== action.payload);
+    });
+    builder.addCase(updateRecurringTransaction.fulfilled, (state, action) => {
+      const index = state.items.findIndex(item => item.id === action.payload.id);
+      if (index !== -1) {
+        state.items[index] = action.payload;
+      }
     });
   }
 });

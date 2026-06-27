@@ -55,6 +55,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
         <button 
           onClick={onToggle}
           className="btn btn-link text-ios-gray p-2 border-0 shadow-none hover-white"
+          aria-label="Alternar menu"
         >
           {isCollapsed ? <Menu size={24} /> : <ChevronLeft size={24} />}
         </button>
@@ -95,6 +96,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
             border: 'none'
           }}
           title="Nova Transação"
+          aria-label="Nova Transação"
         >
           <Plus size={24} strokeWidth={3} />
           {!isCollapsed && <span className="fw-bold">Nova Transação</span>}
@@ -121,6 +123,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                 justifyContent: isCollapsed ? 'center' : 'flex-start'
               }}
               title={isCollapsed ? item.label : ''}
+              aria-label={item.label}
             >
               <Icon size={22} strokeWidth={isActive ? 2.5 : 2} style={{ color: isActive ? 'white' : 'inherit', minWidth: '22px' }} />
               {!isCollapsed && <span style={{ fontWeight: isActive ? 600 : 500, whiteSpace: 'nowrap' }}>{item.label}</span>}

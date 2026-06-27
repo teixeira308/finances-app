@@ -143,6 +143,7 @@ const DashboardScreen = () => {
               }
             }}
             className="btn border-0 p-2 text-ios-gray shadow-none"
+            aria-label="Atualizar dados"
             title="Atualizar dados"
           >
             <RefreshCw size={20} />
@@ -158,6 +159,7 @@ const DashboardScreen = () => {
             variant="link" 
             className="text-white p-2 shadow-none" 
             onClick={handlePrevMonth}
+            aria-label="Mês anterior"
           >
             <ChevronLeft size={20} />
           </Button>
@@ -171,6 +173,7 @@ const DashboardScreen = () => {
             variant="link" 
             className="text-white p-2 shadow-none" 
             onClick={handleNextMonth}
+            aria-label="Próximo mês"
           >
             <ChevronRight size={20} />
           </Button>
