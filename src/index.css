@@ -215,6 +215,8 @@ button:focus-visible, .btn:focus-visible, a:focus-visible {
   }
 }
 
+
+
 @media (min-width: 1024px) {
   .mobile-container {
     padding-left: clamp(1.5rem, 4vw, 3rem) !important;
@@ -297,4 +299,19 @@ button:focus-visible, .btn:focus-visible, a:focus-visible {
 .row > * {
   padding-left: 0.5rem !important;
   padding-right: 0.5rem !important;
+}
+
+/* ── Swipeable Row ────────────────────────────
+ * On narrow/touch screens: swipe actions visible, inline actions hidden.
+ * On desktop/wide: swipe actions hidden by content background, inline actions visible. */
+@media (max-width: 767px) {
+  .inline-actions {
+    display: none !important;
+  }
+}
+
+@media (pointer: fine), (min-width: 768px) {
+  .swipe-actions {
+    display: none !important;
+  }
 }
