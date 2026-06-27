@@ -73,7 +73,11 @@ function App() {
   }
 
   if (!user) {
-    return <LoginScreen />;
+    return (
+      <Suspense fallback={<PageLoader />}>
+        <LoginScreen />
+      </Suspense>
+    );
   }
 
   return (

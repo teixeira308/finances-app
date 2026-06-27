@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { MoneyValue } from '@/shared/components/MoneyValue';
 import { PrivacyToggle } from '@/shared/components/PrivacyToggle';
+import { SwipeableRow, type SwipeAction } from '@/shared/components/SwipeableRow';
 import { projectRecurringTransactions } from '@/shared/utils/projection';
 import { useWorkspaces } from '@/features/workspaces/hooks/useWorkspaces';
 import { WorkspaceSwitcher } from '@/features/workspaces/components/WorkspaceSwitcher';
@@ -40,6 +41,7 @@ const ExtractScreen = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [editAmount, setEditAmount] = useState('');
   const [editRawAmount, setEditRawAmount] = useState(0);
@@ -306,58 +308,79 @@ const ExtractScreen = () => {
                     
                     return (
                       <ListGroup.Item
-                        key={tx.id}
-                        className={`bg-transparent border-light border-opacity-10 px-3 py-3 d-flex align-items-center justify-content-between ${isProjected ? 'opacity-75' : ''}`}
-                      >
-                        <div className="d-flex align-items-center gap-3">
-                          <div 
-                            className="rounded-3 d-flex align-items-center justify-content-center" 
-                            style={{ 
-                              width: '44px', 
-                              height: '44px', 
-                              backgroundColor: tx.type === 'income' ? 'rgba(48, 209, 88, 0.1)' : `${category?.colorToken || '#8E8E93'}20`
-                            }}
+                          key={tx.id}
+                          className={`bg-transparent border-light border-opacity-10 p-0 ${isProjected ? 'opacity-75' : ''}`}
+                        >
+                          <SwipeableRow
+                            actions={[
+                              {
+                                icon: <Pencil size={18} />,
+                                color: '#0079f2',
+                                onClick: () => isProjected ? openEditRecurringModal(tx) : openEditModal(tx),
+                                ariaLabel: 'Editar lançamento',
+                              },
+                              {
+                                icon: <Trash2 size={18} />,
+                                color: '#FF453A',
+                                onClick: () => { setDeleteId(tx.id); setIsDeleteModalOpen(true); },
+                                ariaLabel: 'Excluir lançamento',
+                              },
+                            ]}
                           >
-                            {tx.type === 'income' ? 
-                              <ArrowUpCircle className="text-ios-green" size={24} /> : 
-                              <IconComponent size={20} style={{ color: category?.colorToken || 'var(--ios-gray)' }} />
-                            }
-                          </div>
-                          <div className="d-flex flex-column">
-                            <div className="d-flex align-items-center gap-2">
-                              <span className="fw-bold text-white">{category?.name || 'Sem Categoria'}</span>
-                              {isProjected && (
-                                <Badge bg="primary" className="bg-primary bg-opacity-10 text-primary small border-0 d-flex align-items-center p-1">
-                                  <RefreshCw size={10} />
-                                </Badge>
-                              )}
+                            <div className="d-flex align-items-center justify-content-between px-3 py-3">
+                              <div className="d-flex align-items-center gap-3 min-w-0">
+                                <div 
+                                  className="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" 
+                                  style={{ 
+                                    width: '44px', 
+                                    height: '44px', 
+                                    backgroundColor: tx.type === 'income' ? 'rgba(48, 209, 88, 0.1)' : `${category?.colorToken || '#8E8E93'}20`
+                                  }}
+                                >
+                                  {tx.type === 'income' ? 
+                                    <ArrowUpCircle className="text-ios-green" size={24} /> : 
+                                    <IconComponent size={20} style={{ color: category?.colorToken || 'var(--ios-gray)' }} />
+                                  }
+                                </div>
+                                <div className="d-flex flex-column min-w-0">
+                                  <div className="d-flex align-items-center gap-2">
+                                    <span className="fw-bold text-white text-truncate">{category?.name || 'Sem Categoria'}</span>
+                                    {isProjected && (
+                                      <Badge bg="primary" className="bg-primary bg-opacity-10 text-primary small border-0 d-flex align-items-center p-1 flex-shrink-0">
+                                        <RefreshCw size={10} />
+                                      </Badge>
+                                    )}
+                                  </div>
+                                  {tx.note && <span className="small text-ios-gray text-truncate">{tx.note}</span>}
+                                </div>
+                              </div>
+                              
+                              <div className="d-flex align-items-center gap-2 flex-shrink-0">
+                                <span className={`fw-bold ${tx.type === 'expense' ? 'text-ios-red' : 'text-ios-green'}`}>
+                                  {tx.type === 'expense' ? '-' : '+'} <MoneyValue value={tx.amount} />
+                                </span>
+                                <div className="inline-actions d-flex gap-1">
+                                  <Button 
+                                    variant="link" 
+                                    className="p-1 text-ios-gray opacity-50 shadow-none" 
+                                    onClick={() => isProjected ? openEditRecurringModal(tx) : openEditModal(tx)}
+                                    aria-label="Editar lançamento"
+                                  >
+                                    <Pencil size={16} />
+                                  </Button>
+                                  <Button 
+                                    variant="link" 
+                                    className="p-1 text-ios-red opacity-50 shadow-none" 
+                                    onClick={() => { setDeleteId(tx.id); setIsDeleteModalOpen(true); }}
+                                    aria-label="Excluir lançamento"
+                                  >
+                                    <Trash2 size={16} />
+                                  </Button>
+                                </div>
+                              </div>
                             </div>
-                            {tx.note && <span className="small text-ios-gray">{tx.note}</span>}
-                          </div>
-                        </div>
-                        
-                        <div className="d-flex align-items-center gap-3">
-                          <span className={`fw-bold ${tx.type === 'expense' ? 'text-ios-red' : 'text-ios-green'}`}>
-                            {tx.type === 'expense' ? '-' : '+'} <MoneyValue value={tx.amount} />
-                          </span>
-                          <Button 
-                            variant="link" 
-                            className="p-1 text-ios-gray opacity-50 shadow-none" 
-                            onClick={() => isProjected ? openEditRecurringModal(tx) : openEditModal(tx)}
-                            aria-label="Editar lançamento"
-                          >
-                            <Pencil size={16} />
-                          </Button>
-                          <Button 
-                            variant="link" 
-                            className="p-1 text-ios-red opacity-50 shadow-none" 
-                            onClick={() => { setDeleteId(tx.id); setIsDeleteModalOpen(true); }}
-                            aria-label="Excluir lançamento"
-                          >
-                            <Trash2 size={16} />
-                          </Button>
-                        </div>
-                      </ListGroup.Item>
+                          </SwipeableRow>
+                        </ListGroup.Item>
                     );
                   })}
                 </ListGroup>
