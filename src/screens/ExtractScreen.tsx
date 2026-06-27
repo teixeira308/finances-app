@@ -327,9 +327,8 @@ const ExtractScreen = () => {
                             <div className="d-flex align-items-center gap-2">
                               <span className="fw-bold text-white">{category?.name || 'Sem Categoria'}</span>
                               {isProjected && (
-                                <Badge bg="primary" className="bg-primary bg-opacity-10 text-primary small border-0">
-                                  <RefreshCw size={10} className="me-1" />
-                                  Recorrente
+                                <Badge bg="primary" className="bg-primary bg-opacity-10 text-primary small border-0 d-flex align-items-center p-1">
+                                  <RefreshCw size={10} />
                                 </Badge>
                               )}
                             </div>
