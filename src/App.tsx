@@ -1,18 +1,6 @@
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Spinner } from 'react-bootstrap';
-import DashboardScreen from './screens/DashboardScreen';
-import ExtractScreen from './screens/ExtractScreen';
-import CategoriesScreen from './screens/CategoriesScreen';
-import SettingsScreen from './screens/SettingsScreen';
-import ProfileScreen from './screens/ProfileScreen';
-import SecurityScreen from './screens/SecurityScreen';
-import PrivacyScreen from './screens/PrivacyScreen';
-import TermsOfUseScreen from './screens/TermsOfUseScreen';
-import LoginScreen from './screens/LoginScreen';
-import NewTransactionScreen from './screens/NewTransactionScreen';
-import ReportsScreen from './screens/ReportsScreen';
-import FullReportsScreen from './screens/FullReportsScreen';
 import { MainLayout } from './shared/components/MainLayout';
 import { ScrollToTop } from './shared/components/ScrollToTop';
 import { useAppDispatch, useAppSelector } from './store/hooks';
@@ -25,13 +13,34 @@ import { bootstrapTerms } from './features/terms/store/termsSlice';
 import { TermsGuard } from './navigation/TermsGuard';
 import { useAuth } from './features/auth/components/AuthProvider';
 import { OnboardingGuard } from './navigation/OnboardingGuard';
-import { OnboardingScreen } from './features/onboarding/screens/OnboardingScreen';
 import { WorkspaceGuard } from './navigation/WorkspaceGuard';
-import { WorkspaceSelectionScreen } from './features/workspaces/screens/WorkspaceSelectionScreen';
-import { EditWorkspaceScreen } from './features/workspaces/screens/EditWorkspaceScreen';
-import { selectActiveWorkspaceId, setActiveWorkspaceId } from './features/workspaces/store/workspaceSlice';
-import { InvoicesScreen } from './features/workspaces/screens/InvoicesScreen';
-import { InstallmentsScreen } from './features/workspaces/screens/InstallmentsScreen';
+import { selectActiveWorkspaceId } from './features/workspaces/store/workspaceSlice';
+
+const DashboardScreen = lazy(() => import('./screens/DashboardScreen'));
+const ExtractScreen = lazy(() => import('./screens/ExtractScreen'));
+const CategoriesScreen = lazy(() => import('./screens/CategoriesScreen'));
+const SettingsScreen = lazy(() => import('./screens/SettingsScreen'));
+const ProfileScreen = lazy(() => import('./screens/ProfileScreen'));
+const SecurityScreen = lazy(() => import('./screens/SecurityScreen'));
+const PrivacyScreen = lazy(() => import('./screens/PrivacyScreen'));
+const TermsOfUseScreen = lazy(() => import('./screens/TermsOfUseScreen'));
+const LoginScreen = lazy(() => import('./screens/LoginScreen'));
+const NewTransactionScreen = lazy(() => import('./screens/NewTransactionScreen'));
+const ReportsScreen = lazy(() => import('./screens/ReportsScreen'));
+const FullReportsScreen = lazy(() => import('./screens/FullReportsScreen'));
+const OnboardingScreen = lazy(() => import('./features/onboarding/screens/OnboardingScreen').then(m => ({ default: m.OnboardingScreen })));
+const WorkspaceSelectionScreen = lazy(() => import('./features/workspaces/screens/WorkspaceSelectionScreen').then(m => ({ default: m.WorkspaceSelectionScreen })));
+const EditWorkspaceScreen = lazy(() => import('./features/workspaces/screens/EditWorkspaceScreen').then(m => ({ default: m.EditWorkspaceScreen })));
+const InvoicesScreen = lazy(() => import('./features/workspaces/screens/InvoicesScreen').then(m => ({ default: m.InvoicesScreen })));
+const InstallmentsScreen = lazy(() => import('./features/workspaces/screens/InstallmentsScreen').then(m => ({ default: m.InstallmentsScreen })));
+
+function PageLoader() {
+  return (
+    <div className="d-flex align-items-center justify-content-center bg-black" style={{ minHeight: '100dvh', height: '100%' }}>
+      <Spinner animation="border" variant="primary" />
+    </div>
+  );
+}
 
 function App() {
   const dispatch = useAppDispatch();
@@ -70,37 +79,40 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
-      <Routes>
-        <Route path="/onboarding" element={<OnboardingScreen />} />
-        <Route path="/termos" element={<TermsOfUseScreen />} />
-        <Route path="/workspaces" element={<WorkspaceSelectionScreen />} />
-        <Route path="/workspaces/:id/edit" element={<EditWorkspaceScreen />} />
-        <Route path="*" element={
-          <OnboardingGuard>
-            <TermsGuard>
-            <WorkspaceGuard>
-              
-              <MainLayout>
-                <Routes>
-                  <Route path="/" element={<DashboardScreen />} />
-                  <Route path="/extrato" element={<ExtractScreen />} />
-                  <Route path="/new-transaction" element={<NewTransactionScreen />} />
-                  <Route path="/categories" element={<CategoriesScreen />} />
-                  <Route path="/reports" element={<ReportsScreen />} />
-                  <Route path="/faturas" element={<InvoicesScreen />} />
-                  <Route path="/parcelamentos" element={<InstallmentsScreen />} />
-                  <Route path="/settings" element={<SettingsScreen />} />
-                  <Route path="/profile" element={<ProfileScreen />} />
-                  <Route path="/security" element={<SecurityScreen />} />
-                  <Route path="/privacy" element={<PrivacyScreen />} />
-                  <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-              </MainLayout>
-            </WorkspaceGuard>
-            </TermsGuard>
-          </OnboardingGuard>
-        } />
-      </Routes>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="/onboarding" element={<OnboardingScreen />} />
+          <Route path="/termos" element={<TermsOfUseScreen />} />
+          <Route path="/workspaces" element={<WorkspaceSelectionScreen />} />
+          <Route path="/workspaces/:id/edit" element={<EditWorkspaceScreen />} />
+          <Route path="*" element={
+            <OnboardingGuard>
+              <TermsGuard>
+              <WorkspaceGuard>
+                <MainLayout>
+                  <Suspense fallback={<PageLoader />}>
+                    <Routes>
+                      <Route path="/" element={<DashboardScreen />} />
+                      <Route path="/extrato" element={<ExtractScreen />} />
+                      <Route path="/new-transaction" element={<NewTransactionScreen />} />
+                      <Route path="/categories" element={<CategoriesScreen />} />
+                      <Route path="/reports" element={<ReportsScreen />} />
+                      <Route path="/faturas" element={<InvoicesScreen />} />
+                      <Route path="/parcelamentos" element={<InstallmentsScreen />} />
+                      <Route path="/settings" element={<SettingsScreen />} />
+                      <Route path="/profile" element={<ProfileScreen />} />
+                      <Route path="/security" element={<SecurityScreen />} />
+                      <Route path="/privacy" element={<PrivacyScreen />} />
+                      <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                  </Suspense>
+                </MainLayout>
+              </WorkspaceGuard>
+              </TermsGuard>
+            </OnboardingGuard>
+          } />
+        </Routes>
+      </Suspense>
     </Router>
   );
 }

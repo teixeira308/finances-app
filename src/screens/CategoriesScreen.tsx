@@ -76,6 +76,7 @@ const CategoriesScreen = () => {
             onClick={() => navigate(-1)}
             className="btn btn-link p-2 text-white border-0 bg-black rounded-3 text-decoration-none shadow-none d-flex align-items-center justify-content-center"
             style={{ width: 40, height: 40 }}
+            aria-label="Voltar"
           >
             <ArrowLeft size={24} />
           </button>
@@ -85,6 +86,7 @@ const CategoriesScreen = () => {
           variant="primary" 
           onClick={handleOpen} 
           className="rounded-3 d-flex align-items-center justify-content-center p-2"
+          aria-label="Nova categoria"
         >
           <Plus size={20} />
         </Button>
@@ -149,6 +151,7 @@ const CategoriesScreen = () => {
                     setDeleteId(category.id);
                     setIsDeleteModalOpen(true);
                   }}
+                  aria-label="Excluir categoria"
                 >
                   <Trash2 size={16} />
                 </Button>

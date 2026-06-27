@@ -11,6 +11,7 @@ export const PrivacyToggle = () => {
       variant="link" 
       onClick={togglePrivacy} 
       className="p-1 text-white shadow-none border-0"
+      aria-label="Alternar privacidade"
     >
       {isHidden ? <EyeOff size={20} /> : <Eye size={20} />}
     </Button>

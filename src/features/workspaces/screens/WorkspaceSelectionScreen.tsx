@@ -143,7 +143,7 @@ export const WorkspaceSelectionScreen: React.FC = () => {
       <Modal show={showModal} onHide={() => { setShowModal(false); resetForm(); }} centered contentClassName="bg-ios-dark-gray text-white border-0 rounded-4">
         <Modal.Header className="border-0 pb-0 position-relative d-flex align-items-center justify-content-center">
           <Modal.Title className="fw-bold">Novo Espaço Financeiro</Modal.Title>
-          <Button variant="link" onClick={() => setShowModal(false)} className="text-white p-0 position-absolute" style={{ right: '16px', top: '50%', transform: 'translateY(-50%)' }}>
+          <Button variant="link" onClick={() => setShowModal(false)} className="text-white p-0 position-absolute" style={{ right: '16px', top: '50%', transform: 'translateY(-50%)' }} aria-label="Fechar">
             <X size={24} />
           </Button>
         </Modal.Header>

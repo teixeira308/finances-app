@@ -71,6 +71,7 @@ const Navigation = () => {
               border: 'none',
               marginTop: '-30px'
             }}
+            aria-label="Nova transação"
           >
             <Plus size={28} strokeWidth={3} />
           </button>

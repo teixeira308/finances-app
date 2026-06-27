@@ -223,6 +223,7 @@ const TermsOfUseScreen = () => {
             onClick={() => navigate(-1)}
             className="btn btn-link p-2 text-white border-0 bg-black rounded-3 text-decoration-none shadow-none d-flex align-items-center justify-content-center"
             style={{ width: 40, height: 40 }}
+            aria-label="Voltar"
           >
             <ArrowLeft size={24} />
           </button>
