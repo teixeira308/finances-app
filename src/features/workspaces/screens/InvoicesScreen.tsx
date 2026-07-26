@@ -5,13 +5,14 @@ import { selectCategories } from '@/features/categories/store/categoriesSlice';
 import { MoneyValue } from '@/shared/components/MoneyValue';
 import { ChevronLeft, ChevronRight, Calendar, ArrowRight } from 'lucide-react';
 import { useWorkspaces } from '../hooks/useWorkspaces';
+import { toLocalMonthRef } from '@/shared/utils/date';
 
 export const InvoicesScreen: React.FC = () => {
   const transactions = useAppSelector((state) => state.transactions.items);
   const categories = useAppSelector(selectCategories);
   const { activeWorkspace } = useWorkspaces();
   
-  const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
+  const [selectedMonth, setSelectedMonth] = useState(toLocalMonthRef(new Date()));
 
   const monthLabel = useMemo(() => {
     const [year, month] = selectedMonth.split('-');

@@ -10,6 +10,7 @@ import {
   ChevronLeft, ChevronRight, Calendar, Search, X, Tag
 } from 'lucide-react';
 import { MoneyValue } from '@/shared/components/MoneyValue';
+import { toLocalISOString, toLocalDateOnly } from '@/shared/utils/date';
 import { PrivacyToggle } from '@/shared/components/PrivacyToggle';
 import { SwipeableRow, type SwipeAction } from '@/shared/components/SwipeableRow';
 import { projectRecurringTransactions } from '@/shared/utils/projection';
@@ -159,7 +160,7 @@ const ExtractScreen = () => {
         frequency: editRecurrenceFrequency,
         dayOfMonth: editRecurrenceFrequency === 'monthly' ? editRecurrenceDayOfMonth : undefined,
         dayOfWeek: editRecurrenceFrequency === 'weekly' ? new Date(editOccurredAt).getDay() : undefined,
-        startDate: new Date(editOccurredAt).toISOString().slice(0, 10),
+        startDate: toLocalDateOnly(new Date(editOccurredAt)),
         endDate: undefined,
         isActive: true,
       })).unwrap();
@@ -169,7 +170,7 @@ const ExtractScreen = () => {
         id: editingTransaction.id,
         updates: {
           amount: editRawAmount,
-          occurredAt: new Date(editOccurredAt).toISOString(),
+          occurredAt: toLocalISOString(new Date(editOccurredAt)),
           categoryId: editCategoryId,
           ...(editNote ? { note: editNote } : {}),
         }
@@ -209,7 +210,7 @@ const ExtractScreen = () => {
         amount: editRecurringRawAmount,
         name: editRecurringName,
         categoryId: editRecurringCategoryId,
-        startDate: new Date(editRecurringStartDate).toISOString(),
+        startDate: toLocalDateOnly(new Date(editRecurringStartDate)),
       }
     })).unwrap();
     setEditingRecurring(null);

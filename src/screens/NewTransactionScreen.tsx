@@ -9,6 +9,7 @@ import { ChevronDown, ArrowLeft, Calendar, Info, Plus, ArrowRight, ChevronLeft, 
 import { TransactionType, RecurrenceType, BusinessDayConfig } from '@/shared/models/finance';
 import { useWorkspaces } from '@/features/workspaces/hooks/useWorkspaces';
 import { projectInstallments } from '@/shared/utils/installments';
+import { toLocalISOString, toLocalDateInput } from '@/shared/utils/date';
 import { selectHasSeenTransactionGuide, finishTransactionGuide } from '@/features/onboarding/store/onboardingSlice';
 
 const guideSteps = [
@@ -151,7 +152,7 @@ const NewTransactionScreen = () => {
   const [rawAmount, setRawAmount] = useState(0);
   const [categoryId, setCategoryId] = useState('');
   const [note, setNote] = useState('');
-  const [occurredAt, setOccurredAt] = useState(new Date().toISOString().slice(0, 16));
+  const [occurredAt, setOccurredAt] = useState(toLocalDateInput(new Date()));
   const [installments, setInstallments] = useState(1);
 
   // Recurring Info
@@ -160,7 +161,7 @@ const NewTransactionScreen = () => {
   const [selectedDay, setSelectedDay] = useState<number>(new Date().getDate());
   const [businessDayConfig, setBusinessDayConfig] = useState<BusinessDayConfig | undefined>(undefined);
   const [selectedWeekDay, setSelectedWeekDay] = useState<number>(new Date().getDay());
-  const [startDate, setStartDate] = useState(new Date().toISOString().slice(0, 10));
+  const [startDate, setStartDate] = useState(toLocalDateInput(new Date()).slice(0, 10));
   const [endDate, setEndDate] = useState('');
   const [showAdvanced, setShowAdvanced] = useState(false);
 
@@ -227,7 +228,7 @@ const NewTransactionScreen = () => {
           type: 'expense',
           amount: rawAmount / installments,
           categoryId,
-          occurredAt: new Date(occurredAt).toISOString(),
+          occurredAt: toLocalISOString(new Date(occurredAt)),
           note: note || 'Compra Parcelada'
         }, installments);
         await dispatch(createPurchase(purchaseTransactions)).unwrap();
@@ -238,7 +239,7 @@ const NewTransactionScreen = () => {
           type: txType as TransactionType,
           amount: rawAmount,
           categoryId,
-          occurredAt: new Date(occurredAt).toISOString(),
+          occurredAt: toLocalISOString(new Date(occurredAt)),
           note
         })).unwrap();
       } else {
