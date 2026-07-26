@@ -4,6 +4,7 @@ import { useAppSelector } from '@/store/hooks';
 import { selectCategories } from '@/features/categories/store/categoriesSlice';
 import { MoneyValue } from '@/shared/components/MoneyValue';
 import { useWorkspaces } from '../hooks/useWorkspaces';
+import { toLocalMonthRef } from '@/shared/utils/date';
 import { CreditCard, Calendar, History } from 'lucide-react';
 
 export const CreditCardDashboard: React.FC = () => {
@@ -14,10 +15,10 @@ export const CreditCardDashboard: React.FC = () => {
   const metadata = activeWorkspace?.metadata || {};
   const limit = metadata.limit || 0;
   
-  const currentMonth = new Date().toISOString().slice(0, 7);
+  const currentMonth = toLocalMonthRef(new Date());
   const nextMonth = new Date();
   nextMonth.setMonth(nextMonth.getMonth() + 1);
-  const nextMonthRef = nextMonth.toISOString().slice(0, 7);
+  const nextMonthRef = toLocalMonthRef(nextMonth);
 
   const stats = useMemo(() => {
     const currentInvoice = transactions

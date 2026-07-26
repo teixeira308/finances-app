@@ -46,9 +46,6 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               margin-left: ${isCollapsed ? '80px' : '260px'} !important;
               padding-bottom: 0 !important;
             }
-            main > .content-wrapper {
-              overflow-y: visible !important;
-            }
           }
         `}</style>
         

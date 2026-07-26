@@ -1,4 +1,5 @@
 import { Transaction, RecurringTransaction, BusinessDayConfig } from "../models/finance";
+import { toLocalISOString, toLocalDateOnly } from "./date";
 
 /**
  * Helper to find specific business days in a month.
@@ -99,13 +100,13 @@ export function projectRecurringTransactions(
 
 function createProjectedTransaction(rt: RecurringTransaction, date: Date): Transaction {
   return {
-    id: `projected-${rt.id}-${date.toISOString()}`,
+    id: `projected-${rt.id}-${toLocalISOString(date)}`,
     userId: rt.userId,
     workspaceId: rt.workspaceId,
     type: rt.type,
     amount: rt.amount,
     categoryId: rt.categoryId,
-    occurredAt: date.toISOString(),
+    occurredAt: toLocalISOString(date),
     note: rt.name,
     createdAt: rt.createdAt,
     updatedAt: rt.createdAt,

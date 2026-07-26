@@ -1,11 +1,12 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { toLocalMonthRef } from "@/shared/utils/date";
 
 interface DashboardState {
   selectedMonth: string;
 }
 
 const initialState: DashboardState = {
-  selectedMonth: new Date().toISOString().slice(0, 7)
+  selectedMonth: toLocalMonthRef(new Date())
 };
 
 const slice = createSlice({

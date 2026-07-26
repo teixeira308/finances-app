@@ -1,5 +1,6 @@
 import { Transaction, TransactionType } from "../models/finance";
 import { nanoid } from "nanoid";
+import { toLocalISOString } from "./date";
 
 export const projectInstallments = (
   baseTransaction: Omit<Transaction, "id" | "createdAt" | "updatedAt" | "syncStatus">,
@@ -16,7 +17,7 @@ export const projectInstallments = (
     transactions.push({
       ...baseTransaction,
       id: nanoid(),
-      occurredAt: occurredAt.toISOString(),
+      occurredAt: toLocalISOString(occurredAt),
       installmentInfo: {
         current: i,
         total: installments,

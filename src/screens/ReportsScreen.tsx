@@ -9,6 +9,7 @@ import { selectCategories } from '@/features/categories/store/categoriesSlice';
 import { selectRecurringTransactions } from '@/features/transactions/store/recurringTransactionsSlice';
 import { projectRecurringTransactions } from '@/shared/utils/projection';
 import { calculateSummary } from '@/shared/models/finance';
+import { toLocalMonthRef } from '@/shared/utils/date';
 import { ChevronDown, Calendar, BarChart3, TrendingUp, TrendingDown } from 'lucide-react';
 
 const ReportsScreen = () => {
@@ -17,7 +18,7 @@ const ReportsScreen = () => {
   const categories = useAppSelector(selectCategories);
 
   const [periodType, setPeriodType] = useState('month');
-  const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
+  const [selectedMonth, setSelectedMonth] = useState(toLocalMonthRef(new Date()));
 
   const periodOptions = [
     { label: 'Mês', value: 'month' },
@@ -30,7 +31,7 @@ const ReportsScreen = () => {
 
   const availableMonths = useMemo(() => {
     const months = new Set<string>();
-    const currentMonth = new Date().toISOString().slice(0, 7);
+    const currentMonth = toLocalMonthRef(new Date());
     months.add(currentMonth);
     
     transactions.forEach(tx => {
@@ -53,7 +54,7 @@ const ReportsScreen = () => {
           allMonths.add(tx.occurredAt.slice(0, 7));
         }
       });
-      allMonths.add(now.toISOString().slice(0, 7));
+      allMonths.add(toLocalMonthRef(now));
       return Array.from(allMonths);
     }
 
