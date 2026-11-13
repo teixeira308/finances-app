@@ -28,7 +28,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       >
         {/* Workspace Identification Banner */}
         <div 
-          className="app-workspace-bar d-flex align-items-center justify-content-end px-4 py-2 sticky-top transition-all"
+          className="app-workspace-bar d-flex align-items-center justify-content-end transition-all"
           style={{ 
             zIndex: 1020, 
             backgroundColor: activeWorkspace?.metadata?.color || '#1C1C1E',

@@ -204,8 +204,7 @@ button:focus-visible, .btn:focus-visible, a:focus-visible {
   padding-left: clamp(0.5rem, 3vw, 1rem) !important;
   padding-right: clamp(0.5rem, 3vw, 1rem) !important;
   padding-top: 0.5rem !important;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  padding-bottom: var(--mobile-navigation-space) !important;
 }
 
 @media (min-width: 768px) {
@@ -346,13 +345,12 @@ button:focus-visible, .btn:focus-visible, a:focus-visible {
 }
 
 .app-main {
-  padding-bottom: var(--mobile-navigation-space);
+  padding-bottom: 0;
 }
 
 .app-workspace-bar {
-  padding-top: calc(0.5rem + var(--safe-area-top)) !important;
-  padding-left: calc(1.5rem + var(--safe-area-left)) !important;
-  padding-right: calc(1.5rem + var(--safe-area-right)) !important;
+  min-height: var(--mobile-navigation-height);
+  padding: 0 1rem !important;
 }
 
 .content-wrapper {
@@ -386,6 +384,7 @@ button:focus-visible, .btn:focus-visible, a:focus-visible {
 /* Altura do aplicativo e posição do menu no celular */
 .app-shell {
   min-height: 100svh;
+  flex-direction: column;
 }
 
 .mobile-navigation-wrapper {
@@ -423,6 +422,10 @@ button:focus-visible, .btn:focus-visible, a:focus-visible {
 }
 
 @media (min-width: 768px) {
+  .app-shell {
+    flex-direction: row;
+  }
+
   .app-main {
     padding-bottom: 0;
   }
