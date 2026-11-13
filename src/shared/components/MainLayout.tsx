@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-const { activeWorkspace } = useWorkspaces();
 import Sidebar from '../../navigation/Sidebar';
 import Navigation from '../../navigation';
 import { WorkspaceSwitcher } from '@/features/workspaces/components/WorkspaceSwitcher';
@@ -8,6 +7,10 @@ import { useWorkspaces } from '@/features/workspaces/hooks/useWorkspaces';
 interface MainLayoutProps {
   children: React.ReactNode;
 }
+
+export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const { activeWorkspace } = useWorkspaces();
 
 const [layoutDebug, setLayoutDebug] = useState('');
 
@@ -43,10 +46,6 @@ useEffect(() => {
     window.visualViewport?.removeEventListener('resize', measure);
   };
 }, []);
-
-export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const { activeWorkspace } = useWorkspaces();
 
   return (
      <div className="app-shell bg-black text-white d-flex">
