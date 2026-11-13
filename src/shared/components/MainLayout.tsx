@@ -13,7 +13,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const { activeWorkspace } = useWorkspaces();
 
   return (
-    <div className="bg-black text-white d-flex" style={{ height: '100%' }}>
+     <div className="app-shell bg-black text-white d-flex">
       {/* Desktop Sidebar */}
       <Sidebar isCollapsed={isCollapsed} onToggle={() => setIsCollapsed(!isCollapsed)} />
 
@@ -55,9 +55,13 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       </main>
 
       {/* Mobile Bottom Navigation */}
-      <div className="d-md-none">
-        <Navigation />
-      </div>
+    <div className="mobile-navigation-wrapper d-md-none">
+  <Navigation />
+</div>
+  
+
+        
+      
     </div>
   );
 };
