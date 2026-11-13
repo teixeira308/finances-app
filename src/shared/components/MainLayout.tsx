@@ -3,6 +3,7 @@ import Sidebar from '../../navigation/Sidebar';
 import Navigation from '../../navigation';
 import { WorkspaceSwitcher } from '@/features/workspaces/components/WorkspaceSwitcher';
 import { useWorkspaces } from '@/features/workspaces/hooks/useWorkspaces';
+import logoNome from '@/assets/logo-nome.png';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -28,13 +29,14 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       >
         {/* Workspace Identification Banner */}
         <div 
-          className="app-workspace-bar d-flex align-items-center justify-content-end transition-all"
+          className="app-workspace-bar d-flex align-items-center justify-content-between transition-all"
           style={{ 
             zIndex: 1020, 
             backgroundColor: activeWorkspace?.metadata?.color || '#1C1C1E',
             transition: 'background-color 0.3s ease'
           }}
         >
+          <img src={logoNome} alt="Nexo" className="app-workspace-logo" />
           <WorkspaceSwitcher />
         </div>
 

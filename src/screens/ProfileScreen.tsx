@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, User, Phone, UserCircle, Mail } from 'lucide-react';
 import { useUserProfile } from '@/features/auth/hooks/useUserProfile';
 import { UserAvatar } from '@/shared/components/UserAvatar';
-import { AppLoader } from '@/shared/components/AppLoader';
 import { InlineLoader } from '@/shared/components/InlineLoader';
 
 const ProfileScreen = () => {
@@ -52,7 +51,7 @@ const ProfileScreen = () => {
   };
 
   if (loading && !profile) {
-    return <AppLoader message="Carregando seu perfil..." />;
+    return null;
   }
 
   return (

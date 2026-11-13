@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, type User } from 'firebase/auth';
 import { auth } from '@/shared/services/firebase';
-import { AppLoader } from '@/shared/components/AppLoader';
 
 interface AuthContextType {
   user: User | null;
@@ -23,11 +22,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   return (
     <AuthContext.Provider value={{ user, loading }}>
-      {loading ? (
-        <AppLoader message="Verificando seu acesso..." />
-      ) : (
-        children
-      )}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };

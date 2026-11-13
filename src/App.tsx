@@ -1,7 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { MainLayout } from './shared/components/MainLayout';
-import { AppLoader } from './shared/components/AppLoader';
 import { ScrollToTop } from './shared/components/ScrollToTop';
 import { useAppDispatch, useAppSelector } from './store/hooks';
 import { bootstrapTransactions } from './features/transactions/store/transactionsSlice';
@@ -35,7 +34,7 @@ const InvoicesScreen = lazy(() => import('./features/workspaces/screens/Invoices
 const InstallmentsScreen = lazy(() => import('./features/workspaces/screens/InstallmentsScreen').then(m => ({ default: m.InstallmentsScreen })));
 
 function PageLoader() {
-  return <AppLoader message="Carregando página..." />;
+  return null;
 }
 
 function App() {
@@ -61,7 +60,7 @@ function App() {
   }, [dispatch, user]);
 
   if (loading) {
-    return <AppLoader message="Iniciando seu Nexo..." />;
+    return null;
   }
 
   if (!user) {
