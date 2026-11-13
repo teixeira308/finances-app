@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Container, Card, Form, Button, Badge } from 'react-bootstrap';
 import { login } from '@/features/auth/services/authService';
 import logoNome from '@/assets/logo-nome.png';
+import { InlineLoader } from '@/shared/components/InlineLoader';
 
 
 const LoginScreen = () => {
@@ -64,6 +65,7 @@ const LoginScreen = () => {
               disabled={isLoading}
               className="w-100 py-3 rounded-3 fw-bold shadow-lg mt-2"
             >
+              {isLoading && <InlineLoader label="Entrando" />}
               {isLoading ? 'Entrando...' : 'Entrar'}
             </Button>
           </Form>

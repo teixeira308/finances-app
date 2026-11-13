@@ -11,6 +11,7 @@ import { useWorkspaces } from '@/features/workspaces/hooks/useWorkspaces';
 import { projectInstallments } from '@/shared/utils/installments';
 import { toLocalISOString, toLocalDateInput } from '@/shared/utils/date';
 import { selectHasSeenTransactionGuide, finishTransactionGuide } from '@/features/onboarding/store/onboardingSlice';
+import { InlineLoader } from '@/shared/components/InlineLoader';
 
 const guideSteps = [
   {
@@ -408,6 +409,7 @@ const NewTransactionScreen = () => {
                 disabled={isLoading}
                 className="btn btn-primary w-100 py-3 rounded-3 fw-bold fs-5 shadow-lg border-0 mt-3"
               >
+                {isLoading && <InlineLoader label="Salvando transação" />}
                 {isLoading ? 'Salvando...' : 'Salvar Transação'}
               </Button>
             </Form>

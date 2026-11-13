@@ -8,6 +8,7 @@ import { workspaceRepository } from "@/storage/repositories/workspaceRepository"
 import { nanoid } from "nanoid";
 import { useAuth } from "@/features/auth/components/AuthProvider";
 import { WorkspaceType } from "@/shared/models/finance";
+import { InlineLoader } from "@/shared/components/InlineLoader";
 
 export const WorkspaceSelectionScreen: React.FC = () => {
   const { workspaces, changeWorkspace } = useWorkspaces();
@@ -251,6 +252,7 @@ aspectRatio: "1",
             onClick={handleCreate}
             disabled={isSaving || !newWsName}
           >
+            {isSaving && <InlineLoader label="Criando espaço" />}
             {isSaving ? "Criando..." : "Criar Espaço"}
           </Button>
         </Modal.Body>

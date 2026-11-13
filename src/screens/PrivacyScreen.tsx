@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Container, Card, Button, Badge, Modal, Spinner, Form } from 'react-bootstrap';
+import { Container, Card, Button, Badge, Modal, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Download, Trash2, ShieldAlert, AlertTriangle, FileText } from 'lucide-react';
 import { useAppSelector } from '@/store/hooks';
 import { selectCategories } from '@/features/categories/store/categoriesSlice';
 import { deleteUserAccount } from '@/features/auth/services/authService';
+import { InlineLoader } from '@/shared/components/InlineLoader';
 
 const PrivacyScreen = () => {
   const navigate = useNavigate();
@@ -93,7 +94,7 @@ const PrivacyScreen = () => {
             disabled={isExporting}
             className="w-100 py-3 btn-ios-secondary rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2"
           >
-            {isExporting ? <Spinner size="sm" /> : <Download size={20} />}
+            {isExporting ? <InlineLoader label="Preparando download" /> : <Download size={20} />}
             Baixar meus dados (JSON)
           </Button>
         </Card>
@@ -209,7 +210,7 @@ const PrivacyScreen = () => {
             onClick={handleDeleteAccount}
             disabled={isDeleting}
           >
-            {isDeleting ? <Spinner size="sm" /> : <Trash2 size={18} />}
+            {isDeleting ? <InlineLoader label="Excluindo conta" /> : <Trash2 size={18} />}
             {isDeleting ? "Excluindo..." : "Sim, Excluir Minha Conta"}
           </Button>
         </Modal.Footer>

@@ -3,10 +3,8 @@ import { Container, Card, ListGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { Shield, HelpCircle, ChevronRight, LogOut, Lock, ExternalLink, Briefcase, Settings as SettingsIcon } from 'lucide-react';
 import { logout } from '@/features/auth/services/authService';
-import logoNome from '@/assets/logo-nome.png';
 import { useUserProfile } from '@/features/auth/hooks/useUserProfile';
 import { UserAvatar } from '@/shared/components/UserAvatar';
-import { WorkspaceSwitcher } from '@/features/workspaces/components/WorkspaceSwitcher';
 import { useAppSelector } from '@/store/hooks';
 import { selectActiveWorkspaceId } from '@/features/workspaces/store/workspaceSlice';
 
@@ -19,11 +17,14 @@ const SettingsScreen = () => {
 
   return (
     <Container className="mobile-container p-4 pb-5">
-      <div className="pt-4 mb-4 d-flex align-items-center justify-content-between">
-        <div className="d-flex align-items-center gap-2">
-            <img src={logoNome} alt="Gastos Mensais" className="rounded-3" style={{ height: '30px' }} />
+      <div className="pt-4 mb-4">
+        <div>
+          <h1 className="h1 fw-bold m-0">Ajustes</h1>
+          <p className="text-ios-gray mb-0">Gerencie sua conta e preferências</p>
         </div>
       </div>
+
+      <p className="small fw-bold text-ios-gray text-uppercase px-1 mb-2">Conta</p>
 
       {/* Profile Header */}
       <div 
@@ -38,6 +39,7 @@ const SettingsScreen = () => {
         <ChevronRight size={20} className="text-ios-gray opacity-40" />
       </div>
 
+      <p className="small fw-bold text-ios-gray text-uppercase px-1 mb-2">Espaço financeiro</p>
       <Card className="bg-ios-dark-gray border-0 overflow-hidden mb-4 shadow-none rounded-4">
         <ListGroup variant="flush" className="bg-transparent">
           <ListGroup.Item
@@ -126,6 +128,7 @@ const SettingsScreen = () => {
         </ListGroup>
       </Card>
 
+      <p className="small fw-bold text-ios-gray text-uppercase px-1 mb-2">Sessão</p>
       <Card className="bg-ios-dark-gray border-0 overflow-hidden mb-4 shadow-none rounded-4">
         <ListGroup variant="flush" className="bg-transparent">
           <ListGroup.Item

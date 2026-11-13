@@ -349,8 +349,8 @@ button:focus-visible, .btn:focus-visible, a:focus-visible {
 }
 
 .app-workspace-bar {
-  min-height: var(--mobile-navigation-height);
-  padding: 0 1rem !important;
+  min-height: calc(var(--mobile-navigation-height) + var(--safe-area-top));
+  padding: var(--safe-area-top) 1rem 0 !important;
 }
 
 .content-wrapper {
@@ -482,6 +482,19 @@ button:focus-visible, .btn:focus-visible, a:focus-visible {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.inline-loader {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+  margin-right: 0.5rem;
+  vertical-align: -0.15rem;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: app-loader-spin 0.7s linear infinite;
 }
 
 @keyframes app-loader-spin {

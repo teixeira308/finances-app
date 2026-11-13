@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckCircle, FileText, Shield, BookOpen, Gavel, Lock, Globe, Mail, Info } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { acceptTerms, selectTermsAccepted } from '@/features/terms/store/termsSlice';
+import { InlineLoader } from '@/shared/components/InlineLoader';
 
 const sections = [
   {
@@ -295,6 +296,7 @@ const TermsOfUseScreen = () => {
               onClick={handleAccept}
               disabled={accepting}
             >
+              {accepting && <InlineLoader label="Salvando termos" />}
               {accepting ? 'Salvando...' : 'Aceitar Termos de Uso'}
             </Button>
           </div>

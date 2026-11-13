@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useWorkspaces } from "../hooks/useWorkspaces";
 import { workspaceRepository } from "@/storage/repositories/workspaceRepository";
 import { ArrowLeft, Trash2 } from "lucide-react";
+import { InlineLoader } from "@/shared/components/InlineLoader";
 
 export const EditWorkspaceScreen: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -146,6 +147,7 @@ export const EditWorkspaceScreen: React.FC = () => {
             onClick={handleSave}
             disabled={isSaving || !name}
           >
+            {isSaving && <InlineLoader label="Salvando espaço" />}
             {isSaving ? "Salvando..." : "Salvar Alterações"}
           </Button>
 
@@ -184,6 +186,7 @@ export const EditWorkspaceScreen: React.FC = () => {
             onClick={handleDelete}
             disabled={isDeleting || deleteConfirmation !== "EXCLUIR"}
           >
+            {isDeleting && <InlineLoader label="Excluindo espaço" />}
             {isDeleting ? "Excluindo..." : "Excluir Definitivamente"}
           </Button>
         </Modal.Footer>

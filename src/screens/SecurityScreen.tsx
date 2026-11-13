@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Container, Card, Button, Form, Badge, Modal, Spinner } from 'react-bootstrap';
+import { Container, Card, Button, Form, Badge, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Lock, ShieldCheck } from 'lucide-react';
 import { changePassword, reauthenticateUser } from '@/features/auth/services/authService';
+import { InlineLoader } from '@/shared/components/InlineLoader';
 
 const SecurityScreen = () => {
   const navigate = useNavigate();
@@ -123,7 +124,8 @@ const SecurityScreen = () => {
             Cancelar
           </Button>
           <Button variant="primary" className="flex-grow-1 py-3 fw-bold" onClick={confirmReauth} disabled={isLoading || !currentPassword}>
-            {isLoading ? <Spinner size="sm" /> : 'Confirmar'}
+            {isLoading && <InlineLoader label="Confirmando identidade" />}
+            {isLoading ? 'Confirmando...' : 'Confirmar'}
           </Button>
         </Modal.Footer>
       </Modal>

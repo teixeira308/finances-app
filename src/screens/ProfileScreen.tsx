@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Card, Button, Form, Badge, Row, Col, Spinner } from 'react-bootstrap';
+import { Container, Card, Button, Form, Badge, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, User, Phone, UserCircle, Mail } from 'lucide-react';
 import { useUserProfile } from '@/features/auth/hooks/useUserProfile';
 import { UserAvatar } from '@/shared/components/UserAvatar';
+import { AppLoader } from '@/shared/components/AppLoader';
+import { InlineLoader } from '@/shared/components/InlineLoader';
 
 const ProfileScreen = () => {
   const navigate = useNavigate();
@@ -50,11 +52,7 @@ const ProfileScreen = () => {
   };
 
   if (loading && !profile) {
-    return (
-      <Container className="mobile-container d-flex align-items-center justify-content-center min-vh-100">
-        <Spinner animation="border" variant="primary" />
-      </Container>
-    );
+    return <AppLoader message="Carregando seu perfil..." />;
   }
 
   return (
@@ -162,7 +160,7 @@ const ProfileScreen = () => {
             disabled={isSaving}
             className="w-100 py-3 rounded-4 fw-bold shadow-lg d-flex align-items-center justify-content-center gap-2"
           >
-            {isSaving ? <Spinner size="sm" /> : <Save size={20} />}
+            {isSaving ? <InlineLoader label="Salvando perfil" /> : <Save size={20} />}
             {isSaving ? 'Salvando...' : 'Salvar Alterações'}
           </Button>
         </Form>
