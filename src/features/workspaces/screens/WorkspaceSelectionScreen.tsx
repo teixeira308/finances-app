@@ -77,7 +77,7 @@ export const WorkspaceSelectionScreen: React.FC = () => {
   };
 
   return (
-    <div className="bg-black text-white d-flex flex-column align-items-center no-scrollbar" style={{ height: '100dvh', overflowY: 'auto', padding: '2rem 1rem' }}>
+    <div className="workspace-selection bg-black text-white d-flex flex-column align-items-center no-scrollbar">
       <div className="mb-5 mt-4">
         <img src={logoNome} alt="Nexo" style={{ height: "60px" }} />
       </div>
@@ -94,8 +94,9 @@ export const WorkspaceSelectionScreen: React.FC = () => {
                 <div 
                   className="rounded-3 d-flex align-items-center justify-content-center transition-all shadow-lg"
                   style={{ 
-                    width: "140px", 
-                    height: "140px", 
+                    width: "min(140px, 100%)",
+aspectRatio: "1",
+                    
                     backgroundColor: ws.metadata?.color || "#1C1C1E",
                     border: "3px solid transparent"
                   }}
@@ -128,7 +129,7 @@ export const WorkspaceSelectionScreen: React.FC = () => {
             >
               <div 
                 className="rounded-3 d-flex align-items-center justify-content-center transition-all bg-ios-dark-gray shadow-lg"
-                style={{ width: "140px", height: "140px", border: "3px solid transparent" }}
+                style={{ width: "min(140px, 100%)", aspectRatio: "1", border: "3px solid transparent" }}
               >
                 <Plus size={56} className="text-ios-gray opacity-40" />
               </div>

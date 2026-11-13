@@ -19,7 +19,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
       {/* Main Content Area */}
       <main 
-        className="flex-grow-1 transition-all d-flex flex-column"
+        className="app-main flex-grow-1 transition-all d-flex flex-column"
         style={{ 
           marginLeft: '0px',
           paddingBottom: 'calc(60px + var(--safe-area-bottom))',
@@ -29,7 +29,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       >
         {/* Workspace Identification Banner */}
         <div 
-          className="d-flex align-items-center justify-content-end px-4 py-2 sticky-top transition-all"
+          className="app-workspace-bar d-flex align-items-center justify-content-end px-4 py-2 sticky-top transition-all"
           style={{ 
             zIndex: 1020, 
             backgroundColor: activeWorkspace?.metadata?.color || '#1C1C1E',
