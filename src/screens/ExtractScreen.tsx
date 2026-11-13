@@ -7,7 +7,7 @@ import { selectRecurringTransactions, bootstrapRecurringTransactions, deleteRecu
 import { 
   Trash2, Pencil, ArrowUpCircle, RefreshCw,
   ShoppingBag, Coffee, Car, Home, Film, Briefcase, Plus, Heart,
-  ChevronLeft, ChevronRight, Calendar, Search, X, Tag
+  ChevronLeft, ChevronRight, Calendar, Search, X, Tag, CheckCircle2, Circle
 } from 'lucide-react';
 import { MoneyValue } from '@/shared/components/MoneyValue';
 import { toLocalISOString, toLocalDateOnly } from '@/shared/utils/date';
@@ -121,6 +121,13 @@ const ExtractScreen = () => {
       dispatch(bootstrapCategories(activeWorkspaceId));
       dispatch(bootstrapRecurringTransactions(activeWorkspaceId));
     }
+  };
+
+  const handleTogglePaid = async (transaction: Transaction) => {
+    await dispatch(updateTransaction({
+      id: transaction.id,
+      updates: { isPaid: transaction.isPaid === false },
+    })).unwrap();
   };
 
   const openEditModal = (tx: Transaction) => {
@@ -314,6 +321,7 @@ const ExtractScreen = () => {
                   {txs.map((tx) => {
                     const category = categories.find(c => c.id === tx.categoryId);
                     const isProjected = tx.id.startsWith('projected-');
+                    const isPaid = tx.isPaid !== false;
                     const IconComponent = categoryIcons[category?.iconToken || 'default'] || categoryIcons.default;
                     
                     return (
@@ -323,6 +331,12 @@ const ExtractScreen = () => {
                         >
                           <SwipeableRow
                             actions={[
+                              ...(tx.type === 'expense' && !isProjected ? [{
+                                icon: isPaid ? <Circle size={18} /> : <CheckCircle2 size={18} />,
+                                color: isPaid ? '#8E8E93' : '#30D158',
+                                onClick: () => { void handleTogglePaid(tx); },
+                                ariaLabel: isPaid ? 'Marcar despesa como pendente' : 'Marcar despesa como paga',
+                              }] : []),
                               {
                                 icon: <Pencil size={18} />,
                                 color: '#0079f2',
@@ -355,6 +369,11 @@ const ExtractScreen = () => {
                                 <div className="d-flex flex-column min-w-0">
                                   <div className="d-flex align-items-center gap-2">
                                     <span className="fw-bold text-white text-truncate">{category?.name || 'Sem Categoria'}</span>
+                                    {tx.type === 'expense' && !isProjected && (
+                                      <Badge bg={isPaid ? 'success' : 'secondary'} className="small border-0 flex-shrink-0">
+                                        {isPaid ? 'Paga' : 'Pendente'}
+                                      </Badge>
+                                    )}
                                     {isProjected && (
                                       <Badge bg="primary" className="bg-primary bg-opacity-10 text-primary small border-0 d-flex align-items-center p-1 flex-shrink-0">
                                         <RefreshCw size={10} />
@@ -370,6 +389,17 @@ const ExtractScreen = () => {
                                   {tx.type === 'expense' ? '-' : '+'} <MoneyValue value={tx.amount} />
                                 </span>
                                 <div className="inline-actions d-flex gap-1">
+                                  {tx.type === 'expense' && !isProjected && (
+                                    <Button
+                                      variant="link"
+                                      className={`p-1 shadow-none ${isPaid ? 'text-ios-gray opacity-50' : 'text-ios-green'}`}
+                                      onClick={() => { void handleTogglePaid(tx); }}
+                                      aria-label={isPaid ? 'Marcar despesa como pendente' : 'Marcar despesa como paga'}
+                                      title={isPaid ? 'Marcar como pendente' : 'Marcar como paga'}
+                                    >
+                                      {isPaid ? <Circle size={16} /> : <CheckCircle2 size={16} />}
+                                    </Button>
+                                  )}
                                   <Button 
                                     variant="link" 
                                     className="p-1 text-ios-gray opacity-50 shadow-none" 

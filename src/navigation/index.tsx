@@ -27,11 +27,8 @@ const Navigation = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="mobile-navigation bg-black border-top border-white border-opacity-10 safe-area-bottom">
-      <div 
-        className="d-flex align-items-center justify-content-between mx-auto" 
-        style={{ maxWidth: '448px', height: '60px' }}
-      >
+    <nav className="mobile-navigation bg-black border-top border-white border-opacity-10 safe-area-bottom" aria-label="Navegação principal">
+      <div className="mobile-navigation__content d-flex align-items-center justify-content-between mx-auto">
         {/* Left side: first half of items */}
         <div className="d-flex flex-grow-1 justify-content-around">
           {navItems.slice(0, 2).map((item) => {
@@ -59,18 +56,10 @@ const Navigation = () => {
         </div>
 
         {/* Central FAB */}
-        <div style={{ width: '60px', display: 'flex', justifyContent: 'center' }}>
+        <div className="mobile-navigation__fab-slot">
           <button
             onClick={() => navigate('/new-transaction')}
-            className="btn rounded-circle d-flex align-items-center justify-content-center shadow-lg position-relative"
-            style={{ 
-              width: '50px', 
-              height: '50px', 
-              backgroundColor: 'var(--ios-blue)', 
-              color: 'white',
-              border: 'none',
-              marginTop: '-30px'
-            }}
+            className="mobile-navigation__fab btn rounded-circle d-flex align-items-center justify-content-center shadow-lg position-relative"
             aria-label="Nova transação"
           >
             <Plus size={28} strokeWidth={3} />
@@ -103,7 +92,7 @@ const Navigation = () => {
           })}
         </div>
       </div>
-    </div>
+    </nav>
   );
 };
 

@@ -29,6 +29,7 @@ export interface Transaction {
   amount: number;
   categoryId: string;
   occurredAt: string;
+  isPaid?: boolean;
   note?: string;
   installmentInfo?: {
     current: number;

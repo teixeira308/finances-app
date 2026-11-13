@@ -26,7 +26,7 @@ export const deleteTransaction = createAsyncThunk(
 
 export const updateTransaction = createAsyncThunk(
   "transactions/update",
-  async (input: { id: string; updates: Partial<Pick<Transaction, "amount" | "occurredAt" | "categoryId" | "note">> }, { getState }) => {
+  async (input: { id: string; updates: Partial<Pick<Transaction, "amount" | "occurredAt" | "categoryId" | "note" | "isPaid">> }, { getState }) => {
     const state = getState() as { transactions: { items: Transaction[] } };
     const existing = state.transactions.items.find(t => t.id === input.id);
     if (!existing) throw new Error("Transaction not found");
