@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, type User } from 'firebase/auth';
 import { auth } from '@/shared/services/firebase';
-import { Spinner } from 'react-bootstrap';
+import { AppLoader } from '@/shared/components/AppLoader';
 
 interface AuthContextType {
   user: User | null;
@@ -24,9 +24,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   return (
     <AuthContext.Provider value={{ user, loading }}>
       {loading ? (
-        <div className="d-flex min-vh-100 align-items-center justify-content-center bg-black">
-          <Spinner animation="border" variant="primary" />
-        </div>
+        <AppLoader message="Verificando seu acesso..." />
       ) : (
         children
       )}

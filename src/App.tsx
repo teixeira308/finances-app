@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Spinner } from 'react-bootstrap';
 import { MainLayout } from './shared/components/MainLayout';
+import { AppLoader } from './shared/components/AppLoader';
 import { ScrollToTop } from './shared/components/ScrollToTop';
 import { useAppDispatch, useAppSelector } from './store/hooks';
 import { bootstrapTransactions } from './features/transactions/store/transactionsSlice';
@@ -35,11 +35,7 @@ const InvoicesScreen = lazy(() => import('./features/workspaces/screens/Invoices
 const InstallmentsScreen = lazy(() => import('./features/workspaces/screens/InstallmentsScreen').then(m => ({ default: m.InstallmentsScreen })));
 
 function PageLoader() {
-  return (
-    <div className="d-flex align-items-center justify-content-center bg-black" style={{ minHeight: '100dvh', height: '100%' }}>
-      <Spinner animation="border" variant="primary" />
-    </div>
-  );
+  return <AppLoader message="Carregando página..." />;
 }
 
 function App() {
@@ -65,11 +61,7 @@ function App() {
   }, [dispatch, user]);
 
   if (loading) {
-    return (
-      <div className="d-flex align-items-center justify-content-center bg-black" style={{ minHeight: '100dvh', height: '100%' }}>
-        <Spinner animation="border" variant="primary" />
-      </div>
-    );
+    return <AppLoader message="Iniciando seu Nexo..." />;
   }
 
   if (!user) {

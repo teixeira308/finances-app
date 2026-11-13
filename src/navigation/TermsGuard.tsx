@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { Spinner } from 'react-bootstrap';
+import { AppLoader } from '@/shared/components/AppLoader';
 import { useAppSelector } from '../store/hooks';
 import { selectTermsAccepted, selectTermsLoading } from '../features/terms/store/termsSlice';
 
@@ -13,11 +13,7 @@ export const TermsGuard: React.FC<TermsGuardProps> = ({ children }) => {
   const loading = useAppSelector(selectTermsLoading);
 
   if (loading) {
-    return (
-      <div className="d-flex min-vh-100 align-items-center justify-content-center bg-black">
-        <Spinner animation="border" variant="primary" />
-      </div>
-    );
+    return <AppLoader message="Carregando termos de uso..." />;
   }
 
   if (!accepted) {
