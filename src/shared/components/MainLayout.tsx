@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+const { activeWorkspace } = useWorkspaces();
 import Sidebar from '../../navigation/Sidebar';
 import Navigation from '../../navigation';
 import { WorkspaceSwitcher } from '@/features/workspaces/components/WorkspaceSwitcher';
@@ -7,6 +8,41 @@ import { useWorkspaces } from '@/features/workspaces/hooks/useWorkspaces';
 interface MainLayoutProps {
   children: React.ReactNode;
 }
+
+const [layoutDebug, setLayoutDebug] = useState('');
+
+useEffect(() => {
+  const measure = () => {
+    const shell = document.querySelector('.app-shell');
+    const nav = document.querySelector('.mobile-navigation');
+
+    if (!shell || !nav) return;
+
+    const shellRect = shell.getBoundingClientRect();
+    const navRect = nav.getBoundingClientRect();
+    const navStyle = window.getComputedStyle(nav);
+
+    setLayoutDebug(
+      `tela=${window.screen.height} ` +
+      `janela=${window.innerHeight} ` +
+      `visual=${Math.round(window.visualViewport?.height ?? 0)} ` +
+      `app=${Math.round(shellRect.height)} ` +
+      `menuTopo=${Math.round(navRect.top)} ` +
+      `menuFim=${Math.round(navRect.bottom)} ` +
+      `margemMenu=${navStyle.paddingBottom}`
+    );
+  };
+
+  const frame = requestAnimationFrame(measure);
+  window.addEventListener('resize', measure);
+  window.visualViewport?.addEventListener('resize', measure);
+
+  return () => {
+    cancelAnimationFrame(frame);
+    window.removeEventListener('resize', measure);
+    window.visualViewport?.removeEventListener('resize', measure);
+  };
+}, []);
 
 export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -57,6 +93,23 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       {/* Mobile Bottom Navigation */}
     <div className="mobile-navigation-wrapper d-md-none">
   <Navigation />
+  <div
+  style={{
+    position: 'fixed',
+    top: '40%',
+    left: 0,
+    right: 0,
+    zIndex: 9999,
+    padding: '8px',
+    background: '#fff',
+    color: '#000',
+    fontSize: '12px',
+    overflowWrap: 'anywhere',
+    pointerEvents: 'none',
+  }}
+>
+  DEBUG: {layoutDebug}
+</div>
 </div>
   
 
