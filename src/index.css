@@ -441,6 +441,33 @@ button:focus-visible, .btn:focus-visible, a:focus-visible {
   animation: app-loader-spin 0.7s linear infinite;
 }
 
+.expense-paid-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--ios-gray);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.expense-paid-checkbox .form-check-input {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0;
+  cursor: pointer;
+  background-color: transparent;
+  border-color: var(--ios-gray);
+}
+
+.expense-paid-checkbox .form-check-input:checked {
+  background-color: var(--ios-green);
+  border-color: var(--ios-green);
+}
+
+.expense-paid-checkbox .form-check-label {
+  cursor: pointer;
+}
+
 @keyframes app-loader-spin {
   to { transform: rotate(360deg); }
 }

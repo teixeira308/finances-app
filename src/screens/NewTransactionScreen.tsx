@@ -230,6 +230,7 @@ const NewTransactionScreen = () => {
           amount: rawAmount / installments,
           categoryId,
           occurredAt: toLocalISOString(new Date(occurredAt)),
+          isPaid: false,
           note: note || 'Compra Parcelada'
         }, installments);
         await dispatch(createPurchase(purchaseTransactions)).unwrap();

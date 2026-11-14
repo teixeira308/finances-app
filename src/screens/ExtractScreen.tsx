@@ -321,7 +321,7 @@ const ExtractScreen = () => {
                   {txs.map((tx) => {
                     const category = categories.find(c => c.id === tx.categoryId);
                     const isProjected = tx.id.startsWith('projected-');
-                    const isPaid = tx.isPaid !== false;
+                    const isPaid = tx.isPaid === true;
                     const IconComponent = categoryIcons[category?.iconToken || 'default'] || categoryIcons.default;
                     
                     return (
@@ -369,11 +369,6 @@ const ExtractScreen = () => {
                                 <div className="d-flex flex-column min-w-0">
                                   <div className="d-flex align-items-center gap-2">
                                     <span className="fw-bold text-white text-truncate">{category?.name || 'Sem Categoria'}</span>
-                                    {tx.type === 'expense' && !isProjected && (
-                                      <Badge bg={isPaid ? 'success' : 'secondary'} className="small border-0 flex-shrink-0">
-                                        {isPaid ? 'Paga' : 'Pendente'}
-                                      </Badge>
-                                    )}
                                     {isProjected && (
                                       <Badge bg="primary" className="bg-primary bg-opacity-10 text-primary small border-0 d-flex align-items-center p-1 flex-shrink-0">
                                         <RefreshCw size={10} />
@@ -385,6 +380,17 @@ const ExtractScreen = () => {
                               </div>
                               
                               <div className="d-flex align-items-center gap-2 flex-shrink-0">
+                                {tx.type === 'expense' && !isProjected && (
+                                  <Form.Check
+                                    id={`paid-${tx.id}`}
+                                    type="checkbox"
+                                    checked={isPaid}
+                                    onChange={() => { void handleTogglePaid(tx); }}
+                                    onClick={(event) => event.stopPropagation()}
+                                    label="Paga"
+                                    className="expense-paid-checkbox mb-0"
+                                  />
+                                )}
                                 <span className={`fw-bold ${tx.type === 'expense' ? 'text-ios-red' : 'text-ios-green'}`}>
                                   {tx.type === 'expense' ? '-' : '+'} <MoneyValue value={tx.amount} />
                                 </span>

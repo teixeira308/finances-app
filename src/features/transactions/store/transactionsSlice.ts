@@ -53,6 +53,7 @@ export const createTransaction = createAsyncThunk(
       id: nanoid(),
       createdAt: now,
       updatedAt: now,
+      isPaid: input.type === "expense" ? false : undefined,
       syncStatus: "local_only"
     };
     return saveTransaction(transaction);
