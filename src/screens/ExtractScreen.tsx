@@ -111,9 +111,11 @@ const ExtractScreen = () => {
     const today = toLocalDateOnly(new Date());
     const currentMonthRef = today.slice(0, 7);
     const todayTransactions = [
-      ...transactions.filter((transaction) => transaction.occurredAt.slice(0, 10) === today),
+      ...transactions.filter((transaction) =>
+        transaction.occurredAt.startsWith(currentMonthRef) && transaction.occurredAt.slice(0, 10) <= today
+      ),
       ...projectRecurringTransactions(recurringTransactions, currentMonthRef)
-        .filter((transaction) => transaction.occurredAt.slice(0, 10) === today),
+        .filter((transaction) => transaction.occurredAt.slice(0, 10) <= today),
     ];
 
     return todayTransactions.reduce(
@@ -325,8 +327,8 @@ const ExtractScreen = () => {
           <div className="d-flex align-items-center gap-2">
             <span className="rounded-circle bg-primary" style={{ width: '8px', height: '8px' }} />
             <div>
-              <p className="small fw-bold text-uppercase text-ios-gray mb-0">Total de hoje</p>
-              <span className="x-small text-ios-gray">{new Date().toLocaleDateString('pt-BR')}</span>
+              <p className="small fw-bold text-uppercase text-ios-gray mb-0">Total até hoje</p>
+              <span className="x-small text-ios-gray">Do início do mês até {new Date().toLocaleDateString('pt-BR')}</span>
             </div>
           </div>
           <div className="text-end">
