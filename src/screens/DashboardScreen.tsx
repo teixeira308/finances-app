@@ -21,7 +21,6 @@ import { PrivacyToggle } from '@/shared/components/PrivacyToggle';
 import { useWorkspaces } from '@/features/workspaces/hooks/useWorkspaces';
 import { CreditCardDashboard } from '@/features/workspaces/screens/CreditCardDashboard';
 import { WorkspaceSwitcher } from '@/features/workspaces/components/WorkspaceSwitcher';
-import { toLocalDateOnly, toLocalMonthRef } from '@/shared/utils/date';
 
 const DashboardScreen = () => {
   const navigate = useNavigate();
@@ -63,26 +62,6 @@ const DashboardScreen = () => {
     () => calculateMonthlySummary(monthRef, allTransactions, goals.find((goal) => goal.monthRef === monthRef)),
     [goals, monthRef, allTransactions]
   );
-
-  const todayTotals = useMemo(() => {
-    const today = toLocalDateOnly(new Date());
-    const todayMonthRef = toLocalMonthRef(new Date());
-    const todayTransactions = [
-      ...transactions.filter((transaction) =>
-        transaction.occurredAt.startsWith(todayMonthRef) && transaction.occurredAt.slice(0, 10) <= today
-      ),
-      ...projectRecurringTransactions(recurringTransactions, todayMonthRef)
-        .filter((transaction) => transaction.occurredAt.slice(0, 10) <= today),
-    ];
-
-    return todayTransactions.reduce(
-      (totals, transaction) => ({
-        income: totals.income + (transaction.type === 'income' ? transaction.amount : 0),
-        expense: totals.expense + (transaction.type === 'expense' ? transaction.amount : 0),
-      }),
-      { income: 0, expense: 0 }
-    );
-  }, [transactions, recurringTransactions]);
 
   const totalBalance = (activeWorkspace?.metadata?.initialBalance || 0) + summary.netBalance;
 
@@ -172,26 +151,6 @@ const DashboardScreen = () => {
         </Card.Body>
       </Card>
 
-      <Card className="bg-ios-dark-gray border-0 mb-4 shadow-none">
-        <Card.Body className="p-3 d-flex align-items-center justify-content-between">
-          <div className="d-flex align-items-center gap-2">
-            <span className="rounded-circle bg-primary" style={{ width: '8px', height: '8px' }} />
-            <div>
-              <p className="small fw-bold text-uppercase text-ios-gray mb-0">Total até hoje</p>
-              <span className="x-small text-ios-gray">Do início do mês até {new Date().toLocaleDateString('pt-BR')}</span>
-            </div>
-          </div>
-          <div className="text-end">
-            <span className="x-small text-ios-gray d-block">
-              Entradas <MoneyValue value={todayTotals.income} /> · Saídas <MoneyValue value={todayTotals.expense} />
-            </span>
-            <span className={`fw-bold ${todayTotals.income - todayTotals.expense >= 0 ? 'text-ios-green' : 'text-ios-red'}`}>
-              {todayTotals.income - todayTotals.expense >= 0 ? '+' : '-'} <MoneyValue value={Math.abs(todayTotals.income - todayTotals.expense)} />
-            </span>
-          </div>
-        </Card.Body>
-      </Card>
-      
       <Row className="g-3">
         {/* Column: Summary and Balance */}
         <Col xs={12} lg={5}>
