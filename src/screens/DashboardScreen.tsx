@@ -72,19 +72,28 @@ const DashboardScreen = () => {
     return [...actual, ...projected];
   }, [transactions, recurringTransactions, monthRef]);
 
-  const visibleTransactions = useMemo(() => {
-    const currentMonthRef = toLocalMonthRef(new Date());
-
-    if (monthRef < currentMonthRef) return allTransactions;
-
-    const today = toLocalDateOnly(new Date());
-    return allTransactions.filter((transaction) => transaction.occurredAt.slice(0, 10) <= today);
-  }, [allTransactions, monthRef]);
-
   const summary = useMemo(
-    () => calculateMonthlySummary(monthRef, visibleTransactions, goals.find((goal) => goal.monthRef === monthRef)),
-    [goals, monthRef, visibleTransactions]
+    () => calculateMonthlySummary(monthRef, allTransactions, goals.find((goal) => goal.monthRef === monthRef)),
+    [goals, monthRef, allTransactions]
   );
+
+  const todayTotals = useMemo(() => {
+    const today = toLocalDateOnly(new Date());
+    const todayMonthRef = toLocalMonthRef(new Date());
+    const todayTransactions = [
+      ...transactions.filter((transaction) => transaction.occurredAt.slice(0, 10) === today),
+      ...projectRecurringTransactions(recurringTransactions, todayMonthRef)
+        .filter((transaction) => transaction.occurredAt.slice(0, 10) === today),
+    ];
+
+    return todayTransactions.reduce(
+      (totals, transaction) => ({
+        income: totals.income + (transaction.type === 'income' ? transaction.amount : 0),
+        expense: totals.expense + (transaction.type === 'expense' ? transaction.amount : 0),
+      }),
+      { income: 0, expense: 0 }
+    );
+  }, [transactions, recurringTransactions]);
 
   const totalBalance = (activeWorkspace?.metadata?.initialBalance || 0) + summary.netBalance;
 
@@ -101,10 +110,10 @@ const DashboardScreen = () => {
   }, [summary, categories]);
 
   const sortedTransactions = useMemo(() => {
-    return [...visibleTransactions].sort((a, b) =>
+    return [...allTransactions].sort((a, b) =>
       new Date(a.occurredAt).getTime() - new Date(b.occurredAt).getTime()
     );
-  }, [visibleTransactions]);
+  }, [allTransactions]);
 
   const groupedTransactions = useMemo(() => {
     const groups: Record<string, typeof sortedTransactions> = {};
@@ -118,7 +127,7 @@ const DashboardScreen = () => {
 
   const dailyData = useMemo(() => {
     const data: Record<string, { income: number; expense: number }> = {};
-    visibleTransactions
+    allTransactions
       .sort((a, b) => new Date(a.occurredAt).getTime() - new Date(b.occurredAt).getTime())
       .forEach(tx => {
         const date = new Date(tx.occurredAt).getDate().toString();
@@ -127,7 +136,7 @@ const DashboardScreen = () => {
         else data[date].expense += tx.amount;
       });
     return Object.entries(data).map(([date, values]) => ({ date, ...values }));
-  }, [visibleTransactions]);
+  }, [allTransactions]);
 
   if (activeWorkspace?.type === 'CREDIT_CARD') {
     return <CreditCardDashboard />;
@@ -187,6 +196,26 @@ const DashboardScreen = () => {
           >
             <ChevronRight size={20} />
           </Button>
+        </Card.Body>
+      </Card>
+
+      <Card className="bg-ios-dark-gray border-0 mb-4 shadow-none">
+        <Card.Body className="p-3 d-flex align-items-center justify-content-between">
+          <div className="d-flex align-items-center gap-2">
+            <span className="rounded-circle bg-primary" style={{ width: '8px', height: '8px' }} />
+            <div>
+              <p className="small fw-bold text-uppercase text-ios-gray mb-0">Total de hoje</p>
+              <span className="x-small text-ios-gray">{new Date().toLocaleDateString('pt-BR')}</span>
+            </div>
+          </div>
+          <div className="text-end">
+            <span className="x-small text-ios-gray d-block">
+              Entradas <MoneyValue value={todayTotals.income} /> · Saídas <MoneyValue value={todayTotals.expense} />
+            </span>
+            <span className={`fw-bold ${todayTotals.income - todayTotals.expense >= 0 ? 'text-ios-green' : 'text-ios-red'}`}>
+              {todayTotals.income - todayTotals.expense >= 0 ? '+' : '-'} <MoneyValue value={Math.abs(todayTotals.income - todayTotals.expense)} />
+            </span>
+          </div>
         </Card.Body>
       </Card>
       

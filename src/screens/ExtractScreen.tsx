@@ -80,12 +80,6 @@ const ExtractScreen = () => {
     // Combine
     let combined = [...actual, ...projected];
 
-    const currentMonthRef = toLocalDateOnly(new Date()).slice(0, 7);
-    if (monthRef >= currentMonthRef) {
-      const today = toLocalDateOnly(new Date());
-      combined = combined.filter((transaction) => transaction.occurredAt.slice(0, 10) <= today);
-    }
-
     // Apply text search filter
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase();
@@ -112,6 +106,24 @@ const ExtractScreen = () => {
     });
     return groups;
   }, [filteredTransactions]);
+
+  const todayTotals = useMemo(() => {
+    const today = toLocalDateOnly(new Date());
+    const currentMonthRef = today.slice(0, 7);
+    const todayTransactions = [
+      ...transactions.filter((transaction) => transaction.occurredAt.slice(0, 10) === today),
+      ...projectRecurringTransactions(recurringTransactions, currentMonthRef)
+        .filter((transaction) => transaction.occurredAt.slice(0, 10) === today),
+    ];
+
+    return todayTransactions.reduce(
+      (totals, transaction) => ({
+        income: totals.income + (transaction.type === 'income' ? transaction.amount : 0),
+        expense: totals.expense + (transaction.type === 'expense' ? transaction.amount : 0),
+      }),
+      { income: 0, expense: 0 }
+    );
+  }, [transactions, recurringTransactions]);
 
   const handlePrevMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
@@ -305,6 +317,26 @@ const ExtractScreen = () => {
           >
             <ChevronRight size={24} />
           </Button>
+        </Card.Body>
+      </Card>
+
+      <Card className="bg-ios-dark-gray border-0 mb-4 shadow-none">
+        <Card.Body className="p-3 d-flex align-items-center justify-content-between">
+          <div className="d-flex align-items-center gap-2">
+            <span className="rounded-circle bg-primary" style={{ width: '8px', height: '8px' }} />
+            <div>
+              <p className="small fw-bold text-uppercase text-ios-gray mb-0">Total de hoje</p>
+              <span className="x-small text-ios-gray">{new Date().toLocaleDateString('pt-BR')}</span>
+            </div>
+          </div>
+          <div className="text-end">
+            <span className="x-small text-ios-gray d-block">
+              Entradas <MoneyValue value={todayTotals.income} /> · Saídas <MoneyValue value={todayTotals.expense} />
+            </span>
+            <span className={`fw-bold ${todayTotals.income - todayTotals.expense >= 0 ? 'text-ios-green' : 'text-ios-red'}`}>
+              {todayTotals.income - todayTotals.expense >= 0 ? '+' : '-'} <MoneyValue value={Math.abs(todayTotals.income - todayTotals.expense)} />
+            </span>
+          </div>
         </Card.Body>
       </Card>
 
