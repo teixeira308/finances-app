@@ -22,6 +22,7 @@ import { PrivacyToggle } from '@/shared/components/PrivacyToggle';
 import { useWorkspaces } from '@/features/workspaces/hooks/useWorkspaces';
 import { CreditCardDashboard } from '@/features/workspaces/screens/CreditCardDashboard';
 import { WorkspaceSwitcher } from '@/features/workspaces/components/WorkspaceSwitcher';
+import { toLocalDateOnly, toLocalMonthRef } from '@/shared/utils/date';
 
 const categoryIcons: Record<string, React.ElementType> = {
   shopping: ShoppingBag,
@@ -71,9 +72,18 @@ const DashboardScreen = () => {
     return [...actual, ...projected];
   }, [transactions, recurringTransactions, monthRef]);
 
+  const visibleTransactions = useMemo(() => {
+    const currentMonthRef = toLocalMonthRef(new Date());
+
+    if (monthRef < currentMonthRef) return allTransactions;
+
+    const today = toLocalDateOnly(new Date());
+    return allTransactions.filter((transaction) => transaction.occurredAt.slice(0, 10) <= today);
+  }, [allTransactions, monthRef]);
+
   const summary = useMemo(
-    () => calculateMonthlySummary(monthRef, allTransactions, goals.find((goal) => goal.monthRef === monthRef)),
-    [goals, monthRef, allTransactions]
+    () => calculateMonthlySummary(monthRef, visibleTransactions, goals.find((goal) => goal.monthRef === monthRef)),
+    [goals, monthRef, visibleTransactions]
   );
 
   const totalBalance = (activeWorkspace?.metadata?.initialBalance || 0) + summary.netBalance;
@@ -91,10 +101,10 @@ const DashboardScreen = () => {
   }, [summary, categories]);
 
   const sortedTransactions = useMemo(() => {
-    return [...allTransactions].sort((a, b) => 
+    return [...visibleTransactions].sort((a, b) =>
       new Date(a.occurredAt).getTime() - new Date(b.occurredAt).getTime()
     );
-  }, [allTransactions]);
+  }, [visibleTransactions]);
 
   const groupedTransactions = useMemo(() => {
     const groups: Record<string, typeof sortedTransactions> = {};
@@ -108,7 +118,7 @@ const DashboardScreen = () => {
 
   const dailyData = useMemo(() => {
     const data: Record<string, { income: number; expense: number }> = {};
-    allTransactions
+    visibleTransactions
       .sort((a, b) => new Date(a.occurredAt).getTime() - new Date(b.occurredAt).getTime())
       .forEach(tx => {
         const date = new Date(tx.occurredAt).getDate().toString();
@@ -117,7 +127,7 @@ const DashboardScreen = () => {
         else data[date].expense += tx.amount;
       });
     return Object.entries(data).map(([date, values]) => ({ date, ...values }));
-  }, [allTransactions]);
+  }, [visibleTransactions]);
 
   if (activeWorkspace?.type === 'CREDIT_CARD') {
     return <CreditCardDashboard />;

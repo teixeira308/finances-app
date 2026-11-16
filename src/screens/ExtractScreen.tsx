@@ -80,6 +80,12 @@ const ExtractScreen = () => {
     // Combine
     let combined = [...actual, ...projected];
 
+    const currentMonthRef = toLocalDateOnly(new Date()).slice(0, 7);
+    if (monthRef >= currentMonthRef) {
+      const today = toLocalDateOnly(new Date());
+      combined = combined.filter((transaction) => transaction.occurredAt.slice(0, 10) <= today);
+    }
+
     // Apply text search filter
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase();
